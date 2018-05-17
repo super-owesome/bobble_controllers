@@ -69,6 +69,12 @@ namespace bobble_controllers
 	
 	void BobbleBalanceController::starting(const ros::Time& time)
 	{
+		Pitch = 0.0;
+		PitchDot = 0.0;
+		LeftWheelPosition = 0.0;
+		LeftWheelVelocity = 0.0;
+		RightWheelPosition = 0.0;
+		RightWheelVelocity = 0.0;
 		Kp.setZero();
 		Kd.setZero();
         struct sched_param param;
@@ -84,13 +90,16 @@ namespace bobble_controllers
 	
 	void BobbleBalanceController::update(const ros::Time& time, const ros::Duration& duration)
 	{
-		for(unsigned int i=0;i < joints_.size();i++)
-		{
-			ROS_INFO("Joint %s position : %0.3f", joints_[i].getName().c_str(), joints_[i].getPosition());
-//			q(i)=joints_[i].getPosition();
-//			dq(i)=joints_[i].getVelocity();
-		}
-
+        LeftWheelPosition = joints_[0].getPosition();
+		LeftWheelVelocity = joints_[0].getVelocity();
+		RightWheelPosition = joints_[1].getPosition();
+		RightWheelVelocity = joints_[1].getVelocity();
+		ROS_INFO("IMU Pitch : %0.3f", Pitch);
+		ROS_INFO("IMU Pitch Rate: %0.3f", PitchDot);
+		ROS_INFO("Left Wheel Position : %0.3f", LeftWheelPosition);
+		ROS_INFO("Left Wheel Velocity : %0.3f", LeftWheelVelocity);
+		ROS_INFO("Right Wheel Position : %0.3f", RightWheelPosition);
+		ROS_INFO("Right Wheel Velocity : %0.3f", RightWheelVelocity);
 /*
 		for(unsigned int i=0;i < fext.size();i++) fext[i].Zero();
 		
@@ -103,10 +112,13 @@ namespace bobble_controllers
 */
 	}
 
-	void BobbleBalanceController::imuCB(const bno055::ImuData::ConstPtr &imuData)
+	void BobbleBalanceController::imuCB(const sensor_msgs::Imu::ConstPtr &imuData)
 	{
-		ROS_INFO("IMU Pitch: %0.3f", imuData->Pitch);
-		ROS_INFO("IMU Pitch Rate: %0.3f", imuData->PitchRate);
+		tf::Quaternion q(imuData->orientation.x, imuData->orientation.y, imuData->orientation.z, imuData->orientation.w);
+        tf::Matrix3x3 m(q);
+		double roll, yaw;
+		PitchDot = imuData->angular_velocity.y;
+		m.getRPY(roll, Pitch, yaw);
 	}
 
 }

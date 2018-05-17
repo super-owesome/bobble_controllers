@@ -14,8 +14,9 @@
 #include <hardware_interface/joint_command_interface.h>
 #include <controller_interface/controller.h>
 #include <trajectory_msgs/JointTrajectoryPoint.h>
-#include <bno055/ImuData.h>
+#include <sensor_msgs/Imu.h>
 #include <sensor_msgs/JointState.h>
+#include <tf/transform_datatypes.h>
 
 #include <Eigen/Core>
 
@@ -35,7 +36,14 @@ namespace bobble_controllers
 		Eigen::MatrixXd Kp;
 		Eigen::MatrixXd Kd;
 
-		void imuCB(const bno055::ImuData::ConstPtr &imuData);
+		double Pitch;
+		double PitchDot;
+		double LeftWheelPosition;
+		double LeftWheelVelocity;
+		double RightWheelPosition;
+		double RightWheelVelocity;
+
+		void imuCB(const sensor_msgs::Imu::ConstPtr &imuData);
 
 		public:
 		BobbleBalanceController(void);

@@ -7,7 +7,7 @@ project(bobble_controllers)
 find_package(catkin REQUIRED COMPONENTS
 	controller_interface
 	control_msgs
-	bno055
+	sensor_msgs
 )
 find_package(cmake_modules REQUIRED)
 
@@ -84,7 +84,7 @@ find_package(Eigen REQUIRED)
 catkin_package(
 #  INCLUDE_DIRS include
    LIBRARIES ${PROJECT_NAME}
-   CATKIN_DEPENDS controller_interface control_msgs bno055
+   CATKIN_DEPENDS controller_interface control_msgs sensor_msgs
 #  DEPENDS system_lib
    DEPENDS eigen
 )
