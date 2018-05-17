@@ -54,6 +54,8 @@ namespace bobble_controllers
 			joints_.push_back(j);
 		}
 // Example of registering a call back function to take in external commands
+		sub_imu_sensor_ = node_.subscribe("bno055",1000,
+		        &BobbleBalanceController::imuCB, this);
 //		sub_command_=node_.subscribe("command",1000,
 //		        &BobbleBalanceController::commandCB, this);
 
@@ -99,6 +101,12 @@ namespace bobble_controllers
 		for(unsigned int i=0;i < joints_.size();i++)
 		        joints_[i].setCommand(torque(i));
 */
+	}
+
+	void BobbleBalanceController::imuCB(const bno055::ImuData::ConstPtr &imuData)
+	{
+		ROS_INFO("IMU Pitch: %0.3f", imuData->Pitch);
+		ROS_INFO("IMU Pitch Rate: %0.3f", imuData->PitchRate);
 	}
 
 }

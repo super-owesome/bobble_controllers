@@ -20,7 +20,7 @@ catkin build
 ```
 
 ###  Configure System For Real-Time
-Create a PAM file. See reference 
+Create a PAM file. See reference section 4
 [RealTimeJointControllers.pdf](/uploads/d3596e5602a8ce6ba3f4cb146c7b1120/RealTimeJointControllers.pdf)
 
 ```shell

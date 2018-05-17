@@ -14,6 +14,7 @@
 #include <hardware_interface/joint_command_interface.h>
 #include <controller_interface/controller.h>
 #include <trajectory_msgs/JointTrajectoryPoint.h>
+#include <bno055/ImuData.h>
 #include <sensor_msgs/JointState.h>
 
 #include <Eigen/Core>
@@ -28,10 +29,13 @@ namespace bobble_controllers
 		hardware_interface::EffortJointInterface *robot_;
 		std::vector<hardware_interface::JointHandle> joints_;
 
+		ros::Subscriber sub_imu_sensor_;
 		ros::Subscriber sub_command_;
-			
+
 		Eigen::MatrixXd Kp;
 		Eigen::MatrixXd Kd;
+
+		void imuCB(const bno055::ImuData::ConstPtr &imuData);
 
 		public:
 		BobbleBalanceController(void);
