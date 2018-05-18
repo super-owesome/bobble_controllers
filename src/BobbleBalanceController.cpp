@@ -169,16 +169,14 @@ namespace bobble_controllers
 	
 	void BobbleBalanceController::update(const ros::Time& time, const ros::Duration& duration)
 	{
+		node_.getParam("PitchGain",PitchGain);
+	    node_.getParam("PitchDotGain",PitchDotGain);
+		node_.getParam("WheelDotGain",WheelDotGain);
         LeftWheelPosition = joints_[0].getPosition();
 		LeftWheelVelocity = joints_[0].getVelocity();
 		RightWheelPosition = joints_[1].getPosition();
 		RightWheelVelocity = joints_[1].getVelocity();
-		ROS_INFO("IMU Pitch : %0.3f", Pitch);
-		ROS_INFO("IMU Pitch Rate: %0.3f", PitchDot);
-		ROS_INFO("Left Wheel Position : %0.3f", LeftWheelPosition);
-		ROS_INFO("Left Wheel Velocity : %0.3f", LeftWheelVelocity);
-		ROS_INFO("Right Wheel Position : %0.3f", RightWheelPosition);
-		ROS_INFO("Right Wheel Velocity : %0.3f", RightWheelVelocity);
+
 /*
 		for(unsigned int i=0;i < fext.size();i++) fext[i].Zero();
 		
@@ -187,9 +185,20 @@ namespace bobble_controllers
 		        ROS_ERROR("KDL inverse dynamics solver failed.");
 
 */
-        joints_[0].setCommand(200);
-		joints_[1].setCommand(200);
+        float effort = PitchGain * Pitch + PitchDotGain * PitchDot + WheelDotGain * RightWheelVelocity;
+        joints_[0].setCommand(effort);
+		joints_[1].setCommand(effort);
 
+		ROS_INFO("Pitch Gain: %0.3f", PitchGain);
+		ROS_INFO("PitchDot Gain: %0.3f", PitchDotGain);
+		ROS_INFO("WheelDot Gain: %0.3f", WheelDotGain);
+		ROS_INFO("IMU Pitch : %0.3f", Pitch);
+		ROS_INFO("IMU Pitch Rate: %0.3f", PitchDot);
+		ROS_INFO("Left Wheel Position : %0.3f", LeftWheelPosition);
+		ROS_INFO("Left Wheel Velocity : %0.3f", LeftWheelVelocity);
+		ROS_INFO("Right Wheel Position : %0.3f", RightWheelPosition);
+		ROS_INFO("Right Wheel Velocity : %0.3f", RightWheelVelocity);
+		ROS_INFO("Effort: %0.3f", effort);
 	}
 
 	void BobbleBalanceController::imuCB(const sensor_msgs::Imu::ConstPtr &imuData)
