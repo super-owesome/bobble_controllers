@@ -23,7 +23,7 @@ namespace bobble_controllers
 	{
 		node_=n;
 		robot_=robot;
-		
+
 		XmlRpc::XmlRpcValue joint_names;
 		if(!node_.getParam("joints",joint_names))
 		{
@@ -53,17 +53,91 @@ namespace bobble_controllers
 			        getHandle((std::string)name_value);
 			joints_.push_back(j);
 		}
+		if(!node_.getParam("MotorEffortMax",MotorEffortMax))
+		{
+		    MotorEffortMax = 1.0;
+			ROS_WARN("MotorEffortMax not set for (namespace: %s) using 1.0.",
+			        node_.getNamespace().c_str());
+		}
+		if(!node_.getParam("PitchGain",PitchGain))
+		{
+		    PitchGain = 0.0;
+			ROS_WARN("PitchGain not set for (namespace: %s) using 0.0.",
+			        node_.getNamespace().c_str());
+		}
+		if(!node_.getParam("PitchDotGain",PitchDotGain))
+		{
+		    PitchDotGain = 0.0;
+			ROS_WARN("PitchDotGain not set for (namespace: %s) using 0.0.",
+			        node_.getNamespace().c_str());
+		}
+		if(!node_.getParam("YawGain",YawGain))
+		{
+		    YawGain = 0.0;
+			ROS_WARN("YawGain not set for (namespace: %s) using 0.0.",
+			        node_.getNamespace().c_str());
+		}
+		if(!node_.getParam("YawDotGain",YawDotGain))
+		{
+		    YawDotGain = 0.0;
+			ROS_WARN("YawDotGain not set for (namespace: %s) using 0.0.",
+			        node_.getNamespace().c_str());
+		}
+		if(!node_.getParam("WheelGain",WheelGain))
+		{
+		    WheelGain = 0.0;
+			ROS_WARN("WheelGain not set for (namespace: %s) using 0.0.",
+			        node_.getNamespace().c_str());
+		}
+		if(!node_.getParam("WheelDotGain",WheelDotGain))
+		{
+		    WheelDotGain = 0.0;
+			ROS_WARN("WheelDotGain not set for (namespace: %s) using 0.0.",
+			        node_.getNamespace().c_str());
+		}
+		if(!node_.getParam("WheelIntegralGain",WheelIntegralGain))
+		{
+		    WheelIntegralGain = 0.0;
+			ROS_WARN("WheelIntegralGain not set for (namespace: %s) using 0.0.",
+			        node_.getNamespace().c_str());
+		}
+		if(!node_.getParam("WheelIntegralSaturation",WheelIntegralSaturation))
+		{
+		    WheelIntegralSaturation = 0.0;
+			ROS_WARN("WheelIntegralSaturation not set for (namespace: %s) using 0.0.",
+			        node_.getNamespace().c_str());
+		}
+		if(!node_.getParam("PendulumStateAlpha",PendulumStateAlpha))
+		{
+		    PendulumStateAlpha = 0.0;
+			ROS_WARN("PendulumStateAlpha not set for (namespace: %s) using 0.0.",
+			        node_.getNamespace().c_str());
+		}
+		if(!node_.getParam("WheelStateAlpha",WheelStateAlpha))
+		{
+		    WheelStateAlpha = 0.0;
+			ROS_WARN("WheelStateAlpha not set for (namespace: %s) using 0.0.",
+			        node_.getNamespace().c_str());
+		}
+		if(!node_.getParam("EffortPendulumAlpha",EffortPendulumAlpha))
+		{
+		    EffortPendulumAlpha = 0.0;
+			ROS_WARN("EffortPendulumAlpha not set for (namespace: %s) using 0.0.",
+			        node_.getNamespace().c_str());
+		}
+		if(!node_.getParam("EffortWheelAlpha",EffortWheelAlpha))
+		{
+		    EffortWheelAlpha = 0.0;
+			ROS_WARN("EffortWheelAlpha not set for (namespace: %s) using 0.0.",
+			        node_.getNamespace().c_str());
+		}
+
 // Example of registering a call back function to take in external commands
 		sub_imu_sensor_ = node_.subscribe("bno055",1000,
 		        &BobbleBalanceController::imuCB, this);
 //		sub_command_=node_.subscribe("command",1000,
 //		        &BobbleBalanceController::commandCB, this);
 
-// Example of dynamically sizing gain matrix based on num joints... for
-// generic controllers
-//		Kp.resize(chain.getNrOfJoints(),chain.getNrOfJoints());
-//		Kd.resize(chain.getNrOfJoints(),chain.getNrOfJoints());
-		
 		return true;
 	}
 	
@@ -75,8 +149,13 @@ namespace bobble_controllers
 		LeftWheelVelocity = 0.0;
 		RightWheelPosition = 0.0;
 		RightWheelVelocity = 0.0;
-		Kp.setZero();
-		Kd.setZero();
+        LeftWheelErrorAccumulated = 0.0;
+		RightWheelErrorAccumulated = 0.0;
+        DesiredLeftWheelPosition = 0.0;
+        DesiredRightWheelPosition = 0.0;
+		WheelGains.setZero();
+		PendulumGains.setZero();
+		EstimatedPendulumState.setZero();
         struct sched_param param;
         param.sched_priority=sched_get_priority_max(SCHED_FIFO);
         if(sched_setscheduler(0,SCHED_FIFO,&param) == -1)
@@ -106,10 +185,11 @@ namespace bobble_controllers
 		v.data=ddqr.data+Kp*(qr.data-q.data)+Kd*(dqr.data-dq.data);
 		if(idsolver->CartToJnt(q,dq,v,fext,torque) < 0)
 		        ROS_ERROR("KDL inverse dynamics solver failed.");
-		
-		for(unsigned int i=0;i < joints_.size();i++)
-		        joints_[i].setCommand(torque(i));
+
 */
+        joints_[0].setCommand(200);
+		joints_[1].setCommand(200);
+
 	}
 
 	void BobbleBalanceController::imuCB(const sensor_msgs::Imu::ConstPtr &imuData)
