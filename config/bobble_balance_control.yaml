@@ -8,12 +8,12 @@ bobble:
       joints:
         - left_wheel_hinge
         - right_wheel_hinge
-      PitchGain: 30.0
-      PitchDotGain: 3.0
+      PitchGain: 150.0
+      PitchDotGain: 10.0
       YawGain: 0.0
       YawDotGain: 0.0
       WheelGain: 0.0000
-      WheelDotGain: 0.0 #0.025
+      WheelDotGain: -0.8 #0.025
       WheelIntegralGain: 0.00000
       WheelIntegralSaturation: 1000.0
       PendulumStateAlpha: 0.5
