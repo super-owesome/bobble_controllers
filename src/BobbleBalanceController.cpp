@@ -187,8 +187,9 @@ namespace bobble_controllers
 		        ROS_ERROR("KDL inverse dynamics solver failed.");
 
 */
-        joints_[0].setCommand(200);
-		joints_[1].setCommand(200);
+        float effort = 1.0 * Pitch + 0.25 * PitchDot + 0.025 * RightWheelVelocity;
+        joints_[0].setCommand(effort);
+		joints_[1].setCommand(effort);
 
 	}
 
