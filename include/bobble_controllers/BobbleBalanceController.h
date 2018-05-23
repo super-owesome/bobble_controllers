@@ -16,6 +16,8 @@
 #include <trajectory_msgs/JointTrajectoryPoint.h>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/JointState.h>
+#include <bobble_controllers/ControlCommands.h>
+#include <executive/BobbleBotStatus.h>
 #include <tf/transform_datatypes.h>
 
 #include <Eigen/Core>
@@ -26,10 +28,9 @@ namespace bobble_controllers
 		Controller<hardware_interface::EffortJointInterface>
 	{
 		ros::NodeHandle node_;
-
 		hardware_interface::EffortJointInterface *robot_;
 		std::vector<hardware_interface::JointHandle> joints_;
-
+		ros::Publisher pub_bobble_status;
 		ros::Subscriber sub_imu_sensor_;
 		ros::Subscriber sub_command_;
 
@@ -53,21 +54,26 @@ namespace bobble_controllers
 		double WheelStateAlpha;
 		double EffortPendulumAlpha;
 		double EffortWheelAlpha;
-
 		/// State Vars
+        double Roll;
 		double Pitch;
+		double Yaw;
 		double PitchDot;
 		double LeftWheelPosition;
 		double LeftWheelVelocity;
 		double RightWheelPosition;
 		double RightWheelVelocity;
-
 		double LeftWheelErrorAccumulated;
 		double RightWheelErrorAccumulated;
         double DesiredLeftWheelPosition;
         double DesiredRightWheelPosition;
 
+        // Control commands
+		double DesiredPitch;
+		double DesiredYaw;
+
 		void imuCB(const sensor_msgs::Imu::ConstPtr &imuData);
+		void commandCB(const bobble_controllers::ControlCommands::ConstPtr &cmd);
 
 		public:
 		BobbleBalanceController(void);

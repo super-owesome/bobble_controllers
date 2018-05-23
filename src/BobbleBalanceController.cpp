@@ -132,17 +132,20 @@ namespace bobble_controllers
 			        node_.getNamespace().c_str());
 		}
 
-// Example of registering a call back function to take in external commands
+        // Setup publishers and subscribers
+		pub_bobble_status = n.advertise<executive::BobbleBotStatus>("bb_controller_status", 1000);
 		sub_imu_sensor_ = node_.subscribe("bno055",1000,
 		        &BobbleBalanceController::imuCB, this);
-//		sub_command_=node_.subscribe("command",1000,
-//		        &BobbleBalanceController::commandCB, this);
+		sub_command_=node_.subscribe("bb_cmd",1000,
+		        &BobbleBalanceController::commandCB, this);
 
 		return true;
 	}
 	
 	void BobbleBalanceController::starting(const ros::Time& time)
 	{
+		DesiredPitch = 0.0;
+		DesiredYaw = 0.0;
 		Pitch = 0.0;
 		PitchDot = 0.0;
 		LeftWheelPosition = 0.0;
@@ -173,33 +176,49 @@ namespace bobble_controllers
 		LeftWheelVelocity = joints_[0].getVelocity();
 		RightWheelPosition = joints_[1].getPosition();
 		RightWheelVelocity = joints_[1].getVelocity();
+		ROS_INFO("Desired Pitch : %0.3f", DesiredPitch);
 		ROS_INFO("IMU Pitch : %0.3f", Pitch);
 		ROS_INFO("IMU Pitch Rate: %0.3f", PitchDot);
 		ROS_INFO("Left Wheel Position : %0.3f", LeftWheelPosition);
 		ROS_INFO("Left Wheel Velocity : %0.3f", LeftWheelVelocity);
 		ROS_INFO("Right Wheel Position : %0.3f", RightWheelPosition);
 		ROS_INFO("Right Wheel Velocity : %0.3f", RightWheelVelocity);
-/*
-		for(unsigned int i=0;i < fext.size();i++) fext[i].Zero();
-		
-		v.data=ddqr.data+Kp*(qr.data-q.data)+Kd*(dqr.data-dq.data);
-		if(idsolver->CartToJnt(q,dq,v,fext,torque) < 0)
-		        ROS_ERROR("KDL inverse dynamics solver failed.");
-
-*/
-        float effort = 1.0 * Pitch + 0.25 * PitchDot + 0.025 * RightWheelVelocity;
+        // Implement control law
+        double pitch_error = DesiredPitch - Pitch;
+		double yaw_error = DesiredYaw - Yaw;
+        float effort = 1.0 * pitch_error + 0.25 * PitchDot + 0.025 * RightWheelVelocity;
         joints_[0].setCommand(effort);
 		joints_[1].setCommand(effort);
-
+        // Write out status message
+		executive::BobbleBotStatus sim_status_msg;
+		sim_status_msg.DeltaT = 0.0;
+		sim_status_msg.Roll = Roll;
+		sim_status_msg.Pitch = Pitch;
+		sim_status_msg.Yaw = Yaw;
+		sim_status_msg.RollRate = 0.0;
+		sim_status_msg.PitchRate = 0.0;
+		sim_status_msg.YawRate = 0.0;
+		sim_status_msg.LeftMotorPositionDesired = 0.0;
+		sim_status_msg.LeftMotorPosition = LeftWheelPosition;
+		sim_status_msg.LeftMotorVelocity = LeftWheelVelocity;
+		sim_status_msg.RightMotorPositionDesired = 0.0;
+		sim_status_msg.RightMotorPosition = RightWheelPosition;
+		sim_status_msg.RightMotorVelocity = RightWheelVelocity;
+		pub_bobble_status.publish(sim_status_msg);
 	}
 
-	void BobbleBalanceController::imuCB(const sensor_msgs::Imu::ConstPtr &imuData)
-	{
-		tf::Quaternion q(imuData->orientation.x, imuData->orientation.y, imuData->orientation.z, imuData->orientation.w);
-        tf::Matrix3x3 m(q);
-		double roll, yaw;
+	void BobbleBalanceController::imuCB(const sensor_msgs::Imu::ConstPtr &imuData) {
+		tf::Quaternion q(imuData->orientation.x, imuData->orientation.y, imuData->orientation.z,
+						 imuData->orientation.w);
+		tf::Matrix3x3 m(q);
 		PitchDot = imuData->angular_velocity.y;
-		m.getRPY(roll, Pitch, yaw);
+		m.getRPY(Roll, Pitch, Yaw);
+	}
+
+	void BobbleBalanceController::commandCB(const bobble_controllers::ControlCommands::ConstPtr &cmd)
+	{
+		DesiredPitch = cmd->DesiredPitch;
+		DesiredYaw = cmd->DesiredYaw;
 	}
 
 }
