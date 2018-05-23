@@ -176,15 +176,8 @@ namespace bobble_controllers
 		LeftWheelVelocity = joints_[0].getVelocity();
 		RightWheelPosition = joints_[1].getPosition();
 		RightWheelVelocity = joints_[1].getVelocity();
-		ROS_INFO("Desired Pitch : %0.3f", DesiredPitch);
-		ROS_INFO("IMU Pitch : %0.3f", Pitch);
-		ROS_INFO("IMU Pitch Rate: %0.3f", PitchDot);
-		ROS_INFO("Left Wheel Position : %0.3f", LeftWheelPosition);
-		ROS_INFO("Left Wheel Velocity : %0.3f", LeftWheelVelocity);
-		ROS_INFO("Right Wheel Position : %0.3f", RightWheelPosition);
-		ROS_INFO("Right Wheel Velocity : %0.3f", RightWheelVelocity);
         // Implement control law
-        double pitch_error = DesiredPitch - Pitch;
+        double pitch_error = Pitch - DesiredPitch;
 		double yaw_error = DesiredYaw - Yaw;
         float effort = 1.0 * pitch_error + 0.25 * PitchDot + 0.025 * RightWheelVelocity;
         joints_[0].setCommand(effort);
