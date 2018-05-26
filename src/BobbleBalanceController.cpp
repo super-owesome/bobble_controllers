@@ -147,7 +147,9 @@ namespace bobble_controllers
 		DesiredPitch = 0.0;
 		DesiredYaw = 0.0;
 		Pitch = 0.0;
+		RollDot = 0.0;
 		PitchDot = 0.0;
+		YawDot = 0.0;
 		LeftWheelPosition = 0.0;
 		LeftWheelVelocity = 0.0;
 		RightWheelPosition = 0.0;
@@ -188,9 +190,9 @@ namespace bobble_controllers
 		sim_status_msg.Roll = Roll;
 		sim_status_msg.Pitch = Pitch;
 		sim_status_msg.Yaw = Yaw;
-		sim_status_msg.RollRate = 0.0;
-		sim_status_msg.PitchRate = 0.0;
-		sim_status_msg.YawRate = 0.0;
+		sim_status_msg.RollRate = RollDot;
+		sim_status_msg.PitchRate = PitchDot;
+		sim_status_msg.YawRate = YawDot;
 		sim_status_msg.LeftMotorPositionDesired = 0.0;
 		sim_status_msg.LeftMotorPosition = LeftWheelPosition;
 		sim_status_msg.LeftMotorVelocity = LeftWheelVelocity;
@@ -204,7 +206,9 @@ namespace bobble_controllers
 		tf::Quaternion q(imuData->orientation.x, imuData->orientation.y, imuData->orientation.z,
 						 imuData->orientation.w);
 		tf::Matrix3x3 m(q);
+		RollDot = imuData->angular_velocity.x;
 		PitchDot = imuData->angular_velocity.y;
+		YawDot = imuData->angular_velocity.z;
 		m.getRPY(Roll, Pitch, Yaw);
 	}
 

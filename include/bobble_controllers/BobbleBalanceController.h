@@ -58,7 +58,9 @@ namespace bobble_controllers
         double Roll;
 		double Pitch;
 		double Yaw;
+		double RollDot;
 		double PitchDot;
+		double YawDot;
 		double LeftWheelPosition;
 		double LeftWheelVelocity;
 		double RightWheelPosition;
