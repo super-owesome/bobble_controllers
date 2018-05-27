@@ -1,6 +1,6 @@
 <launch>
     <arg name="paused" default="true"/>
-    <arg name="gui" default="false"/>
+    <arg name="gui" default="true"/>
 
 	<include file="$(find bobble_description)/launch/bobble_sim.launch">
 		<arg name="paused" value="$(arg paused)"/>

@@ -76,6 +76,7 @@ namespace bobble_controllers
 
 		void imuCB(const sensor_msgs::Imu::ConstPtr &imuData);
 		void commandCB(const bobble_controllers::ControlCommands::ConstPtr &cmd);
+		void write_controller_status_msg();
 
 		public:
 		BobbleBalanceController(void);

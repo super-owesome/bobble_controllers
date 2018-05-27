@@ -185,6 +185,10 @@ namespace bobble_controllers
         joints_[0].setCommand(effort);
 		joints_[1].setCommand(effort);
         // Write out status message
+        write_controller_status_msg();
+	}
+
+	void BobbleBalanceController::write_controller_status_msg() {
 		executive::BobbleBotStatus sim_status_msg;
 		sim_status_msg.DeltaT = 0.0;
 		sim_status_msg.Roll = Roll;
@@ -201,6 +205,7 @@ namespace bobble_controllers
 		sim_status_msg.RightMotorVelocity = RightWheelVelocity;
 		pub_bobble_status.publish(sim_status_msg);
 	}
+
 
 	void BobbleBalanceController::imuCB(const sensor_msgs::Imu::ConstPtr &imuData) {
 		tf::Quaternion q(imuData->orientation.x, imuData->orientation.y, imuData->orientation.z,
