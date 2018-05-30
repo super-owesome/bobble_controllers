@@ -1,0 +1,2 @@
+float32 DesiredPitch
+float32 DesiredYaw
