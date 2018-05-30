@@ -4,7 +4,6 @@
 
 	<include file="$(find bobble_description)/launch/bobble_sim.launch">
 		<arg name="paused" value="$(arg paused)"/>
-		<arg name="gui" value="$(arg gui)"/>
 	</include>
 
 	<rosparam file="$(find bobble_controllers)/config/bobble_balance_control.yaml"
