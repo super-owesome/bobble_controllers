@@ -69,6 +69,8 @@ namespace bobble_controllers
 
 		void imuCB(const sensor_msgs::Imu::ConstPtr &imuData);
 
+		void unpackParameter(std::string parameterName, double &referenceToParameter, double defaultValue);
+
 		public:
 		BobbleBalanceController(void);
 		~BobbleBalanceController(void);

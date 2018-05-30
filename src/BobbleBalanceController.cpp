@@ -18,7 +18,19 @@ namespace bobble_controllers
 	{
 		sub_command_.shutdown();
 	}
-		
+
+	void BobbleBalanceController::unpackParameter(std::string parameterName, double &referenceToParameter, double defaultValue)
+	{
+		if(!node_.getParam(parameterName, referenceToParameter))
+		{
+			referenceToParameter = defaultValue;
+			ROS_WARN("%s not set for (namespace: %s) using %f.",
+					 parameterName.c_str(),
+					 node_.getNamespace().c_str(),
+			         defaultValue);
+		}
+	}
+
 	bool BobbleBalanceController::init(hardware_interface::EffortJointInterface *robot,ros::NodeHandle &n)
 	{
 		node_=n;
@@ -53,84 +65,20 @@ namespace bobble_controllers
 			        getHandle((std::string)name_value);
 			joints_.push_back(j);
 		}
-		if(!node_.getParam("MotorEffortMax",MotorEffortMax))
-		{
-		    MotorEffortMax = 1.0;
-			ROS_WARN("MotorEffortMax not set for (namespace: %s) using 1.0.",
-			        node_.getNamespace().c_str());
-		}
-		if(!node_.getParam("PitchGain",PitchGain))
-		{
-		    PitchGain = 0.0;
-			ROS_WARN("PitchGain not set for (namespace: %s) using 0.0.",
-			        node_.getNamespace().c_str());
-		}
-		if(!node_.getParam("PitchDotGain",PitchDotGain))
-		{
-		    PitchDotGain = 0.0;
-			ROS_WARN("PitchDotGain not set for (namespace: %s) using 0.0.",
-			        node_.getNamespace().c_str());
-		}
-		if(!node_.getParam("YawGain",YawGain))
-		{
-		    YawGain = 0.0;
-			ROS_WARN("YawGain not set for (namespace: %s) using 0.0.",
-			        node_.getNamespace().c_str());
-		}
-		if(!node_.getParam("YawDotGain",YawDotGain))
-		{
-		    YawDotGain = 0.0;
-			ROS_WARN("YawDotGain not set for (namespace: %s) using 0.0.",
-			        node_.getNamespace().c_str());
-		}
-		if(!node_.getParam("WheelGain",WheelGain))
-		{
-		    WheelGain = 0.0;
-			ROS_WARN("WheelGain not set for (namespace: %s) using 0.0.",
-			        node_.getNamespace().c_str());
-		}
-		if(!node_.getParam("WheelDotGain",WheelDotGain))
-		{
-		    WheelDotGain = 0.0;
-			ROS_WARN("WheelDotGain not set for (namespace: %s) using 0.0.",
-			        node_.getNamespace().c_str());
-		}
-		if(!node_.getParam("WheelIntegralGain",WheelIntegralGain))
-		{
-		    WheelIntegralGain = 0.0;
-			ROS_WARN("WheelIntegralGain not set for (namespace: %s) using 0.0.",
-			        node_.getNamespace().c_str());
-		}
-		if(!node_.getParam("WheelIntegralSaturation",WheelIntegralSaturation))
-		{
-		    WheelIntegralSaturation = 0.0;
-			ROS_WARN("WheelIntegralSaturation not set for (namespace: %s) using 0.0.",
-			        node_.getNamespace().c_str());
-		}
-		if(!node_.getParam("PendulumStateAlpha",PendulumStateAlpha))
-		{
-		    PendulumStateAlpha = 0.0;
-			ROS_WARN("PendulumStateAlpha not set for (namespace: %s) using 0.0.",
-			        node_.getNamespace().c_str());
-		}
-		if(!node_.getParam("WheelStateAlpha",WheelStateAlpha))
-		{
-		    WheelStateAlpha = 0.0;
-			ROS_WARN("WheelStateAlpha not set for (namespace: %s) using 0.0.",
-			        node_.getNamespace().c_str());
-		}
-		if(!node_.getParam("EffortPendulumAlpha",EffortPendulumAlpha))
-		{
-		    EffortPendulumAlpha = 0.0;
-			ROS_WARN("EffortPendulumAlpha not set for (namespace: %s) using 0.0.",
-			        node_.getNamespace().c_str());
-		}
-		if(!node_.getParam("EffortWheelAlpha",EffortWheelAlpha))
-		{
-		    EffortWheelAlpha = 0.0;
-			ROS_WARN("EffortWheelAlpha not set for (namespace: %s) using 0.0.",
-			        node_.getNamespace().c_str());
-		}
+
+		unpackParameter("MotorEffortMax", MotorEffortMax, 1.0);
+		unpackParameter("PitchGain", PitchGain, 0.0);
+		unpackParameter("PitchDotGain", PitchDotGain, 0.0);
+		unpackParameter("YawGain", YawGain, 0.0);
+		unpackParameter("YawDotGain", YawDotGain, 0.0);
+		unpackParameter("WheelGain", WheelGain, 0.0);
+		unpackParameter("WheelDotGain", WheelDotGain, 0.0);
+		unpackParameter("WheelIntegralGain", WheelIntegralGain, 0.0);
+		unpackParameter("WheelIntegralSaturation", WheelIntegralSaturation, 0.0);
+		unpackParameter("PendulumStateAlpha", PendulumStateAlpha, 0.0);
+		unpackParameter("WheelStateAlpha", WheelStateAlpha, 0.0);
+		unpackParameter("EffortPendulumAlpha", EffortPendulumAlpha, 0.0);
+		unpackParameter("EffortWheelAlpha", EffortWheelAlpha, 0.0);
 
 // Example of registering a call back function to take in external commands
 		sub_imu_sensor_ = node_.subscribe("bno055",1000,
