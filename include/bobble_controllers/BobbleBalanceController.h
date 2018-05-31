@@ -34,9 +34,11 @@ namespace bobble_controllers
 		ros::Subscriber sub_imu_sensor_;
 		ros::Subscriber sub_command_;
 
-		Eigen::Matrix<double, 4, 2> EstimatedPendulumState;
-		Eigen::Matrix<double, 2, 4> PendulumGains;
-		Eigen::Matrix<double, 2, 4> WheelGains;
+		Eigen::Matrix<double, 6, 1> EstimatedState;
+		Eigen::Matrix<double, 6, 1> DesiredState;
+		Eigen::Matrix<double, 6, 1> ErrorState;
+		Eigen::Matrix<double, 2, 6> ControlGains;
+		Eigen::Matrix<double, 2, 1> Effort;
 
 		/// Config params
 		double MotorEffortMax;
@@ -79,6 +81,9 @@ namespace bobble_controllers
 		void write_controller_status_msg();
 
 		void unpackParameter(std::string parameterName, double &referenceToParameter, double defaultValue);
+		void packGains(double PitchGain, double PitchDotGain, double RightWheelGain, double RightWheelDotGain, double LeftWheelGain, double LeftWheelDotGain);
+		void packState(double Pitch, double PitchDot, double RightWheelPosition, double RightWheelVelocity, double LeftWheelPosition, double LeftWheelVelocity);
+		void packDesired(double PitchDesired, double PitchDotDesired, double RightWheelPositionDesired, double RightWheelVelocityDesired, double LeftWheelPositionDesired, double LeftWheelVelocityDesired);
 
 		public:
 		BobbleBalanceController(void);

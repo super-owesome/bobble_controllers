@@ -12,8 +12,8 @@ bobble:
       PitchDotGain: 0.25
       YawGain: 0.0
       YawDotGain: 0.0
-      WheelGain: 0.0000
-      WheelDotGain: 0.025 #0.025
+      WheelGain: 0.00
+      WheelDotGain: 0.005
       WheelIntegralGain: 0.00000
       WheelIntegralSaturation: 1000.0
       PendulumStateAlpha: 0.5

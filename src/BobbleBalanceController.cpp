@@ -24,11 +24,43 @@ namespace bobble_controllers
 		if(!node_.getParam(parameterName, referenceToParameter))
 		{
 			referenceToParameter = defaultValue;
-			ROS_WARN("%s not set for (namespace: %s) using %f.",
+			ROS_ERROR("%s not set for (namespace: %s) using %f.",
 					 parameterName.c_str(),
 					 node_.getNamespace().c_str(),
 			         defaultValue);
 		}
+	}
+
+	void BobbleBalanceController::packGains(double PitchGain, double PitchDotGain, double RightWheelGain, double RightWheelDotGain, double LeftWheelGain, double LeftWheelDotGain)
+	{
+		ControlGains(0, 0) = ControlGains(0, 1) = PitchGain;
+		ControlGains(1, 0) = ControlGains(1, 1) = PitchDotGain;
+		ControlGains(0, 2) = RightWheelGain;
+		ControlGains(0, 3) = RightWheelDotGain;
+		ControlGains(1, 4) = LeftWheelGain;
+		ControlGains(1, 5) = LeftWheelDotGain;
+		ControlGains(1, 2) = ControlGains(1, 3) = ControlGains(0, 4) = ControlGains(0, 5) = 0.0;
+	}
+
+
+	void BobbleBalanceController::packState(double Pitch, double PitchDot, double RightWheelPosition, double RightWheelVelocity, double LeftWheelPosition, double LeftWheelVelocity)
+	{
+	    EstimatedState(0) = Pitch;
+		EstimatedState(1) = PitchDot;
+		EstimatedState(2) = RightWheelPosition;
+		EstimatedState(3) = RightWheelVelocity;
+		EstimatedState(4) = LeftWheelPosition;
+		EstimatedState(5) = LeftWheelVelocity;
+	}
+
+	void BobbleBalanceController::packDesired(double PitchDesired, double PitchDotDesired, double RightWheelPositionDesired, double RightWheelVelocityDesired, double LeftWheelPositionDesired, double LeftWheelVelocityDesired)
+	{
+		DesiredState(0) = PitchDesired;
+		DesiredState(1) = PitchDotDesired;
+		DesiredState(2) = RightWheelPositionDesired;
+		DesiredState(3) = RightWheelVelocityDesired;
+		DesiredState(4) = LeftWheelPositionDesired;
+		DesiredState(5) = LeftWheelVelocityDesired;
 	}
 
 	bool BobbleBalanceController::init(hardware_interface::EffortJointInterface *robot,ros::NodeHandle &n)
@@ -80,6 +112,8 @@ namespace bobble_controllers
 		unpackParameter("EffortPendulumAlpha", EffortPendulumAlpha, 0.0);
 		unpackParameter("EffortWheelAlpha", EffortWheelAlpha, 0.0);
 
+		packGains(PitchGain, PitchDotGain, WheelGain, WheelDotGain, WheelGain, WheelDotGain);
+
         // Setup publishers and subscribers
 		pub_bobble_status = n.advertise<executive::BobbleBotStatus>("bb_controller_status", 1000);
 		sub_imu_sensor_ = node_.subscribe("bno055",1000,
@@ -106,9 +140,8 @@ namespace bobble_controllers
 		RightWheelErrorAccumulated = 0.0;
         DesiredLeftWheelPosition = 0.0;
         DesiredRightWheelPosition = 0.0;
-		WheelGains.setZero();
-		PendulumGains.setZero();
-		EstimatedPendulumState.setZero();
+		EstimatedState.setZero();
+		DesiredState.setZero();
         struct sched_param param;
         param.sched_priority=sched_get_priority_max(SCHED_FIFO);
         if(sched_setscheduler(0,SCHED_FIFO,&param) == -1)
@@ -122,16 +155,15 @@ namespace bobble_controllers
 	
 	void BobbleBalanceController::update(const ros::Time& time, const ros::Duration& duration)
 	{
-        LeftWheelPosition = joints_[0].getPosition();
-		LeftWheelVelocity = joints_[0].getVelocity();
-		RightWheelPosition = joints_[1].getPosition();
-		RightWheelVelocity = joints_[1].getVelocity();
-        // Implement control law
-        double pitch_error = Pitch - DesiredPitch;
-		double yaw_error = DesiredYaw - Yaw;
-        float effort = 1.0 * pitch_error + 0.25 * PitchDot + 0.025 * RightWheelVelocity;
-        joints_[0].setCommand(effort);
-		joints_[1].setCommand(effort);
+	    packState(-Pitch, -PitchDot, joints_[1].getPosition(), joints_[1].getVelocity(), joints_[0].getPosition(), joints_[0].getVelocity());
+	    packDesired(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+
+	    ErrorState = DesiredState - EstimatedState;
+
+	    Effort = ControlGains * ErrorState;
+
+        joints_[0].setCommand(Effort(1));
+		joints_[1].setCommand(Effort(0));
         // Write out status message
         write_controller_status_msg();
 	}
