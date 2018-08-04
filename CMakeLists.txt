@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(bobble_controllers)
+add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -7,6 +8,9 @@ project(bobble_controllers)
 find_package(catkin REQUIRED COMPONENTS
 	message_generation
     rospy
+    controller_manager
+	pluginlib
+	chupacabra_comm
 	controller_interface
 	control_msgs
 	sensor_msgs
@@ -44,7 +48,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
    LIBRARIES ${PROJECT_NAME}
-   CATKIN_DEPENDS controller_interface control_msgs sensor_msgs executive std_msgs rospy message_runtime
+   CATKIN_DEPENDS chupacabra_comm controller_interface control_msgs sensor_msgs executive controller_manager pluginlib std_msgs rospy message_runtime
 #  DEPENDS system_lib
    DEPENDS eigen
 )
@@ -66,7 +70,10 @@ add_library(bobble_controllers
 )
 
 ## Declare a cpp executable
-# add_executable(bobble_controllers_node src/bobble_controllers_node.cpp)
+add_executable(BobbleControlNode src/nodes/BobbleControlNode.cpp src/BobbleBotHw.cpp)
+target_link_libraries(BobbleControlNode ${catkin_LIBRARIES})
+install(TARGETS BobbleControlNode
+        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes

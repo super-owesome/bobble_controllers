@@ -1,0 +1,7 @@
+bobble:
+  bobble_bot_control_node:
+     LoopRate: 1 # hz
+     LeftMotorJointName: "left_wheel_hinge"
+     LeftMotorChupId: 291
+     RightMotorJointName: "right_wheel_hinge"
+     RightMotorChupId: 292

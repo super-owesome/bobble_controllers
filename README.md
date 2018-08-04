@@ -9,6 +9,12 @@ sudo apt-get install ros-lunar-gazebo-ros-pkgs
 sudo apt-get install ros-lunar-gazebo-ros-control
 ```
 
+#### Special note
+I had to also do this in order to get the BobbleControlNode to compile:
+```shell
+sudo ln -s /opt/ros/lunar/include/pluginlib/class_loader.h /opt/ros/lunar/include/pluginlib/class_loader.hpp
+```
+
 ### Add Bobble Sim and Controller Packages
 Clone the following two repositories into your BobbleBot workspace.
 

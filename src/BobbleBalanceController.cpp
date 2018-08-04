@@ -144,6 +144,7 @@ namespace bobble_controllers
 	
 	void BobbleBalanceController::starting(const ros::Time& time)
 	{
+		ROS_WARN("MAKING IT INTO BOBBLE BALANCE CONTROLLER STARTING");
 		DesiredPitch = 0.0;
 		DesiredYaw = 0.0;
 		Pitch = 0.0;
@@ -174,16 +175,19 @@ namespace bobble_controllers
 	
 	void BobbleBalanceController::update(const ros::Time& time, const ros::Duration& duration)
 	{
+        std::cout << "Joint 0 : " << joints_[0].getName() << std::endl;
+		std::cout << "Joint 1 : " << joints_[1].getName() << std::endl;
         LeftWheelPosition = joints_[0].getPosition();
 		LeftWheelVelocity = joints_[0].getVelocity();
+		std::cout << "Left Wheel Position : " << joints_[0].getPosition() << std::endl;
 		RightWheelPosition = joints_[1].getPosition();
 		RightWheelVelocity = joints_[1].getVelocity();
         // Implement control law
         double pitch_error = Pitch - DesiredPitch;
 		double yaw_error = DesiredYaw - Yaw;
         float effort = 1.0 * pitch_error + 0.25 * PitchDot + 0.025 * RightWheelVelocity;
-        joints_[0].setCommand(effort);
-		joints_[1].setCommand(effort);
+        joints_[0].setCommand(0.2);
+		joints_[1].setCommand(0.1);
         // Write out status message
         write_controller_status_msg();
 	}
