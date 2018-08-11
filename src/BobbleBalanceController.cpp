@@ -19,7 +19,7 @@ namespace bobble_controllers
 		sub_command_.shutdown();
 	}
 		
-	bool BobbleBalanceController::init(hardware_interface::EffortJointInterface *robot,ros::NodeHandle &n)
+	bool BobbleBalanceController::init(hardware_interface::ChupEffortJointInterface *robot,ros::NodeHandle &n)
 	{
 		node_=n;
 		robot_=robot;
@@ -49,7 +49,7 @@ namespace bobble_controllers
 				return false;
 			}
 			
-			hardware_interface::JointHandle j=robot->
+			hardware_interface::ChupJointHandle j=robot->
 			        getHandle((std::string)name_value);
 			joints_.push_back(j);
 		}
@@ -144,7 +144,6 @@ namespace bobble_controllers
 	
 	void BobbleBalanceController::starting(const ros::Time& time)
 	{
-		ROS_WARN("MAKING IT INTO BOBBLE BALANCE CONTROLLER STARTING");
 		DesiredPitch = 0.0;
 		DesiredYaw = 0.0;
 		Pitch = 0.0;
@@ -175,19 +174,16 @@ namespace bobble_controllers
 	
 	void BobbleBalanceController::update(const ros::Time& time, const ros::Duration& duration)
 	{
-        std::cout << "Joint 0 : " << joints_[0].getName() << std::endl;
-		std::cout << "Joint 1 : " << joints_[1].getName() << std::endl;
         LeftWheelPosition = joints_[0].getPosition();
 		LeftWheelVelocity = joints_[0].getVelocity();
-		std::cout << "Left Wheel Position : " << joints_[0].getPosition() << std::endl;
 		RightWheelPosition = joints_[1].getPosition();
 		RightWheelVelocity = joints_[1].getVelocity();
-        // Implement control law
         double pitch_error = Pitch - DesiredPitch;
 		double yaw_error = DesiredYaw - Yaw;
         float effort = 1.0 * pitch_error + 0.25 * PitchDot + 0.025 * RightWheelVelocity;
         joints_[0].setCommand(0.2);
 		joints_[1].setCommand(0.1);
+		//std::cout << "Left Wheel Position : " << joints_[0].getPosition() << std::endl;
         // Write out status message
         write_controller_status_msg();
 	}

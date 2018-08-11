@@ -5,9 +5,9 @@
 #ifndef SRC_BOBBLEBOTHW_H
 #define SRC_BOBBLEBOTHW_H
 
-#include <hardware_interface/joint_command_interface.h>
-#include <hardware_interface/joint_state_interface.h>
 #include <hardware_interface/robot_hw.h>
+#include <bobble_controllers/ChupJointCommandInterface.h>
+#include <bobble_controllers/ChupJointStateInterface.h>
 #include <chupacabra_comm/LinuxTransporter.h>
 #include <chupacabra_comm/ChupCanLinuxDriver.h>
 
@@ -29,8 +29,7 @@ public:
     ChupCanLinuxDriver right_motor_chup_can_interface;
 
 private:
-    hardware_interface::JointStateInterface  jnt_state_interface;
-    hardware_interface::EffortJointInterface jnt_effort_interface;
+    hardware_interface::ChupEffortJointInterface jnt_effort_interface;
     LinuxTransporter   left_motor_chup_can_transporter;
     CommData           left_motor_chup_joint_data;
     LinuxTransporter   right_motor_chup_can_transporter;

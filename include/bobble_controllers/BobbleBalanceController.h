@@ -11,7 +11,7 @@
 #include <string>
 
 #include <ros/node_handle.h>
-#include <hardware_interface/joint_command_interface.h>
+#include <bobble_controllers/ChupJointCommandInterface.h>
 #include <controller_interface/controller.h>
 #include <trajectory_msgs/JointTrajectoryPoint.h>
 #include <sensor_msgs/Imu.h>
@@ -25,11 +25,11 @@
 namespace bobble_controllers
 {
 	class BobbleBalanceController: public controller_interface::
-		Controller<hardware_interface::EffortJointInterface>
+		Controller<hardware_interface::ChupEffortJointInterface>
 	{
 		ros::NodeHandle node_;
-		hardware_interface::EffortJointInterface *robot_;
-		std::vector<hardware_interface::JointHandle> joints_;
+		hardware_interface::ChupEffortJointInterface *robot_;
+		std::vector<hardware_interface::ChupJointHandle> joints_;
 		ros::Publisher pub_bobble_status;
 		ros::Subscriber sub_imu_sensor_;
 		ros::Subscriber sub_command_;
@@ -82,7 +82,7 @@ namespace bobble_controllers
 		BobbleBalanceController(void);
 		~BobbleBalanceController(void);
 		
-		bool init(hardware_interface::EffortJointInterface *robot, ros::NodeHandle &n);
+		bool init(hardware_interface::ChupEffortJointInterface *robot, ros::NodeHandle &n);
 		void starting(const ros::Time& time);
 		void update(const ros::Time& time,const ros::Duration& duration);
 	};
