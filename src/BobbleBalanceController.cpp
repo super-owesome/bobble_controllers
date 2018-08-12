@@ -19,7 +19,7 @@ namespace bobble_controllers
 		sub_command_.shutdown();
 	}
 		
-	bool BobbleBalanceController::init(hardware_interface::ChupEffortJointInterface *robot,ros::NodeHandle &n)
+	bool BobbleBalanceController::init(hardware_interface::EffortJointInterface *robot,ros::NodeHandle &n)
 	{
 		node_=n;
 		robot_=robot;
@@ -49,7 +49,7 @@ namespace bobble_controllers
 				return false;
 			}
 			
-			hardware_interface::ChupJointHandle j=robot->
+			hardware_interface::JointHandle j=robot->
 			        getHandle((std::string)name_value);
 			joints_.push_back(j);
 		}

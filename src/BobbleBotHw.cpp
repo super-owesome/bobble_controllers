@@ -4,9 +4,7 @@
 BobbleBotHw::BobbleBotHw()
  :
    left_motor_chup_can_interface(left_motor_chup_can_transporter),
-   left_motor_chup_joint_data(),
-   right_motor_chup_can_interface(right_motor_chup_can_transporter),
-   right_motor_chup_joint_data()
+   right_motor_chup_can_interface(right_motor_chup_can_transporter)
 {
   ros::NodeHandle pnh("~");
   std::string default_can_channel = "vcan0";
@@ -24,19 +22,19 @@ BobbleBotHw::BobbleBotHw()
   right_motor_chup_can_interface.ChannelName = right_motor_joint_name;
 
   // define the joint state handles...supply the pointers needed
-  hardware_interface::ChupJointStateHandle left_joint_state_handle(left_motor_joint_name,
-                                                               &left_motor_chup_joint_data.Position,
-                                                               &left_motor_chup_joint_data.Velocity,
-                                                               &left_motor_chup_joint_data.Torque);
-  hardware_interface::ChupJointStateHandle right_joint_state_handle(right_motor_joint_name,
-                                                                &right_motor_chup_joint_data.Position,
-                                                                &right_motor_chup_joint_data.Velocity,
-                                                                &right_motor_chup_joint_data.Torque);
+  hardware_interface::JointStateHandle left_joint_state_handle(left_motor_joint_name,
+                                                               &LeftMotorPosition,
+                                                               &LeftMotorVelocity,
+                                                               &LeftMotorTorque);
+  hardware_interface::JointStateHandle right_joint_state_handle(right_motor_joint_name,
+                                                                &RightMotorPosition,
+                                                                &RightMotorVelocity,
+                                                                &RightMotorTorque);
   // connect and register the joint effort interfaces
-  hardware_interface::ChupJointHandle left_joint_effort_handle(left_joint_state_handle,
-                                                            &left_motor_chup_joint_data.CmdVoltage);
-  hardware_interface::ChupJointHandle right_joint_effort_handle(right_joint_state_handle,
-                                                            &right_motor_chup_joint_data.CmdVoltage);
+  hardware_interface::JointHandle left_joint_effort_handle(left_joint_state_handle,
+                                                            &LeftMotorCmdVoltage);
+  hardware_interface::JointHandle right_joint_effort_handle(right_joint_state_handle,
+                                                            &RightMotorCmdVoltage);
 
   jnt_effort_interface.registerHandle(left_joint_effort_handle);
   jnt_effort_interface.registerHandle(right_joint_effort_handle);
@@ -54,28 +52,31 @@ void BobbleBotHw::init(){
 }
 
 void BobbleBotHw::read(){
- left_motor_chup_can_interface.ReadTelemetry();
- CommData left_chup_data = left_motor_chup_can_interface.getCommData();
- left_motor_chup_joint_data.Position = left_chup_data.Position;
- left_motor_chup_joint_data.Velocity = left_chup_data.Velocity;
- left_motor_chup_joint_data.Torque = left_chup_data.Torque;
- hardware_interface::ChupJointHandle left_jnt_handle = jnt_effort_interface.getHandle(left_motor_joint_name);
- right_motor_chup_can_interface.ReadTelemetry();
- CommData right_chup_data = right_motor_chup_can_interface.getCommData();
- right_motor_chup_joint_data.Position = right_chup_data.Position;
- right_motor_chup_joint_data.Velocity = right_chup_data.Velocity;
- right_motor_chup_joint_data.Torque = right_chup_data.Torque;
- hardware_interface::ChupJointHandle right_jnt_handle = jnt_effort_interface.getHandle(right_motor_joint_name);
- std::cout << "Left Motor Position : " << left_jnt_handle.getPosition() << std::endl;
- std::cout << "Left Motor Velocity : " << left_jnt_handle.getVelocity() << std::endl;
- std::cout << "Right Motor Position : " << right_jnt_handle.getPosition() << std::endl;
- std::cout << "Right Motor Velocity : " << right_jnt_handle.getVelocity() << std::endl;
+  left_motor_chup_can_interface.ReadTelemetry();
+  right_motor_chup_can_interface.ReadTelemetry();
+  CommData left_chup_data = left_motor_chup_can_interface.getCommData();
+  CommData right_chup_data = right_motor_chup_can_interface.getCommData();
+  LeftMotorPosition = (double) left_chup_data.Position;
+  LeftMotorVelocity = (double) left_chup_data.Velocity;
+  LeftMotorTorque = (double) left_chup_data.Torque;
+  RightMotorPosition = (double) right_chup_data.Position;
+  RightMotorVelocity = (double) right_chup_data.Velocity;
+  RightMotorTorque = (double) right_chup_data.Torque;
+  hardware_interface::JointHandle left_jnt_handle = jnt_effort_interface.getHandle(left_motor_joint_name);
+  hardware_interface::JointHandle right_jnt_handle = jnt_effort_interface.getHandle(right_motor_joint_name);
+  std::cout << "Left Motor Position : " << LeftMotorPosition << std::endl;
+  std::cout << "Left Motor Velocity : " << LeftMotorVelocity << std::endl;
+  std::cout << "Right Motor Position : " << RightMotorPosition << std::endl;
+  std::cout << "Right Motor Velocity : " << RightMotorVelocity << std::endl;
 }
 
 void BobbleBotHw::write(){
-  std::cout << "Write Left Motor Command : " << left_motor_chup_joint_data.CmdVoltage << std::endl;
-  std::cout << "Write Right Motor Command : " << right_motor_chup_joint_data.CmdVoltage << std::endl;
-  left_motor_chup_can_interface.SendCommands(left_motor_chup_joint_data);
-  right_motor_chup_can_interface.SendCommands(right_motor_chup_joint_data);
+  std::cout << "Write Left Motor Command : " << LeftMotorCmdVoltage << std::endl;
+  std::cout << "Write Right Motor Command : " << RightMotorCmdVoltage << std::endl;
+  CommData left_chup_cmd, right_chup_cmd;
+  left_chup_cmd.CmdVoltage = (double) LeftMotorCmdVoltage;
+  right_chup_cmd.CmdVoltage = (double) RightMotorCmdVoltage;
+  left_motor_chup_can_interface.SendCommands(left_chup_cmd);
+  right_motor_chup_can_interface.SendCommands(right_chup_cmd);
 }
 

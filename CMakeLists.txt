@@ -67,7 +67,7 @@ include_directories(include
 ## Declare a cpp library
 add_library(bobble_controllers
   src/BobbleBalanceController.cpp
-  include/bobble_controllers/ChupJointStateInterface.h include/bobble_controllers/ChupJointCommandInterface.h)
+		)
 
 ## Declare a cpp executable
 add_executable(BobbleControlNode src/nodes/BobbleControlNode.cpp src/BobbleBotHw.cpp)
