@@ -158,9 +158,9 @@ namespace bobble_controllers
 		RightWheelErrorAccumulated = 0.0;
         DesiredLeftWheelPosition = 0.0;
         DesiredRightWheelPosition = 0.0;
-		WheelGains.setZero();
-		PendulumGains.setZero();
-		EstimatedPendulumState.setZero();
+		//WheelGains.setZero();
+		//PendulumGains.setZero();
+		//EstimatedPendulumState.setZero();
         struct sched_param param;
         param.sched_priority=sched_get_priority_max(SCHED_FIFO);
         if(sched_setscheduler(0,SCHED_FIFO,&param) == -1)
@@ -181,7 +181,7 @@ namespace bobble_controllers
         double pitch_error = Pitch - DesiredPitch;
 		double yaw_error = DesiredYaw - Yaw;
         float effort = 1.0 * pitch_error + 0.25 * PitchDot + 0.025 * RightWheelVelocity;
-        joints_[0].setCommand(0.2);
+        joints_[0].setCommand(0.1);
 		joints_[1].setCommand(0.1);
 		//std::cout << "Left Wheel Position : " << joints_[0].getPosition() << std::endl;
         // Write out status message

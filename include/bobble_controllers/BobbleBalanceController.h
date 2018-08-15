@@ -20,7 +20,7 @@
 #include <executive/BobbleBotStatus.h>
 #include <tf/transform_datatypes.h>
 
-#include <Eigen/Core>
+//#include <Eigen/Core>
 
 namespace bobble_controllers
 {
@@ -34,9 +34,9 @@ namespace bobble_controllers
 		ros::Subscriber sub_imu_sensor_;
 		ros::Subscriber sub_command_;
 
-		Eigen::Matrix<double, 4, 2> EstimatedPendulumState;
-		Eigen::Matrix<double, 2, 4> PendulumGains;
-		Eigen::Matrix<double, 2, 4> WheelGains;
+		//Eigen::Matrix<double, 4, 2> EstimatedPendulumState;
+		//Eigen::Matrix<double, 2, 4> PendulumGains;
+		//Eigen::Matrix<double, 2, 4> WheelGains;
 
 		/// Config params
 		double MotorEffortMax;

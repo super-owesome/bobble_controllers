@@ -9,12 +9,6 @@
         output="screen"/>
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/bobble"
 		args="bobble_balance_controller"/>
-    <node pkg="chupacabra_emulator" type="ChupEmulatorNode" ns="/bobble" name="left_motor_emulator" output="screen">
-        <param name="Rate" value="2000"/>
-        <param name="Name" value="left_motor_emulator"/>
-        <param name="deviceId" value="291"/>
-        <param name="txOffset" value="1024"/>
-    </node>
     <node pkg="chupacabra_emulator" type="ChupEmulatorNode" ns="/bobble" name="right_motor_emulator" output="screen">
         <param name="Rate" value="2000"/>
         <param name="Name" value="right_motor_emulator"/>
