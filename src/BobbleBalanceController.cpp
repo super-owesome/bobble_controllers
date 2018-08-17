@@ -191,9 +191,9 @@ namespace bobble_controllers
 		}
 		// PD control
         float effort = 1.0 * pitch_error + 0.25 * PitchDot + 0.025 * RightWheelVelocity;
-		// Send effort commands
-		LeftMotorEffortCmd = effort;
-		RightMotorEffortCmd = effort;
+	// Send effort commands
+	LeftMotorEffortCmd = effort;
+	RightMotorEffortCmd = effort;
         if (ActiveControlMode != ControlModes::IDLE){
 			joints_[0].setCommand(LeftMotorEffortCmd);
 			joints_[1].setCommand(RightMotorEffortCmd);

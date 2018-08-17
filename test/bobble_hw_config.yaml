@@ -1,9 +1,11 @@
 bobble:
   bobble_bot_control_node:
-     LoopRate: 200 # hz
+     LoopRate: 500 # hz
      LeftMotorJointName: "left_wheel_hinge"
-     LeftMotorChupId: 291
-     LeftMotorRxOffset: 1024
+     LeftMotorChannel: "can0"
+     LeftMotorChupId: 0x100
+     LeftMotorRxOffset: 0x100
      RightMotorJointName: "right_wheel_hinge"
+     RightMotorChannel: "vcan0"
      RightMotorChupId: 292
      RightMotorRxOffset: 1024
