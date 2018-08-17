@@ -12,7 +12,7 @@
 
 	<node name="controller_spawner" pkg="controller_manager" type="spawner"
 		respawn="false" output="screen" ns="/bobble"
-		args="joint_state_controller bobble_balance_controller"/>
+		args="bobble_balance_controller"/>
 
 	<node name="robot_state_publisher" pkg="robot_state_publisher"
 		type="state_publisher"

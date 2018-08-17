@@ -144,23 +144,26 @@ namespace bobble_controllers
 	
 	void BobbleBalanceController::starting(const ros::Time& time)
 	{
+		ActiveControlMode = ControlModes::IDLE;
 		DesiredPitch = 0.0;
 		DesiredYaw = 0.0;
 		Pitch = 0.0;
 		RollDot = 0.0;
 		PitchDot = 0.0;
 		YawDot = 0.0;
+		LeftMotorEffortCmd = 0.0;
 		LeftWheelPosition = 0.0;
 		LeftWheelVelocity = 0.0;
+		RightMotorEffortCmd = 0.0;
 		RightWheelPosition = 0.0;
 		RightWheelVelocity = 0.0;
         LeftWheelErrorAccumulated = 0.0;
 		RightWheelErrorAccumulated = 0.0;
         DesiredLeftWheelPosition = 0.0;
         DesiredRightWheelPosition = 0.0;
-		WheelGains.setZero();
-		PendulumGains.setZero();
-		EstimatedPendulumState.setZero();
+		//WheelGains.setZero();
+		//PendulumGains.setZero();
+		//EstimatedPendulumState.setZero();
         struct sched_param param;
         param.sched_priority=sched_get_priority_max(SCHED_FIFO);
         if(sched_setscheduler(0,SCHED_FIFO,&param) == -1)
@@ -178,18 +181,30 @@ namespace bobble_controllers
 		LeftWheelVelocity = joints_[0].getVelocity();
 		RightWheelPosition = joints_[1].getPosition();
 		RightWheelVelocity = joints_[1].getVelocity();
-        double pitch_error = Pitch - DesiredPitch;
-		double yaw_error = DesiredYaw - Yaw;
+		double pitch_error, yaw_error;
+		if (ActiveControlMode == ControlModes::DRIVE){
+			pitch_error = Pitch - DesiredPitch;
+			yaw_error = DesiredYaw - Yaw;
+		}else{
+			pitch_error = Pitch;
+			yaw_error = Yaw;
+		}
+		// PD control
         float effort = 1.0 * pitch_error + 0.25 * PitchDot + 0.025 * RightWheelVelocity;
-        joints_[0].setCommand(0.2);
-		joints_[1].setCommand(0.1);
-		//std::cout << "Left Wheel Position : " << joints_[0].getPosition() << std::endl;
+		// Send effort commands
+		LeftMotorEffortCmd = effort;
+		RightMotorEffortCmd = effort;
+        if (ActiveControlMode != ControlModes::IDLE){
+			joints_[0].setCommand(LeftMotorEffortCmd);
+			joints_[1].setCommand(RightMotorEffortCmd);
+        }
         // Write out status message
         write_controller_status_msg();
 	}
 
 	void BobbleBalanceController::write_controller_status_msg() {
 		executive::BobbleBotStatus sim_status_msg;
+		sim_status_msg.ControlMode = ActiveControlMode;
 		sim_status_msg.DeltaT = 0.0;
 		sim_status_msg.Roll = Roll;
 		sim_status_msg.Pitch = Pitch;
@@ -197,10 +212,12 @@ namespace bobble_controllers
 		sim_status_msg.RollRate = RollDot;
 		sim_status_msg.PitchRate = PitchDot;
 		sim_status_msg.YawRate = YawDot;
-		sim_status_msg.LeftMotorPositionDesired = 0.0;
+		sim_status_msg.DesiredPitch = DesiredPitch;
+		sim_status_msg.DesiredYaw = DesiredYaw;
+		sim_status_msg.LeftMotorEffortCmd = LeftMotorEffortCmd;
 		sim_status_msg.LeftMotorPosition = LeftWheelPosition;
 		sim_status_msg.LeftMotorVelocity = LeftWheelVelocity;
-		sim_status_msg.RightMotorPositionDesired = 0.0;
+		sim_status_msg.RightMotorEffortCmd = RightMotorEffortCmd;
 		sim_status_msg.RightMotorPosition = RightWheelPosition;
 		sim_status_msg.RightMotorVelocity = RightWheelVelocity;
 		pub_bobble_status.publish(sim_status_msg);
@@ -219,6 +236,7 @@ namespace bobble_controllers
 
 	void BobbleBalanceController::commandCB(const bobble_controllers::ControlCommands::ConstPtr &cmd)
 	{
+		ActiveControlMode = cmd->ControlMode;
 		DesiredPitch = cmd->DesiredPitch;
 		DesiredYaw = cmd->DesiredYaw;
 	}
