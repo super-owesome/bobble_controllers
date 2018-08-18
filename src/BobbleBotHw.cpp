@@ -64,15 +64,9 @@ void BobbleBotHw::read(){
   RightMotorTorque = (double) right_chup_data.Torque;
   hardware_interface::JointHandle left_jnt_handle = jnt_effort_interface.getHandle(left_motor_joint_name);
   hardware_interface::JointHandle right_jnt_handle = jnt_effort_interface.getHandle(right_motor_joint_name);
-  std::cout << "Left Motor Position : " << LeftMotorPosition << std::endl;
-  std::cout << "Left Motor Velocity : " << LeftMotorVelocity << std::endl;
-  std::cout << "Right Motor Position : " << RightMotorPosition << std::endl;
-  std::cout << "Right Motor Velocity : " << RightMotorVelocity << std::endl;
 }
 
 void BobbleBotHw::write(){
-  std::cout << "Write Left Motor Command : " << LeftMotorCmdVoltage << std::endl;
-  std::cout << "Write Right Motor Command : " << RightMotorCmdVoltage << std::endl;
   CommData left_chup_cmd, right_chup_cmd;
   left_chup_cmd.CmdVoltage = (double) LeftMotorCmdVoltage;
   right_chup_cmd.CmdVoltage = (double) RightMotorCmdVoltage;

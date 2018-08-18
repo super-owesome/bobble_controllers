@@ -31,7 +31,6 @@ int main(int argc, char **argv)
     const ros::Duration period = time - prev_time;
     prev_time = time;
     bobble_bot.read();
-    ROS_INFO("Looping with period: %f s", period.toSec());
     cm.update(time, period);
     bobble_bot.write();
     rate.sleep();
