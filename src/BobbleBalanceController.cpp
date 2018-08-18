@@ -181,23 +181,27 @@ namespace bobble_controllers
 		LeftWheelVelocity = joints_[0].getVelocity();
 		RightWheelPosition = joints_[1].getPosition();
 		RightWheelVelocity = joints_[1].getVelocity();
-		double pitch_error, yaw_error;
-		if (ActiveControlMode == ControlModes::DRIVE){
-			pitch_error = Pitch - DesiredPitch;
-			yaw_error = DesiredYaw - Yaw;
-		}else{
+		double pitch_error, yaw_error, effort;
+		if (ActiveControlMode == ControlModes::IDLE)
+		{
+			effort = 0.0;
+		}
+		else if (ActiveControlMode == ControlModes::DRIVE)
+		{
+		    effort = DesiredPitch;
+		}
+		else if (ActiveControlMode == ControlModes::BALANCE)
+		{
 			pitch_error = Pitch;
 			yaw_error = Yaw;
+			effort = 1.0 * pitch_error + 0.25 * PitchDot + 0.025 * RightWheelVelocity;
 		}
 		// PD control
-        float effort = 1.0 * pitch_error + 0.25 * PitchDot + 0.025 * RightWheelVelocity;
-	// Send effort commands
-	LeftMotorEffortCmd = effort;
-	RightMotorEffortCmd = effort;
-        if (ActiveControlMode != ControlModes::IDLE){
-			joints_[0].setCommand(LeftMotorEffortCmd);
-			joints_[1].setCommand(RightMotorEffortCmd);
-        }
+	    // Send effort commands
+	    LeftMotorEffortCmd = effort;
+	    RightMotorEffortCmd = effort;
+	    joints_[0].setCommand(LeftMotorEffortCmd);
+	    joints_[1].setCommand(RightMotorEffortCmd);
         // Write out status message
         write_controller_status_msg();
 	}
