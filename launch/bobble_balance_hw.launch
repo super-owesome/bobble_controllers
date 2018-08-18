@@ -1,7 +1,4 @@
 <launch>
-    <arg name="paused" default="true"/>
-    <arg name="gui" default="true"/>
-    <arg name="robot_name" default="bobble_bot"/>
     <rosparam file="$(find bobble_controllers)/config/bobble_hw_config.yaml" command="load"/>
 	<rosparam file="$(find bobble_controllers)/config/bobble_balance_control.yaml"
 		command="load"/>
