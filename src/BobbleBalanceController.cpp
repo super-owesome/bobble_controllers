@@ -201,11 +201,8 @@ namespace bobble_controllers
 	    // Send effort commands
 	    LeftMotorEffortCmd = effort;
 	    RightMotorEffortCmd = effort;
-	    if (ActiveControlMode != ControlModes::IDLE)
-	    {
-	        joints_[0].setCommand(LeftMotorEffortCmd);
-	        joints_[1].setCommand(RightMotorEffortCmd);
-	    }
+	    joints_[0].setCommand(LeftMotorEffortCmd);
+	    joints_[1].setCommand(RightMotorEffortCmd);
         // Write out status message
         write_controller_status_msg();
 	}

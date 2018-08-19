@@ -1,5 +1,6 @@
 #include <ros/ros.h>
-#include <sched.h>
+#include <pthread.h>
+#include <sys/mman.h>
 #include <bobble_controllers/BobbleBotHw.h>
 #include <controller_manager/controller_manager.h>
 
@@ -10,10 +11,11 @@ int main(int argc, char **argv)
   param.sched_priority=sched_get_priority_max(SCHED_FIFO);
   if(sched_setscheduler(0,SCHED_FIFO,&param) == -1){
     ROS_WARN("Failed to set real-time scheduler.");
-    return;
+    return -1;
   }
   if(mlockall(MCL_CURRENT|MCL_FUTURE) == -1) {
     ROS_WARN("Failed to lock memory.");
+    return -1;
   }
 
   // Set up ROS.

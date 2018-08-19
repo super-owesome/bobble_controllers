@@ -62,8 +62,6 @@ void BobbleBotHw::read(){
   RightMotorPosition = (double) right_chup_data.Position;
   RightMotorVelocity = (double) right_chup_data.Velocity;
   RightMotorTorque = (double) right_chup_data.Torque;
-  hardware_interface::JointHandle left_jnt_handle = jnt_effort_interface.getHandle(left_motor_joint_name);
-  hardware_interface::JointHandle right_jnt_handle = jnt_effort_interface.getHandle(right_motor_joint_name);
 }
 
 void BobbleBotHw::write(){
