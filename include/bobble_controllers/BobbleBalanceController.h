@@ -20,7 +20,7 @@
 #include <executive/BobbleBotStatus.h>
 #include <tf/transform_datatypes.h>
 
-#include <Eigen/Core>
+//#include <Eigen/Core>
 
 namespace bobble_controllers
 {
@@ -34,9 +34,15 @@ namespace bobble_controllers
 		ros::Subscriber sub_imu_sensor_;
 		ros::Subscriber sub_command_;
 
-		Eigen::Matrix<double, 4, 2> EstimatedPendulumState;
-		Eigen::Matrix<double, 2, 4> PendulumGains;
-		Eigen::Matrix<double, 2, 4> WheelGains;
+		enum ControlModes{
+			IDLE,
+			BALANCE,
+			DRIVE
+		};
+
+		//Eigen::Matrix<double, 4, 2> EstimatedPendulumState;
+		//Eigen::Matrix<double, 2, 4> PendulumGains;
+		//Eigen::Matrix<double, 2, 4> WheelGains;
 
 		/// Config params
 		double MotorEffortMax;
@@ -55,6 +61,7 @@ namespace bobble_controllers
 		double EffortPendulumAlpha;
 		double EffortWheelAlpha;
 		/// State Vars
+		int ActiveControlMode;
         double Roll;
 		double Pitch;
 		double Yaw;
@@ -63,8 +70,10 @@ namespace bobble_controllers
 		double YawDot;
 		double LeftWheelPosition;
 		double LeftWheelVelocity;
+		double LeftMotorEffortCmd;
 		double RightWheelPosition;
 		double RightWheelVelocity;
+		double RightMotorEffortCmd;
 		double LeftWheelErrorAccumulated;
 		double RightWheelErrorAccumulated;
         double DesiredLeftWheelPosition;
