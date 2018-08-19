@@ -1,9 +1,21 @@
 #include <ros/ros.h>
+#include <sched.h>
 #include <bobble_controllers/BobbleBotHw.h>
 #include <controller_manager/controller_manager.h>
 
 int main(int argc, char **argv)
 {
+  struct sched_param param;
+
+  param.sched_priority=sched_get_priority_max(SCHED_FIFO);
+  if(sched_setscheduler(0,SCHED_FIFO,&param) == -1){
+    ROS_WARN("Failed to set real-time scheduler.");
+    return;
+  }
+  if(mlockall(MCL_CURRENT|MCL_FUTURE) == -1) {
+    ROS_WARN("Failed to lock memory.");
+  }
+
   // Set up ROS.
   ros::init(argc, argv, "bobble_bot_control_node");
   ros::NodeHandle nh;

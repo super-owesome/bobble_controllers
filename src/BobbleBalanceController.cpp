@@ -165,7 +165,8 @@ namespace bobble_controllers
 		//PendulumGains.setZero();
 		//EstimatedPendulumState.setZero();
         struct sched_param param;
-        param.sched_priority=sched_get_priority_max(SCHED_FIFO);
+        // set the priority high, but not so high it overrides the comm
+        param.sched_priority=95;
         if(sched_setscheduler(0,SCHED_FIFO,&param) == -1)
         {
                 ROS_WARN("Failed to set real-time scheduler.");
