@@ -18,12 +18,24 @@ namespace bobble_controllers
 	{
 		sub_command_.shutdown();
 	}
-		
+
+	void BobbleBalanceController::unpackParameter(std::string parameterName, double &referenceToParameter, double defaultValue)
+	{
+		if(!node_.getParam(parameterName, referenceToParameter))
+		{
+			referenceToParameter = defaultValue;
+			ROS_WARN("%s not set for (namespace: %s) using %f.",
+					 parameterName.c_str(),
+					 node_.getNamespace().c_str(),
+			         defaultValue);
+		}
+	}
+
 	bool BobbleBalanceController::init(hardware_interface::EffortJointInterface *robot,ros::NodeHandle &n)
 	{
 		node_=n;
 		robot_=robot;
-		
+
 		XmlRpc::XmlRpcValue joint_names;
 		if(!node_.getParam("joints",joint_names))
 		{
@@ -53,32 +65,56 @@ namespace bobble_controllers
 			        getHandle((std::string)name_value);
 			joints_.push_back(j);
 		}
-// Example of registering a call back function to take in external commands
-		sub_imu_sensor_ = node_.subscribe("bno055",1000,
-		        &BobbleBalanceController::imuCB, this);
-//		sub_command_=node_.subscribe("command",1000,
-//		        &BobbleBalanceController::commandCB, this);
 
-// Example of dynamically sizing gain matrix based on num joints... for
-// generic controllers
-//		Kp.resize(chain.getNrOfJoints(),chain.getNrOfJoints());
-//		Kd.resize(chain.getNrOfJoints(),chain.getNrOfJoints());
-		
+		unpackParameter("MotorEffortMax", MotorEffortMax, 1.0);
+		unpackParameter("PitchGain", PitchGain, 0.0);
+		unpackParameter("PitchDotGain", PitchDotGain, 0.0);
+		unpackParameter("YawGain", YawGain, 0.0);
+		unpackParameter("YawDotGain", YawDotGain, 0.0);
+		unpackParameter("WheelGain", WheelGain, 0.0);
+		unpackParameter("WheelDotGain", WheelDotGain, 0.0);
+		unpackParameter("WheelIntegralGain", WheelIntegralGain, 0.0);
+		unpackParameter("WheelIntegralSaturation", WheelIntegralSaturation, 0.0);
+		unpackParameter("PendulumStateAlpha", PendulumStateAlpha, 0.0);
+		unpackParameter("WheelStateAlpha", WheelStateAlpha, 0.0);
+		unpackParameter("EffortPendulumAlpha", EffortPendulumAlpha, 0.0);
+		unpackParameter("EffortWheelAlpha", EffortWheelAlpha, 0.0);
+
+        // Setup publishers and subscribers
+		pub_bobble_status = n.advertise<executive::BobbleBotStatus>("bb_controller_status", 1);
+		sub_imu_sensor_ = node_.subscribe("/imu_bosch/data",1,
+		        &BobbleBalanceController::imuCB, this);
+		sub_command_=node_.subscribe("/bobble/bobble_balance_controller/bb_cmd",1,
+		        &BobbleBalanceController::commandCB, this);
+
 		return true;
 	}
 	
 	void BobbleBalanceController::starting(const ros::Time& time)
 	{
+		ActiveControlMode = ControlModes::IDLE;
+		DesiredPitch = 0.0;
+		DesiredYaw = 0.0;
 		Pitch = 0.0;
+		RollDot = 0.0;
 		PitchDot = 0.0;
+		YawDot = 0.0;
+		LeftMotorEffortCmd = 0.0;
 		LeftWheelPosition = 0.0;
 		LeftWheelVelocity = 0.0;
+		RightMotorEffortCmd = 0.0;
 		RightWheelPosition = 0.0;
 		RightWheelVelocity = 0.0;
-		Kp.setZero();
-		Kd.setZero();
+        LeftWheelErrorAccumulated = 0.0;
+		RightWheelErrorAccumulated = 0.0;
+        DesiredLeftWheelPosition = 0.0;
+        DesiredRightWheelPosition = 0.0;
+		//WheelGains.setZero();
+		//PendulumGains.setZero();
+		//EstimatedPendulumState.setZero();
         struct sched_param param;
-        param.sched_priority=sched_get_priority_max(SCHED_FIFO);
+        // set the priority high, but not so high it overrides the comm
+        param.sched_priority=95;
         if(sched_setscheduler(0,SCHED_FIFO,&param) == -1)
         {
                 ROS_WARN("Failed to set real-time scheduler.");
@@ -94,31 +130,68 @@ namespace bobble_controllers
 		LeftWheelVelocity = joints_[0].getVelocity();
 		RightWheelPosition = joints_[1].getPosition();
 		RightWheelVelocity = joints_[1].getVelocity();
-		ROS_INFO("IMU Pitch : %0.3f", Pitch);
-		ROS_INFO("IMU Pitch Rate: %0.3f", PitchDot);
-		ROS_INFO("Left Wheel Position : %0.3f", LeftWheelPosition);
-		ROS_INFO("Left Wheel Velocity : %0.3f", LeftWheelVelocity);
-		ROS_INFO("Right Wheel Position : %0.3f", RightWheelPosition);
-		ROS_INFO("Right Wheel Velocity : %0.3f", RightWheelVelocity);
-/*
-		for(unsigned int i=0;i < fext.size();i++) fext[i].Zero();
-		
-		v.data=ddqr.data+Kp*(qr.data-q.data)+Kd*(dqr.data-dq.data);
-		if(idsolver->CartToJnt(q,dq,v,fext,torque) < 0)
-		        ROS_ERROR("KDL inverse dynamics solver failed.");
-		
-		for(unsigned int i=0;i < joints_.size();i++)
-		        joints_[i].setCommand(torque(i));
-*/
+		double pitch_error, yaw_error, effort;
+		if (ActiveControlMode == ControlModes::IDLE)
+		{
+			effort = 0.0;
+		}
+		else if (ActiveControlMode == ControlModes::DRIVE)
+		{
+		    effort = DesiredPitch;
+		}
+		else if (ActiveControlMode == ControlModes::BALANCE)
+		{
+			pitch_error = Pitch;
+			yaw_error = Yaw;
+			effort = 1.0 * pitch_error + 0.25 * PitchDot + 0.025 * RightWheelVelocity;
+		}
+		// PD control
+	    // Send effort commands
+	    LeftMotorEffortCmd = effort;
+	    RightMotorEffortCmd = effort;
+	    joints_[0].setCommand(LeftMotorEffortCmd);
+	    joints_[1].setCommand(RightMotorEffortCmd);
+        // Write out status message
+        write_controller_status_msg();
 	}
 
-	void BobbleBalanceController::imuCB(const sensor_msgs::Imu::ConstPtr &imuData)
-	{
-		tf::Quaternion q(imuData->orientation.x, imuData->orientation.y, imuData->orientation.z, imuData->orientation.w);
-        tf::Matrix3x3 m(q);
-		double roll, yaw;
+	void BobbleBalanceController::write_controller_status_msg() {
+		executive::BobbleBotStatus sim_status_msg;
+		sim_status_msg.ControlMode = ActiveControlMode;
+		sim_status_msg.DeltaT = 0.0;
+		sim_status_msg.Roll = Roll;
+		sim_status_msg.Pitch = Pitch;
+		sim_status_msg.Yaw = Yaw;
+		sim_status_msg.RollRate = RollDot;
+		sim_status_msg.PitchRate = PitchDot;
+		sim_status_msg.YawRate = YawDot;
+		sim_status_msg.DesiredPitch = DesiredPitch;
+		sim_status_msg.DesiredYaw = DesiredYaw;
+		sim_status_msg.LeftMotorEffortCmd = LeftMotorEffortCmd;
+		sim_status_msg.LeftMotorPosition = LeftWheelPosition;
+		sim_status_msg.LeftMotorVelocity = LeftWheelVelocity;
+		sim_status_msg.RightMotorEffortCmd = RightMotorEffortCmd;
+		sim_status_msg.RightMotorPosition = RightWheelPosition;
+		sim_status_msg.RightMotorVelocity = RightWheelVelocity;
+		pub_bobble_status.publish(sim_status_msg);
+	}
+
+
+	void BobbleBalanceController::imuCB(const sensor_msgs::Imu::ConstPtr &imuData) {
+		tf::Quaternion q(imuData->orientation.x, imuData->orientation.y, imuData->orientation.z,
+						 imuData->orientation.w);
+		tf::Matrix3x3 m(q);
+		RollDot = imuData->angular_velocity.x;
 		PitchDot = imuData->angular_velocity.y;
-		m.getRPY(roll, Pitch, yaw);
+		YawDot = imuData->angular_velocity.z;
+		m.getRPY(Roll, Pitch, Yaw);
+	}
+
+	void BobbleBalanceController::commandCB(const bobble_controllers::ControlCommands::ConstPtr &cmd)
+	{
+		ActiveControlMode = cmd->ControlMode;
+		DesiredPitch = cmd->DesiredPitch;
+		DesiredYaw = cmd->DesiredYaw;
 	}
 
 }

@@ -1,0 +1,21 @@
+<launch>
+    <arg name="paused" default="true"/>
+    <arg name="gui" default="true"/>
+
+	<include file="$(find bobble_description)/launch/bobble_sim.launch">
+		<arg name="paused" value="$(arg paused)"/>
+	</include>
+
+	<rosparam file="$(find bobble_controllers)/config/bobble_balance_control.yaml"
+		command="load"/>
+
+	<node name="controller_spawner" pkg="controller_manager" type="spawner"
+		respawn="false" output="screen" ns="/bobble"
+		args="bobble_balance_controller"/>
+
+	<node name="robot_state_publisher" pkg="robot_state_publisher"
+		type="state_publisher"
+		ns="/bobble" />
+</launch>
+
+

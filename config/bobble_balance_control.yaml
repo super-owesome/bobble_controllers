@@ -1,10 +1,19 @@
 bobble:
-    joint_state_controller:
-      type: joint_state_controller/JointStateController
-      publish_rate: 100
-
     bobble_balance_controller:
       type: bobble_controllers/BobbleBalanceController
       joints:
         - left_wheel_hinge
         - right_wheel_hinge
+      PitchGain: 1.0
+      PitchDotGain: 0.25
+      YawGain: 0.0
+      YawDotGain: 0.0
+      WheelGain: 0.0000
+      WheelDotGain: 0.025 #0.025
+      WheelIntegralGain: 0.00000
+      WheelIntegralSaturation: 1000.0
+      PendulumStateAlpha: 0.5
+      WheelStateAlpha: 0.5
+      EffortPendulumAlpha: 0.05
+      EffortWheelAlpha: 0.05
+      MotorEffortMax: 0.4
