@@ -6,7 +6,7 @@ bobble:
      LeftMotorChupId: 0x100
      LeftMotorRxOffset: 0x100
      RightMotorJointName: "right_wheel_hinge"
-     RightMotorChannel: "vcan0"
+     RightMotorChannel: "can0"
      RightMotorChupId: 0x101
      RightMotorRxOffset: 0x100
      RollOffset: -2.73225927353
