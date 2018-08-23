@@ -9,3 +9,4 @@ bobble:
      RightMotorChannel: "vcan0"
      RightMotorChupId: 0x101
      RightMotorRxOffset: 0x100
+     RollOffset: -2.73225927353

@@ -79,6 +79,9 @@ namespace bobble_controllers
 		unpackParameter("WheelStateAlpha", WheelStateAlpha, 0.0);
 		unpackParameter("EffortPendulumAlpha", EffortPendulumAlpha, 0.0);
 		unpackParameter("EffortWheelAlpha", EffortWheelAlpha, 0.0);
+		unpackParameter("RollOffset", RollOffset, 0.0);
+		unpackParameter("PitchOffset", PitchOffset, 0.0);
+		unpackParameter("YawOffset", YawOffset, 0.0);
 
         // Setup publishers and subscribers
 		pub_bobble_status = n.advertise<executive::BobbleBotStatus>("bb_controller_status", 1);
@@ -130,7 +133,7 @@ namespace bobble_controllers
 		LeftWheelVelocity = joints_[0].getVelocity();
 		RightWheelPosition = joints_[1].getPosition();
 		RightWheelVelocity = joints_[1].getVelocity();
-		double pitch_error, yaw_error, effort;
+		double roll_error, yaw_error, effort;
 		if (ActiveControlMode == ControlModes::IDLE)
 		{
 			effort = 0.0;
@@ -141,9 +144,9 @@ namespace bobble_controllers
 		}
 		else if (ActiveControlMode == ControlModes::BALANCE)
 		{
-			pitch_error = Pitch;
-			yaw_error = Yaw;
-			effort = 1.0 * pitch_error + 0.25 * PitchDot + 0.025 * RightWheelVelocity;
+			roll_error = Roll - RollOffset;
+			yaw_error = Yaw - YawOffset;
+			effort = 1.0 * roll_error + 0.25 * PitchDot + 0.025 * RightWheelVelocity;
 		}
 		// PD control
 	    // Send effort commands
@@ -159,9 +162,9 @@ namespace bobble_controllers
 		executive::BobbleBotStatus sim_status_msg;
 		sim_status_msg.ControlMode = ActiveControlMode;
 		sim_status_msg.DeltaT = 0.0;
-		sim_status_msg.Roll = Roll;
-		sim_status_msg.Pitch = Pitch;
-		sim_status_msg.Yaw = Yaw;
+		sim_status_msg.Roll = Roll - RollOffset;
+		sim_status_msg.Pitch = Pitch - PitchOffset;
+		sim_status_msg.Yaw = Yaw - YawOffset;
 		sim_status_msg.RollRate = RollDot;
 		sim_status_msg.PitchRate = PitchDot;
 		sim_status_msg.YawRate = YawDot;

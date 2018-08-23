@@ -79,6 +79,11 @@ namespace bobble_controllers
         double DesiredLeftWheelPosition;
         double DesiredRightWheelPosition;
 
+        // Offsets
+		double RollOffset;
+		double PitchOffset;
+		double YawOffset;
+
         // Control commands
 		double DesiredPitch;
 		double DesiredYaw;
