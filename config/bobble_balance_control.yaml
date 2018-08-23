@@ -17,3 +17,4 @@ bobble:
       EffortPendulumAlpha: 0.05
       EffortWheelAlpha: 0.05
       MotorEffortMax: 0.4
+      RollOffset: -2.73225927353
