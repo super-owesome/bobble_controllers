@@ -133,25 +133,27 @@ namespace bobble_controllers
 		LeftWheelVelocity = joints_[0].getVelocity();
 		RightWheelPosition = joints_[1].getPosition();
 		RightWheelVelocity = joints_[1].getVelocity();
-		double roll_error, yaw_error, effort;
+		double roll_error, yaw_error;
 		if (ActiveControlMode == ControlModes::IDLE)
 		{
-			effort = 0.0;
+			LeftMotorEffortCmd = 0.0;
+			RightMotorEffortCmd = 0.0;
 		}
 		else if (ActiveControlMode == ControlModes::DRIVE)
 		{
-		    effort = DesiredPitch;
+			LeftMotorEffortCmd = DesiredPitch;
+			RightMotorEffortCmd = -DesiredPitch;
 		}
 		else if (ActiveControlMode == ControlModes::BALANCE)
 		{
 			roll_error = Roll - RollOffset;
 			yaw_error = Yaw - YawOffset;
-			effort = 1.0 * roll_error + 0.25 * PitchDot + 0.025 * RightWheelVelocity;
+			LeftMotorEffortCmd = -0.005 * LeftWheelVelocity;
+			RightMotorEffortCmd = -0.005 * RightWheelVelocity;
+			//effort = 1.0 * roll_error;// + 0.25 * PitchDot + 0.025 * RightWheelVelocity;
 		}
 		// PD control
 	    // Send effort commands
-	    LeftMotorEffortCmd = effort;
-	    RightMotorEffortCmd = effort;
 	    joints_[0].setCommand(LeftMotorEffortCmd);
 	    joints_[1].setCommand(RightMotorEffortCmd);
         // Write out status message

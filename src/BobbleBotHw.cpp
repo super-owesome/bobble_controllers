@@ -4,7 +4,9 @@
 BobbleBotHw::BobbleBotHw()
  :
    left_motor_chup_can_interface(left_motor_chup_can_transporter),
-   right_motor_chup_can_interface(right_motor_chup_can_transporter)
+   right_motor_chup_can_interface(right_motor_chup_can_transporter),
+   LeftMotorCmdVoltage(0.0),
+   RightMotorCmdVoltage(0.0)
 {
   ros::NodeHandle pnh("~");
   std::string default_can_channel = "vcan0";
@@ -66,8 +68,8 @@ void BobbleBotHw::read(){
 
 void BobbleBotHw::write(){
   CommData left_chup_cmd, right_chup_cmd;
-  left_chup_cmd.CmdVoltage = (double) LeftMotorCmdVoltage;
-  right_chup_cmd.CmdVoltage = (double) RightMotorCmdVoltage;
+  left_chup_cmd.CmdVoltage = LeftMotorCmdVoltage;
+  right_chup_cmd.CmdVoltage = RightMotorCmdVoltage;
   left_motor_chup_can_interface.SendCommands(left_chup_cmd);
   right_motor_chup_can_interface.SendCommands(right_chup_cmd);
 }
