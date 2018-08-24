@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <vector>
 #include <string>
+#include <algorithm>
 
 #include <ros/node_handle.h>
 #include <hardware_interface/joint_command_interface.h>
@@ -20,7 +21,7 @@
 #include <executive/BobbleBotStatus.h>
 #include <tf/transform_datatypes.h>
 
-//#include <Eigen/Core>
+#include <Eigen/Core>
 
 namespace bobble_controllers
 {
@@ -37,12 +38,15 @@ namespace bobble_controllers
 		enum ControlModes{
 			IDLE,
 			BALANCE,
-			DRIVE
+			DRIVE,
+			DIAGNOSTIC
 		};
 
-		//Eigen::Matrix<double, 4, 2> EstimatedPendulumState;
-		//Eigen::Matrix<double, 2, 4> PendulumGains;
-		//Eigen::Matrix<double, 2, 4> WheelGains;
+		Eigen::Matrix<double, 6, 1> EstimatedState;
+		Eigen::Matrix<double, 6, 1> DesiredState;
+		Eigen::Matrix<double, 6, 1> ErrorState;
+		Eigen::Matrix<double, 2, 6> ControlGains;
+		Eigen::Matrix<double, 2, 1> Effort;
 
 		/// Config params
 		double MotorEffortMax;
@@ -68,16 +72,6 @@ namespace bobble_controllers
 		double RollDot;
 		double PitchDot;
 		double YawDot;
-		double LeftWheelPosition;
-		double LeftWheelVelocity;
-		double LeftMotorEffortCmd;
-		double RightWheelPosition;
-		double RightWheelVelocity;
-		double RightMotorEffortCmd;
-		double LeftWheelErrorAccumulated;
-		double RightWheelErrorAccumulated;
-        double DesiredLeftWheelPosition;
-        double DesiredRightWheelPosition;
 
         // Control commands
 		double DesiredPitch;
@@ -88,6 +82,10 @@ namespace bobble_controllers
 		void write_controller_status_msg();
 
 		void unpackParameter(std::string parameterName, double &referenceToParameter, double defaultValue);
+		void packGains(double PitchGain, double PitchDotGain, double RightWheelGain, double RightWheelDotGain, double LeftWheelGain, double LeftWheelDotGain);
+		void packState(double Pitch, double PitchDot, double RightWheelPosition, double RightWheelVelocity, double LeftWheelPosition, double LeftWheelVelocity);
+		void packDesired(double PitchDesired, double PitchDotDesired, double RightWheelPositionDesired, double RightWheelVelocityDesired, double LeftWheelPositionDesired, double LeftWheelVelocityDesired);
+		double limitEffort(double effort_cmd, double min_effort, double max_effort);
 
 		public:
 		BobbleBalanceController(void);
