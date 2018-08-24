@@ -148,8 +148,8 @@ namespace bobble_controllers
 		{
 			roll_error = Roll - RollOffset;
 			yaw_error = Yaw - YawOffset;
-			LeftMotorEffortCmd = -0.005 * LeftWheelVelocity;
-			RightMotorEffortCmd = -0.005 * RightWheelVelocity;
+			LeftMotorEffortCmd = 1.35 * roll_error + 0.075 * RollDot - 0.005 * LeftWheelVelocity;
+			RightMotorEffortCmd = 1.35 * roll_error + 0.075 * RollDot - 0.005 * RightWheelVelocity;
 			//effort = 1.0 * roll_error;// + 0.25 * PitchDot + 0.025 * RightWheelVelocity;
 		}
 		// PD control

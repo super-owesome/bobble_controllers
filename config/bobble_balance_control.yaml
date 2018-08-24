@@ -4,12 +4,12 @@ bobble:
       joints:
         - left_wheel_hinge
         - right_wheel_hinge
-      PitchGain: 1.0
-      PitchDotGain: 0.25
+      PitchGain: 0.0
+      PitchDotGain: 0.05
       YawGain: 0.0
       YawDotGain: 0.0
       WheelGain: 0.0000
-      WheelDotGain: 0.025 #0.025
+      WheelDotGain: 0.005 #0.025
       WheelIntegralGain: 0.00000
       WheelIntegralSaturation: 1000.0
       PendulumStateAlpha: 0.5
@@ -17,4 +17,4 @@ bobble:
       EffortPendulumAlpha: 0.05
       EffortWheelAlpha: 0.05
       MotorEffortMax: 0.4
-      RollOffset: -2.73225927353
+      RollOffset: -2.895
