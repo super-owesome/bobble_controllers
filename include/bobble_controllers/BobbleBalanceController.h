@@ -88,6 +88,11 @@ namespace bobble_controllers
 		double DesiredPitch;
 		double DesiredYaw;
 
+		// Previous Commands
+		double _EffortRightWheelPrevious;
+		double _EffortLeftWheelPrevious;
+		double _EffortPendulumPrevious;
+
 		void imuCB(const sensor_msgs::Imu::ConstPtr &imuData);
 		void commandCB(const bobble_controllers::ControlCommands::ConstPtr &cmd);
 		void write_controller_status_msg();

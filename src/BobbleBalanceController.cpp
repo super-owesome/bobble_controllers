@@ -112,6 +112,9 @@ namespace bobble_controllers
 		RightWheelErrorAccumulated = 0.0;
         DesiredLeftWheelPosition = 0.0;
         DesiredRightWheelPosition = 0.0;
+        _EffortRightWheelPrevious = 0.0;
+		_EffortLeftWheelPrevious = 0.0;
+		_EffortPendulumPrevious = 0.0;
 		//WheelGains.setZero();
 		//PendulumGains.setZero();
 		//EstimatedPendulumState.setZero();
@@ -146,13 +149,21 @@ namespace bobble_controllers
 		}
 		else if (ActiveControlMode == ControlModes::BALANCE)
 		{
+			// Calculate Errors
 			roll_error = Roll - RollOffset;
 			yaw_error = Yaw - YawOffset;
-			LeftMotorEffortCmd = PitchGain * roll_error + PitchDotGain * RollDot - WheelDotGain * LeftWheelVelocity;
-			RightMotorEffortCmd = PitchGain * roll_error + PitchDotGain * RollDot - WheelDotGain * RightWheelVelocity;
-			//effort = 1.0 * roll_error;// + 0.25 * PitchDot + 0.025 * RightWheelVelocity;
+			// Calculate efforts
+			double effortLeftWheel = EffortWheelAlpha * _EffortLeftWheelPrevious + (1.0 - EffortWheelAlpha) * WheelDotGain * LeftWheelVelocity;
+			double effortRightWheel = EffortWheelAlpha * _EffortRightWheelPrevious + (1.0 - EffortWheelAlpha) * WheelDotGain * RightWheelVelocity;
+			double effortPendulum = EffortPendulumAlpha * _EffortPendulumPrevious + (1.0 - EffortPendulumAlpha) * PitchGain * roll_error + PitchDotGain * RollDot;
+			// Add efforts
+			LeftMotorEffortCmd = effortPendulum - effortLeftWheel;
+			RightMotorEffortCmd = effortPendulum - effortRightWheel;
+			// Store previous commands
+            _EffortLeftWheelPrevious = effortLeftWheel;
+			_EffortRightWheelPrevious = effortRightWheel;
+			_EffortPendulumPrevious = effortPendulum;
 		}
-		// PD control
 	    // Send effort commands
 	    joints_[0].setCommand(LeftMotorEffortCmd);
 	    joints_[1].setCommand(RightMotorEffortCmd);
