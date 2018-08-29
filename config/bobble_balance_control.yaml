@@ -18,3 +18,4 @@ bobble:
       EffortWheelAlpha: 0.05
       MotorEffortMax: 0.4
       RollOffset: -2.80
+      MaximumPitch: 0.15

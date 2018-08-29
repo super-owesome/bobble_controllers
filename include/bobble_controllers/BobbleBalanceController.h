@@ -93,6 +93,10 @@ namespace bobble_controllers
 		double _EffortLeftWheelPrevious;
 		double _EffortPendulumPrevious;
 
+		// Safety
+		bool _isSafe;
+		double MaximumPitch;
+
 		void imuCB(const sensor_msgs::Imu::ConstPtr &imuData);
 		void commandCB(const bobble_controllers::ControlCommands::ConstPtr &cmd);
 		void write_controller_status_msg();
