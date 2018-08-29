@@ -18,6 +18,7 @@
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/JointState.h>
 #include <bobble_controllers/ControlCommands.h>
+#include <generic_filter/Filter.h>
 #include <executive/BobbleBotStatus.h>
 #include <tf/transform_datatypes.h>
 
@@ -25,6 +26,33 @@
 
 namespace bobble_controllers
 {
+	/*
+ * @brief Filter for the IMU pitch rate
+ */
+	class PitchRateFilter : public Filter {
+
+	public:
+		PitchRateFilter();
+		~PitchRateFilter(){};
+	};
+
+	/*
+     * @brief The c'tor constructs the filter weights
+     *        necessary for a three point moving average.
+     */
+	inline PitchRateFilter::PitchRateFilter()
+	{
+
+		// 5 point moving average
+		_numInWeights = 3;
+		_numOutWeights = 1;
+		_inputWeights[0] = 0.1;
+		_inputWeights[1] = 0.1;
+		_inputWeights[2] = 0.1;
+		_outputWeights[0] = 1;
+	}
+
+
 	class BobbleBalanceController: public controller_interface::
 		Controller<hardware_interface::EffortJointInterface>
 	{
@@ -47,6 +75,7 @@ namespace bobble_controllers
 		Eigen::Matrix<double, 6, 1> ErrorState;
 		Eigen::Matrix<double, 2, 6> ControlGains;
 		Eigen::Matrix<double, 2, 1> Effort;
+		Eigen::Matrix<double, 2, 1> EffortPrev;
 
 		/// Config params
 		double MotorEffortMax;
@@ -71,11 +100,17 @@ namespace bobble_controllers
 		double Yaw;
 		double RollDot;
 		double PitchDot;
+		double PitchDotBuffer[5];
 		double YawDot;
 
         // Control commands
+		double LeftMotorEffortCmd;
+		double RightMotorEffortCmd;
 		double DesiredPitch;
 		double DesiredYaw;
+
+		// Filters
+		PitchRateFilter PitchDotFilter;
 
 		void imuCB(const sensor_msgs::Imu::ConstPtr &imuData);
 		void commandCB(const bobble_controllers::ControlCommands::ConstPtr &cmd);

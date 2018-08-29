@@ -10,7 +10,7 @@
 
 namespace bobble_controllers
 {	
-	BobbleBalanceController::BobbleBalanceController(void)
+	BobbleBalanceController::BobbleBalanceController(void) : PitchDotFilter()
 	{
 	}
 	
@@ -33,8 +33,8 @@ namespace bobble_controllers
 
 	void BobbleBalanceController::packGains(double PitchGain, double PitchDotGain, double RightWheelGain, double RightWheelDotGain, double LeftWheelGain, double LeftWheelDotGain)
 	{
-		ControlGains(0, 0) = ControlGains(0, 1) = PitchGain;
-		ControlGains(1, 0) = ControlGains(1, 1) = PitchDotGain;
+		ControlGains(0, 0) = ControlGains(1, 0) = PitchGain;
+		ControlGains(0, 1) = ControlGains(1, 1) = PitchDotGain;
 		ControlGains(0, 2) = RightWheelGain;
 		ControlGains(0, 3) = RightWheelDotGain;
 		ControlGains(1, 4) = LeftWheelGain;
@@ -134,6 +134,8 @@ namespace bobble_controllers
 	void BobbleBalanceController::starting(const ros::Time& time)
 	{
 		ActiveControlMode = ControlModes::IDLE;
+		LeftMotorEffortCmd = 0.0;
+		RightMotorEffortCmd = 0.0;
 		DesiredPitch = 0.0;
 		DesiredYaw = 0.0;
 		Roll = 0.0;
@@ -159,18 +161,22 @@ namespace bobble_controllers
 	
 	void BobbleBalanceController::update(const ros::Time& time, const ros::Duration& duration)
 	{
+		PitchDot = PitchDotFilter.filter(PitchDot);
 	    // Load the BobbleBot state from sensed values
 		packState(Pitch, PitchDot, joints_[0].getPosition(), joints_[0].getVelocity(), joints_[1].getPosition(), joints_[1].getVelocity());
 
 		if (ActiveControlMode == ControlModes::DRIVE)
 		{
-			packDesired(DesiredPitch, 0.0, 0.0, 0.0, 0.0, 0.0);
+			packDesired(0.0, 0.0, 0.0, DesiredPitch*20.0, 0.0, DesiredPitch*20.0);
+			//Effort(0) = PitchGain * Pitch + PitchDotGain * PitchDot + WheelDotGain*joints_[0].getVelocity();
 		}
 		else if (ActiveControlMode == ControlModes::BALANCE)
 		{
 			packDesired(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+			//Effort(0) = PitchGain * Pitch + PitchDotGain * PitchDot + WheelDotGain*joints_[0].getVelocity();
+
 		}
-	    ErrorState = EstimatedState - DesiredState;
+	    ErrorState = DesiredState - EstimatedState;
 	    Effort = ControlGains * ErrorState;
 
 	    // Overwrite effort if we're in idle or diagnostic modes
@@ -184,10 +190,15 @@ namespace bobble_controllers
 		}
 		Effort(0) = limitEffort(Effort(0), -MotorEffortMax, MotorEffortMax);
 		Effort(1) = limitEffort(Effort(1), -MotorEffortMax, MotorEffortMax);
+		Effort = EffortPrev*(1-EffortWheelAlpha) + Effort*(EffortWheelAlpha);
+
+        RightMotorEffortCmd = Effort(0);
+		LeftMotorEffortCmd = Effort(1);
+		EffortPrev = Effort;
 
 		// Send the effort commands
-        joints_[0].setCommand(Effort(0));
-		//joints_[1].setCommand(Effort(0));
+        joints_[0].setCommand(RightMotorEffortCmd);
+		joints_[1].setCommand(LeftMotorEffortCmd);
 
         // Write out status message
         write_controller_status_msg();
@@ -205,10 +216,10 @@ namespace bobble_controllers
 		sim_status_msg.YawRate = YawDot;
 		sim_status_msg.DesiredPitch = DesiredPitch;
 		sim_status_msg.DesiredYaw = DesiredYaw;
-		sim_status_msg.LeftMotorEffortCmd = Effort(1);
+		sim_status_msg.LeftMotorEffortCmd = LeftMotorEffortCmd;
 		sim_status_msg.LeftMotorPosition = EstimatedState(4);
 		sim_status_msg.LeftMotorVelocity = EstimatedState(5);
-		sim_status_msg.RightMotorEffortCmd = Effort(0);
+		sim_status_msg.RightMotorEffortCmd = RightMotorEffortCmd;
 		sim_status_msg.RightMotorPosition = EstimatedState(2);
 		sim_status_msg.RightMotorVelocity = EstimatedState(3);
 		pub_bobble_status.publish(sim_status_msg);
@@ -220,9 +231,10 @@ namespace bobble_controllers
 						 imuData->orientation.w);
 		tf::Matrix3x3 m(q);
 		RollDot = imuData->angular_velocity.x;
-		PitchDot = imuData->angular_velocity.y;
+		PitchDot = -1.0*imuData->angular_velocity.y;
 		YawDot = imuData->angular_velocity.z;
 		m.getRPY(Roll, Pitch, Yaw);
+		Pitch *= -1.0; // flip the sign on pitch
 	}
 
 	void BobbleBalanceController::commandCB(const bobble_controllers::ControlCommands::ConstPtr &cmd)
