@@ -7,6 +7,7 @@
 #define BOBBLE_CONTROLLERS_BOBBLE_BALANCE_CONTROLLER_H
 
 #include <cstddef>
+#include <cmath>
 #include <vector>
 #include <string>
 #include <algorithm>
@@ -18,42 +19,15 @@
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/JointState.h>
 #include <bobble_controllers/ControlCommands.h>
+#include <bobble_controllers/PidControl.h>
 #include <generic_filter/Filter.h>
 #include <executive/BobbleBotStatus.h>
 #include <tf/transform_datatypes.h>
 
-#include <Eigen/Core>
-
 namespace bobble_controllers
 {
-	/*
- * @brief Filter for the IMU pitch rate
- */
-	class PitchRateFilter : public Filter {
 
-	public:
-		PitchRateFilter();
-		~PitchRateFilter(){};
-	};
-
-	/*
-     * @brief The c'tor constructs the filter weights
-     *        necessary for a three point moving average.
-     */
-	inline PitchRateFilter::PitchRateFilter()
-	{
-
-		// 5 point moving average
-		_numInWeights = 3;
-		_numOutWeights = 1;
-		_inputWeights[0] = 0.1;
-		_inputWeights[1] = 0.1;
-		_inputWeights[2] = 0.1;
-		_outputWeights[0] = 1;
-	}
-
-
-	class BobbleBalanceController: public controller_interface::
+class BobbleBalanceController: public controller_interface::
 		Controller<hardware_interface::EffortJointInterface>
 	{
 		ros::NodeHandle node_;
@@ -65,70 +39,101 @@ namespace bobble_controllers
 
 		enum ControlModes{
 			IDLE,
+            STARTUP,
 			BALANCE,
 			DRIVE,
 			DIAGNOSTIC
 		};
 
-		Eigen::Matrix<double, 6, 1> EstimatedState;
-		Eigen::Matrix<double, 6, 1> DesiredState;
-		Eigen::Matrix<double, 6, 1> ErrorState;
-		Eigen::Matrix<double, 2, 6> ControlGains;
-		Eigen::Matrix<double, 2, 1> Effort;
-		Eigen::Matrix<double, 2, 1> EffortPrev;
-
-		/// Config params
+		/// Controller config
+		double StartingTiltSafetyLimitDegrees;
+		double MaxTiltSafetyLimitDegrees;
 		double MotorEffortMax;
-		// Gains
-		double PitchGain;
-		double PitchDotGain;
-		double YawGain;
-		double YawDotGain;
-		double WheelGain;
-		double WheelDotGain;
-		double WheelIntegralGain;
-		double WheelIntegralSaturation;
-		// Filters
-		double PendulumStateAlpha;
-		double WheelStateAlpha;
-		double EffortPendulumAlpha;
-		double EffortWheelAlpha;
-		/// State Vars
-		int ActiveControlMode;
-        double Roll;
-		double Pitch;
-		double Yaw;
-		double RollDot;
-		double PitchDot;
-		double PitchDotBuffer[5];
-		double YawDot;
+	    double MotorEffortToTorqueSimFactor;
+		double MotorEffortFilterGain;
+		double VelocityControlKp;
+		double VelocityControlKi;
+	    double VelocityControlAlphaFilter;
+	    double VelocityControlMaxIntegralOutput;
+	    double VelocityControlOutputLimitDegrees;
+		double TiltControlKp;
+		double TiltControlKd;
+	    double TiltControlAlphaFilter;
+		double HoldHeadingControlKp;
+		double HoldHeadingControlKd;
+		double TurningControlKp;
+		double TurningControlKi;
+		double TurningControlKd;
 
-        // Control commands
+		/// Measured state
+		double MeasuredTilt;
+		double MeasuredHeading;
+		double MeasuredRoll;
+		double MeasuredTiltDot;
+		double MeasuredTurnRate;
+		double MeasuredRightMotorPosition;
+		double MeasuredRightMotorVelocity;
+		double MeasuredLeftMotorPosition;
+		double MeasuredLeftMotorVelocity;
+	    double ForwardVelocity;
+
+		/// Control commands (desired states)
+		bool StartupCmd;
+		bool IdleCmd;
+		double DesiredVelocity;
+		double DesiredTurnRate;
+		double DesiredHeading;
+
+		/// Filters
+		LPFilter MeasuredTiltFilter;
+	    LPFilter MeasuredTiltDotFilter;
+	    LPFilter LeftWheelVelocityFilter;
+		//LPFilter RightMotorEffortLPFilter;
+
+	    /// Filter Gains
+		double MeasuredTiltFilterGain;
+	    double MeasuredTiltDotFilterGain;
+	    double LeftWheelVelocityFilterGain;
+
+		/// PID Controllers
+		PidControl VelocityControlPID;
+		PidControl TiltControlPID;
+		PidControl HoldHeadingControlPID;
+		PidControl TurningControlPID;
+
+		/// Controller state
+		int ActiveControlMode;
+		double DesiredTilt;
+        double Tilt;
+	    double TiltDot;
+		double Heading;
+		double TurnRate;
+		double LastTiltError;
+		double LastHeadingError;
+		double LastTurningError;
+
+        /// Controller outputs
+		double TiltEffort;
+		double HeadingEffort;
 		double LeftMotorEffortCmd;
 		double RightMotorEffortCmd;
-		double DesiredPitch;
-		double DesiredYaw;
 
-		// Filters
-		PitchRateFilter PitchDotFilter;
-
+		bool init(hardware_interface::EffortJointInterface *robot, ros::NodeHandle &n);
+		void starting(const ros::Time& time);
 		void imuCB(const sensor_msgs::Imu::ConstPtr &imuData);
 		void commandCB(const bobble_controllers::ControlCommands::ConstPtr &cmd);
+		void update(const ros::Time& time,const ros::Duration& duration);
+		void perform_velocity_control();
+		void perform_tilt_control();
+		void perform_heading_control();
 		void write_controller_status_msg();
-
 		void unpackParameter(std::string parameterName, double &referenceToParameter, double defaultValue);
-		void packGains(double PitchGain, double PitchDotGain, double RightWheelGain, double RightWheelDotGain, double LeftWheelGain, double LeftWheelDotGain);
-		void packState(double Pitch, double PitchDot, double RightWheelPosition, double RightWheelVelocity, double LeftWheelPosition, double LeftWheelVelocity);
-		void packDesired(double PitchDesired, double PitchDotDesired, double RightWheelPositionDesired, double RightWheelVelocityDesired, double LeftWheelPositionDesired, double LeftWheelVelocityDesired);
-		double limitEffort(double effort_cmd, double min_effort, double max_effort);
+		double limitEffort(double effort_cmd);
 
 		public:
 		BobbleBalanceController(void);
 		~BobbleBalanceController(void);
-		
-		bool init(hardware_interface::EffortJointInterface *robot, ros::NodeHandle &n);
-		void starting(const ros::Time& time);
-		void update(const ros::Time& time,const ros::Duration& duration);
+
 	};
 }
 #endif

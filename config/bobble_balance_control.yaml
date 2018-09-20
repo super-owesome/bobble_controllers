@@ -4,16 +4,23 @@ bobble:
       joints:
         - right_wheel_hinge
         - left_wheel_hinge
-      PitchGain: 0.20
-      PitchDotGain: 0.0005
-      YawGain: 0.0
-      YawDotGain: 0.0
-      WheelGain: -0.00025
-      WheelDotGain: 0.0
-      WheelIntegralGain: 0.00000
-      WheelIntegralSaturation: 1000.0
-      PendulumStateAlpha: 0.5
-      WheelStateAlpha: 0.5
-      EffortPendulumAlpha: 0.05
-      EffortWheelAlpha: 0.95
-      MotorEffortMax: 0.4
+      StartingTiltSafetyLimitDegrees: 4.0
+      MaxTiltSafetyLimitDegrees: 20.0
+      MotorEffortMax: 0.08
+      MotorEffortToTorqueSimFactor: 0.832 # Should be set to 1.0 for HW
+      MeasuredTiltFilterGain: 0.05
+      MeasuredTiltDotFilterGain: 0.05
+      LeftWheelVelocityFilterGain: 0.05
+      VelocityControlKp: 0.0085 #0.0085 #0.0005
+      VelocityControlKi: 0.0 #0.00055 #0.006
+      VelocityControlAlphaFilter: 0.01
+      VelocityControlMaxIntegralOutput: 0.6
+      VelocityControlOutputLimitDegrees: 20.0
+      TiltControlKp: 1.0
+      TiltControlKd: 0.05
+      TiltControlAlphaFilter: 0.05
+      HoldHeadingControlKp: 0.0
+      HoldHeadingControlKd: 0.0
+      TurningControlKp: 0.0
+      TurningControlKi: 0.0
+      TurningControlKd: 0.0
