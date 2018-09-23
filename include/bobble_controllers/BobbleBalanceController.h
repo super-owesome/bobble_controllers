@@ -92,6 +92,8 @@ namespace bobble_controllers
 		double _EffortRightWheelPrevious;
 		double _EffortLeftWheelPrevious;
 		double _EffortPendulumPrevious;
+		double _RollPrevious;
+		double _RollDotPrevious;
 
 		// Safety
 		bool _isSafe;

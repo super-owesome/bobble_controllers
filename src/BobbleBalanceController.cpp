@@ -116,6 +116,8 @@ namespace bobble_controllers
         _EffortRightWheelPrevious = 0.0;
 		_EffortLeftWheelPrevious = 0.0;
 		_EffortPendulumPrevious = 0.0;
+                _RollPrevious = 0.0;
+                _RollDotPrevious = 0.0;
 		_isSafe = false;
 		//WheelGains.setZero();
 		//PendulumGains.setZero();
@@ -139,14 +141,14 @@ namespace bobble_controllers
 		RightWheelPosition = joints_[1].getPosition();
 		RightWheelVelocity = joints_[1].getVelocity();
 
-		if(abs(Roll) > MaximumPitch)
+		if(abs(Roll - RollOffset) > MaximumPitch)
 		{
 			_isSafe = false;
 		} else {
 			_isSafe = true;
 		}
 
-		double roll_error, yaw_error;
+		double roll_error, roll_dot_error, yaw_error;
 		if (ActiveControlMode == ControlModes::IDLE)
 		{
 			LeftMotorEffortCmd = 0.0;
@@ -169,16 +171,34 @@ namespace bobble_controllers
 			{
 			    // Calculate Errors
 			    roll_error = Roll - RollOffset;
+			    roll_dot_error = RollDot;
+
+			    double filtered_roll_error = PendulumStateAlpha * _RollPrevious
+				    + (1.0 - PendulumStateAlpha)
+				    * roll_error;
+			    double filtered_roll_dot_error = PendulumStateAlpha * _RollDotPrevious
+				    + (1.0 - PendulumStateAlpha)
+				    * roll_dot_error;
+			    
+			    _RollPrevious = filtered_roll_error;
+			    _RollDotPrevious = filtered_roll_dot_error;
+
 			    yaw_error = Yaw - YawOffset;
 			    // Calculate efforts
-			    double effortLeftWheel = EffortWheelAlpha * _EffortLeftWheelPrevious + (1.0 - EffortWheelAlpha) * WheelDotGain * LeftWheelVelocity;
-			    double effortRightWheel = EffortWheelAlpha * _EffortRightWheelPrevious + (1.0 - EffortWheelAlpha) * WheelDotGain * RightWheelVelocity;
-			    double effortPendulum = EffortPendulumAlpha * _EffortPendulumPrevious + (1.0 - EffortPendulumAlpha) * PitchGain * roll_error + PitchDotGain * RollDot;
+			    double effortLeftWheel = EffortWheelAlpha * _EffortLeftWheelPrevious
+				    + (1.0 - EffortWheelAlpha)
+				    * (WheelDotGain * LeftWheelVelocity + WheelGain * LeftWheelPosition);
+			    double effortRightWheel = EffortWheelAlpha * _EffortRightWheelPrevious
+				    + (1.0 - EffortWheelAlpha)
+				    * (WheelDotGain * RightWheelVelocity + WheelGain * RightWheelPosition);
+			    double effortPendulum = EffortPendulumAlpha * _EffortPendulumPrevious
+				    + (1.0 - EffortPendulumAlpha) 
+				    * (PitchGain * filtered_roll_error + PitchDotGain * filtered_roll_dot_error);
 			    // Add efforts
 			    LeftMotorEffortCmd = effortPendulum - effortLeftWheel;
 			    RightMotorEffortCmd = effortPendulum - effortRightWheel;
 			    // Store previous commands
-                _EffortLeftWheelPrevious = effortLeftWheel;
+                            _EffortLeftWheelPrevious = effortLeftWheel;
 			    _EffortRightWheelPrevious = effortRightWheel;
 			    _EffortPendulumPrevious = effortPendulum;
 		    } else {
@@ -190,6 +210,20 @@ namespace bobble_controllers
 		    }
 		}
 	    // Send effort commands
+	    if(LeftMotorEffortCmd > MotorEffortMax)
+	    {
+		LeftMotorEffortCmd = MotorEffortMax;
+	    } else if(LeftMotorEffortCmd < -MotorEffortMax)
+	    {
+		    LeftMotorEffortCmd = -MotorEffortMax;
+	    }
+	    if(RightMotorEffortCmd > MotorEffortMax)
+	    {
+		RightMotorEffortCmd = MotorEffortMax;
+	    } else if(RightMotorEffortCmd < -MotorEffortMax)
+	    {
+		    RightMotorEffortCmd = -MotorEffortMax;
+	    }
 	    joints_[0].setCommand(LeftMotorEffortCmd);
 	    joints_[1].setCommand(RightMotorEffortCmd);
         // Write out status message
