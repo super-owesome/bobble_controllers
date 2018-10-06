@@ -154,7 +154,7 @@ namespace bobble_controllers
 			LeftMotorEffortCmd = 0.0;
 			RightMotorEffortCmd = 0.0;
 		}
-		else if (ActiveControlMode == ControlModes::DRIVE)
+		else if (ActiveControlMode == ControlModes::SPIN_MOTORS)
 		{
 			if(_isSafe)
 			{
@@ -198,7 +198,7 @@ namespace bobble_controllers
 			    LeftMotorEffortCmd = effortPendulum - effortLeftWheel;
 			    RightMotorEffortCmd = effortPendulum - effortRightWheel;
 			    // Store previous commands
-                            _EffortLeftWheelPrevious = effortLeftWheel;
+				_EffortLeftWheelPrevious = effortLeftWheel;
 			    _EffortRightWheelPrevious = effortRightWheel;
 			    _EffortPendulumPrevious = effortPendulum;
 		    } else {

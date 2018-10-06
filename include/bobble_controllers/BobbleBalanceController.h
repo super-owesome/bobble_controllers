@@ -37,7 +37,8 @@ namespace bobble_controllers
 		enum ControlModes{
 			IDLE,
 			BALANCE,
-			DRIVE
+			DRIVE,
+            SPIN_MOTORS
 		};
 
 		//Eigen::Matrix<double, 4, 2> EstimatedPendulumState;
