@@ -87,7 +87,7 @@ namespace bobble_controllers
 
         // Setup publishers and subscribers
 		pub_bobble_status = n.advertise<executive::BobbleBotStatus>("bb_controller_status", 1);
-		sub_imu_sensor_ = node_.subscribe("/imu_bosch/data",1,
+		sub_imu_sensor_ = node_.subscribe("/imu_bosch/data_raw",1,
 		        &BobbleBalanceController::imuCB, this);
 		sub_command_=node_.subscribe("/bobble/bobble_balance_controller/bb_cmd",1,
 		        &BobbleBalanceController::commandCB, this);
