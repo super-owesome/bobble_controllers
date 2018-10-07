@@ -83,7 +83,6 @@ namespace bobble_controllers
 		unpackParameter("PitchOffset", PitchOffset, 0.0);
 		unpackParameter("YawOffset", YawOffset, 0.0);
 		unpackParameter("MaximumPitch", MaximumPitch, 0.0);
-		unpackParameter("WheelVelocityAdjustment", WheelVelocityAdjustment, 1.0);
 
         // Setup publishers and subscribers
 		pub_bobble_status = n.advertise<executive::BobbleBotStatus>("bb_controller_status", 1);
@@ -119,8 +118,6 @@ namespace bobble_controllers
 		_EffortPendulumPrevious = 0.0;
                 _RollPrevious = 0.0;
                 _RollDotPrevious = 0.0;
-		_LeftWheelVelocityPrev = 0.0;
-		_RightWheelVelocityPrev = 0.0;
 		_isSafe = false;
 		//WheelGains.setZero();
 		//PendulumGains.setZero();
@@ -139,24 +136,12 @@ namespace bobble_controllers
 	
 	void BobbleBalanceController::update(const ros::Time& time, const ros::Duration& duration)
 	{
-		// Set positions
-        	LeftWheelPosition = joints_[0].getPosition();
+        LeftWheelPosition = joints_[0].getPosition();
+		LeftWheelVelocity = joints_[0].getVelocity();
 		RightWheelPosition = joints_[1].getPosition();
-		// Filter Velocities
-		LeftWheelVelocity = WheelStateAlpha * _LeftWheelVelocityPrev
-		    + (1.0 - WheelStateAlpha)
-		    * joints_[0].getVelocity();
-		RightWheelVelocity = WheelStateAlpha * _RightWheelVelocityPrev
-		    + (1.0 - WheelStateAlpha)
-		    * joints_[1].getVelocity();
+		RightWheelVelocity = joints_[1].getVelocity();
 
-		LeftWheelVelocity = LeftWheelVelocity * WheelVelocityAdjustment;
-		RightWheelVelocity = RightWheelVelocity * WheelVelocityAdjustment;
-
-		_LeftWheelVelocityPrev = LeftWheelVelocity;
-		_RightWheelVelocityPrev = RightWheelVelocity;
-
-		if(abs(Roll) > MaximumPitch)
+		if(abs(Roll - RollOffset) > MaximumPitch)
 		{
 			_isSafe = false;
 		} else {
@@ -185,13 +170,23 @@ namespace bobble_controllers
 			if(_isSafe)
 			{
 			    // Calculate Errors
-			    roll_error = Roll;
+			    roll_error = Roll - RollOffset;
 			    roll_dot_error = RollDot;
 
-			    float left_wheel_adj_velocity = LeftWheelVelocity + RollDot;
-			    float right_wheel_adj_velocity = RightWheelVelocity + RollDot;
+			    double filtered_roll_error = PendulumStateAlpha * _RollPrevious
+				    + (1.0 - PendulumStateAlpha)
+				    * roll_error;
+			    double filtered_roll_dot_error = PendulumStateAlpha * _RollDotPrevious
+				    + (1.0 - PendulumStateAlpha)
+				    * roll_dot_error;
+			    
+			    _RollPrevious = filtered_roll_error;
+			    _RollDotPrevious = filtered_roll_dot_error;
 
-			    yaw_error = Yaw;
+			    float left_wheel_adj_velocity = LeftWheelVelocity - RollDot;
+			    float right_wheel_adj_velocity = RightWheelVelocity - RollDot;
+
+			    yaw_error = Yaw - YawOffset;
 			    // Calculate efforts
 			    double effortLeftWheel = EffortWheelAlpha * _EffortLeftWheelPrevious
 				    + (1.0 - EffortWheelAlpha)
@@ -201,12 +196,12 @@ namespace bobble_controllers
 				    * (WheelDotGain * right_wheel_adj_velocity + WheelGain * RightWheelPosition);
 			    double effortPendulum = EffortPendulumAlpha * _EffortPendulumPrevious
 				    + (1.0 - EffortPendulumAlpha) 
-				    * (PitchGain * Roll + PitchDotGain * RollDot);
+				    * (PitchGain * filtered_roll_error + PitchDotGain * filtered_roll_dot_error);
 			    // Add efforts
 			    LeftMotorEffortCmd = effortPendulum - effortLeftWheel;
 			    RightMotorEffortCmd = effortPendulum - effortRightWheel;
 			    // Store previous commands
-                		_EffortLeftWheelPrevious = effortLeftWheel;
+				_EffortLeftWheelPrevious = effortLeftWheel;
 			    _EffortRightWheelPrevious = effortRightWheel;
 			    _EffortPendulumPrevious = effortPendulum;
 		    } else {
@@ -242,9 +237,9 @@ namespace bobble_controllers
 		executive::BobbleBotStatus sim_status_msg;
 		sim_status_msg.ControlMode = ActiveControlMode;
 		sim_status_msg.DeltaT = 0.0;
-		sim_status_msg.Roll = Roll;
-		sim_status_msg.Pitch = Pitch;
-		sim_status_msg.Yaw = Yaw;
+		sim_status_msg.Roll = Roll - RollOffset;
+		sim_status_msg.Pitch = Pitch - PitchOffset;
+		sim_status_msg.Yaw = Yaw - YawOffset;
 		sim_status_msg.RollRate = RollDot;
 		sim_status_msg.PitchRate = PitchDot;
 		sim_status_msg.YawRate = YawDot;
@@ -268,15 +263,6 @@ namespace bobble_controllers
 		PitchDot = imuData->angular_velocity.y;
 		YawDot = imuData->angular_velocity.z;
 		m.getRPY(Roll, Pitch, Yaw);
-
-		Roll = PendulumStateAlpha * _RollPrevious
-		    + (1.0 - PendulumStateAlpha)
-		    * (Roll - RollOffset);
-		_RollPrevious = Roll;
-		RollDot = PendulumStateAlpha * _RollDotPrevious
-		    + (1.0 - PendulumStateAlpha)
-		    * RollDot;
-		_RollDotPrevious = RollDot;
 	}
 
 	void BobbleBalanceController::commandCB(const bobble_controllers::ControlCommands::ConstPtr &cmd)

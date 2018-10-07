@@ -84,6 +84,7 @@ namespace bobble_controllers
 		double RollOffset;
 		double PitchOffset;
 		double YawOffset;
+		double WheelVelocityAdjustment;
 
         // Control commands
 		double DesiredPitch;
@@ -95,6 +96,8 @@ namespace bobble_controllers
 		double _EffortPendulumPrevious;
 		double _RollPrevious;
 		double _RollDotPrevious;
+		double _LeftWheelVelocityPrev;
+		double _RightWheelVelocityPrev;
 
 		// Safety
 		bool _isSafe;
