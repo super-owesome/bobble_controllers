@@ -261,8 +261,12 @@ namespace bobble_controllers
 
 
 	void BobbleBalanceController::imuCB(const sensor_msgs::Imu::ConstPtr &imuData) {
-		tf::Quaternion q(imuData->orientation.x, imuData->orientation.y, imuData->orientation.z,
-						 imuData->orientation.w);
+	    for(int i = 0; i < 5; i++) {
+			MadgwickAHRSupdateIMU(imuData->angular_velocity.x, imuData->angular_velocity.y, imuData->angular_velocity.z,
+								  imuData->linear_acceleration.x, imuData->linear_acceleration.y,
+								  imuData->linear_acceleration.z);
+		}
+		tf::Quaternion q(q0, q1, q2, q3);
 		tf::Matrix3x3 m(q);
 		RollDot = imuData->angular_velocity.x;
 		PitchDot = imuData->angular_velocity.y;

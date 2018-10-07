@@ -70,7 +70,7 @@ add_library(bobble_controllers
 		)
 
 ## Declare a cpp executable
-add_executable(BobbleControlNode src/nodes/BobbleControlNode.cpp src/BobbleBotHw.cpp)
+add_executable(BobbleControlNode src/nodes/BobbleControlNode.cpp src/BobbleBotHw.cpp src/MadgwickAHRS.cpp)
 target_link_libraries(BobbleControlNode ${catkin_LIBRARIES})
 install(TARGETS BobbleControlNode
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})

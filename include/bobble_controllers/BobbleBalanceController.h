@@ -20,6 +20,8 @@
 #include <executive/BobbleBotStatus.h>
 #include <tf/transform_datatypes.h>
 
+#include "bobble_controllers/MadgwickAHRS.h"
+
 //#include <Eigen/Core>
 
 namespace bobble_controllers
