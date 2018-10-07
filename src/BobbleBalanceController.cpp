@@ -163,7 +163,7 @@ namespace bobble_controllers
 			_isSafe = true;
 		}
 
-		double roll_error, roll_dot_error, yaw_error;
+		double pitch_error, pitch_dot_error, yaw_error;
 		if (ActiveControlMode == ControlModes::IDLE)
 		{
 			LeftMotorEffortCmd = 0.0;
@@ -185,11 +185,11 @@ namespace bobble_controllers
 			if(_isSafe)
 			{
 			    // Calculate Errors
-			    roll_error = Roll;
-			    roll_dot_error = RollDot;
+			    pitch_error = Pitch;
+			    pitch_dot_error = PitchDot;
 
-			    float left_wheel_adj_velocity = LeftWheelVelocity + RollDot;
-			    float right_wheel_adj_velocity = RightWheelVelocity + RollDot;
+			    float left_wheel_adj_velocity = LeftWheelVelocity + PitchDot;
+			    float right_wheel_adj_velocity = RightWheelVelocity + PitchDot;
 
 			    yaw_error = Yaw;
 			    // Calculate efforts
@@ -201,7 +201,7 @@ namespace bobble_controllers
 				    * (WheelDotGain * right_wheel_adj_velocity + WheelGain * RightWheelPosition);
 			    double effortPendulum = EffortPendulumAlpha * _EffortPendulumPrevious
 				    + (1.0 - EffortPendulumAlpha) 
-				    * (PitchGain * Roll + PitchDotGain * RollDot);
+				    * (PitchGain * Pitch + PitchDotGain * PitchDot);
 			    // Add efforts
 			    LeftMotorEffortCmd = effortPendulum - effortLeftWheel;
 			    RightMotorEffortCmd = effortPendulum - effortRightWheel;
@@ -266,19 +266,22 @@ namespace bobble_controllers
 							  imuData->linear_acceleration.z);
 		tf::Quaternion q(q0, q1, q2, q3);
 		tf::Matrix3x3 m(q);
-		RollDot = imuData->angular_velocity.x;
-		PitchDot = imuData->angular_velocity.y;
-		YawDot = imuData->angular_velocity.z;
-		m.getRPY(Roll, Pitch, Yaw);
 
-		Roll = PendulumStateAlpha * _RollPrevious
+		// Set Angular Velocities
+		PitchDot = imuData->angular_velocity.x;
+		RollDot = imuData->angular_velocity.y;
+		YawDot = imuData->angular_velocity.z;
+		// Set Angles
+		m.getRPY(Yaw, Roll, Pitch);
+
+		Pitch = PendulumStateAlpha * _PitchPrevious
 		    + (1.0 - PendulumStateAlpha)
-		    * (Roll - RollOffset);
-		_RollPrevious = Roll;
-		RollDot = PendulumStateAlpha * _RollDotPrevious
+		    * (Pitch - PitchOffset);
+		_PitchPrevious = Pitch;
+		PitchDot = PendulumStateAlpha * _PitchDotPrevious
 		    + (1.0 - PendulumStateAlpha)
-		    * RollDot;
-		_RollDotPrevious = RollDot;
+		    * PitchDot;
+		_PitchDotPrevious = PitchDot;
 	}
 
 	void BobbleBalanceController::commandCB(const bobble_controllers::ControlCommands::ConstPtr &cmd)

@@ -96,7 +96,9 @@ namespace bobble_controllers
 		double _EffortRightWheelPrevious;
 		double _EffortLeftWheelPrevious;
 		double _EffortPendulumPrevious;
+		double _PitchPrevious;
 		double _RollPrevious;
+		double _PitchDotPrevious;
 		double _RollDotPrevious;
 		double _LeftWheelVelocityPrev;
 		double _RightWheelVelocityPrev;
