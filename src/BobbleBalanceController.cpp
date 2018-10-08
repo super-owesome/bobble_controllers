@@ -218,6 +218,14 @@ namespace bobble_controllers
 		    }
 		}
 	    // Send effort commands
+	    if(LeftMotorEffortCmd == 0.0 && LeftMotorEffortCmd !=0.0)
+	    {
+                LeftMotorEffortCmd = 0.0;
+	    }
+	    if(RightMotorEffortCmd == 0.0 && RightMotorEffortCmd !=0.0)
+	    {
+                RightMotorEffortCmd = 0.0;
+	    }
 	    if(LeftMotorEffortCmd > MotorEffortMax)
 	    {
 		LeftMotorEffortCmd = MotorEffortMax;
@@ -261,7 +269,7 @@ namespace bobble_controllers
 
 
 	void BobbleBalanceController::imuCB(const sensor_msgs::Imu::ConstPtr &imuData) {
-		MadgwickAHRSupdateIMU(imuData->angular_velocity.x, imuData->angular_velocity.y, imuData->angular_velocity.z,
+		    MadgwickAHRSupdateIMU(imuData->angular_velocity.x, imuData->angular_velocity.y, imuData->angular_velocity.z,
 							  imuData->linear_acceleration.x, imuData->linear_acceleration.y,
 							  imuData->linear_acceleration.z);
 		tf::Quaternion q(q0, q1, q2, q3);
