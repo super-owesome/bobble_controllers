@@ -4,19 +4,21 @@ bobble:
       joints:
         - left_wheel_hinge
         - right_wheel_hinge
-      PitchGain: 2.5
-      PitchDotGain: 0.20
+      PitchGain: 18.75
+      PitchDotGain: 1.5
       YawGain: 0.0
       YawDotGain: 0.0
-      WheelGain: 0.00
+      WheelGain: 0.0
       WheelDotGain: 0.00025
       WheelIntegralGain: 0.00000
       WheelIntegralSaturation: 1000.0
       PendulumStateAlpha: 0.15
       WheelStateAlpha: 0.15
       EffortPendulumAlpha: 0.1
-      EffortWheelAlpha: 0.1
+      EffortWheelAlpha:  0.1
       MotorEffortMax: 0.2
-      PitchOffset: -2.85
+      PitchOffset: 0.0 # -2.85
       MaximumPitch: 0.15
-      WheelVelocityAdjustment: 0.4
+      WheelVelocityAdjustment: 0.05
+      MotorEffortToTorqueSimFactor: 0.832 # Should be set to 1.0 for HW
+      #MotorEffortToTorqueSimFactor: 1.0  # Should be set to 1.0 for HW

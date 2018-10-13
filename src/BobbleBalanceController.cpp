@@ -84,6 +84,7 @@ namespace bobble_controllers
 		unpackParameter("YawOffset", YawOffset, 0.0);
 		unpackParameter("MaximumPitch", MaximumPitch, 0.0);
 		unpackParameter("WheelVelocityAdjustment", WheelVelocityAdjustment, 1.0);
+		unpackParameter("MotorEffortToTorqueSimFactor", MotorEffortToTorqueSimFactor, 1.0);
 
         // Setup publishers and subscribers
 		pub_bobble_status = n.advertise<executive::BobbleBotStatus>("bb_controller_status", 1);
@@ -104,11 +105,14 @@ namespace bobble_controllers
 		RollDot = 0.0;
 		PitchDot = 0.0;
 		YawDot = 0.0;
+		q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;	// quaternion of sensor frame relative to auxiliary frame
 		LeftMotorEffortCmd = 0.0;
 		LeftWheelPosition = 0.0;
+		LeftWheelPositionBias = 0.0;
 		LeftWheelVelocity = 0.0;
 		RightMotorEffortCmd = 0.0;
 		RightWheelPosition = 0.0;
+		RightWheelPositionBias = 0.0;
 		RightWheelVelocity = 0.0;
         LeftWheelErrorAccumulated = 0.0;
 		RightWheelErrorAccumulated = 0.0;
@@ -117,8 +121,8 @@ namespace bobble_controllers
         _EffortRightWheelPrevious = 0.0;
 		_EffortLeftWheelPrevious = 0.0;
 		_EffortPendulumPrevious = 0.0;
-                _RollPrevious = 0.0;
-                _RollDotPrevious = 0.0;
+        _RollPrevious = 0.0;
+        _RollDotPrevious = 0.0;
 		_LeftWheelVelocityPrev = 0.0;
 		_RightWheelVelocityPrev = 0.0;
 		_isSafe = false;
@@ -140,8 +144,8 @@ namespace bobble_controllers
 	void BobbleBalanceController::update(const ros::Time& time, const ros::Duration& duration)
 	{
 		// Set positions
-        	LeftWheelPosition = joints_[0].getPosition();
-		RightWheelPosition = joints_[1].getPosition();
+       	LeftWheelPosition = joints_[0].getPosition() - LeftWheelPositionBias;
+		RightWheelPosition = joints_[1].getPosition() - RightWheelPositionBias;
 		// Filter Velocities
 		LeftWheelVelocity = WheelStateAlpha * _LeftWheelVelocityPrev
 		    + (1.0 - WheelStateAlpha)
@@ -156,7 +160,7 @@ namespace bobble_controllers
 		_LeftWheelVelocityPrev = LeftWheelVelocity;
 		_RightWheelVelocityPrev = RightWheelVelocity;
 
-		if(abs(Roll) > MaximumPitch)
+		if(abs(Pitch) > MaximumPitch)
 		{
 			_isSafe = false;
 		} else {
@@ -166,6 +170,9 @@ namespace bobble_controllers
 		double pitch_error, pitch_dot_error, yaw_error;
 		if (ActiveControlMode == ControlModes::IDLE)
 		{
+			q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;	// sim only
+			LeftWheelPositionBias = joints_[0].getPosition();
+			RightWheelPositionBias = joints_[1].getPosition();
 			LeftMotorEffortCmd = 0.0;
 			RightMotorEffortCmd = 0.0;
 		}
@@ -240,8 +247,8 @@ namespace bobble_controllers
 	    {
 		    RightMotorEffortCmd = -MotorEffortMax;
 	    }
-	    joints_[0].setCommand(LeftMotorEffortCmd);
-	    joints_[1].setCommand(RightMotorEffortCmd);
+	    joints_[0].setCommand(LeftMotorEffortCmd * MotorEffortToTorqueSimFactor);
+	    joints_[1].setCommand(RightMotorEffortCmd * MotorEffortToTorqueSimFactor);
         // Write out status message
         write_controller_status_msg();
 	}
@@ -276,15 +283,17 @@ namespace bobble_controllers
 		tf::Matrix3x3 m(q);
 
 		// Set Angular Velocities
-		PitchDot = imuData->angular_velocity.x;
-		RollDot = imuData->angular_velocity.y;
+		PitchDot = imuData->angular_velocity.y;
+		RollDot = imuData->angular_velocity.x;
 		YawDot = imuData->angular_velocity.z;
 		// Set Angles
-		m.getRPY(Yaw, Roll, Pitch);
+		m.getRPY(Yaw, Pitch, Roll);
+		Pitch*=-1.0;
 
 		Pitch = PendulumStateAlpha * _PitchPrevious
 		    + (1.0 - PendulumStateAlpha)
 		    * (Pitch - PitchOffset);
+
 		_PitchPrevious = Pitch;
 		PitchDot = PendulumStateAlpha * _PitchDotPrevious
 		    + (1.0 - PendulumStateAlpha)

@@ -20,8 +20,6 @@ find_package(cmake_modules REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
-find_package(Eigen REQUIRED)
-
 
 catkin_python_setup()
 
@@ -50,7 +48,6 @@ catkin_package(
    LIBRARIES ${PROJECT_NAME}
    CATKIN_DEPENDS chupacabra_comm controller_interface control_msgs sensor_msgs executive controller_manager pluginlib std_msgs rospy message_runtime
 #  DEPENDS system_lib
-   DEPENDS eigen
 )
 
 ###########
@@ -61,11 +58,11 @@ catkin_package(
 ## Your package locations should be listed before other locations
 include_directories(include
   ${catkin_INCLUDE_DIRS}
-  ${Eigen_INCLUDE_DIRS}
 )
 
 ## Declare a cpp library
 add_library(bobble_controllers
+  src/MadgwickAHRS.cpp
   src/BobbleBalanceController.cpp
 		)
 

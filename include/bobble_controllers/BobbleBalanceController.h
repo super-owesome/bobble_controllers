@@ -22,8 +22,6 @@
 
 #include "bobble_controllers/MadgwickAHRS.h"
 
-//#include <Eigen/Core>
-
 namespace bobble_controllers
 {
 	class BobbleBalanceController: public controller_interface::
@@ -42,10 +40,6 @@ namespace bobble_controllers
 			DRIVE,
             SPIN_MOTORS
 		};
-
-		//Eigen::Matrix<double, 4, 2> EstimatedPendulumState;
-		//Eigen::Matrix<double, 2, 4> PendulumGains;
-		//Eigen::Matrix<double, 2, 4> WheelGains;
 
 		/// Config params
 		double MotorEffortMax;
@@ -72,9 +66,11 @@ namespace bobble_controllers
 		double PitchDot;
 		double YawDot;
 		double LeftWheelPosition;
+		double LeftWheelPositionBias;
 		double LeftWheelVelocity;
 		double LeftMotorEffortCmd;
 		double RightWheelPosition;
+		double RightWheelPositionBias;
 		double RightWheelVelocity;
 		double RightMotorEffortCmd;
 		double LeftWheelErrorAccumulated;
@@ -87,6 +83,9 @@ namespace bobble_controllers
 		double PitchOffset;
 		double YawOffset;
 		double WheelVelocityAdjustment;
+
+		// Sim specific parameters
+		double MotorEffortToTorqueSimFactor;
 
         // Control commands
 		double DesiredPitch;
