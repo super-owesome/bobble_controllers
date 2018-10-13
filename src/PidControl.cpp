@@ -228,8 +228,7 @@ double PidControl::getOutput(double actual, double setpoint){
     //the correct thing, and small values helps prevent output spikes and overshoot
 
     if (useExternalDerivError){
-        Doutput= D*(*extDerivError-lastActual);
-        lastActual=*extDerivError;
+        Doutput= -D*(*extDerivError);
     }else{
         Doutput= -D*(actual-lastActual);
         lastActual=actual;
