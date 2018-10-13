@@ -8,306 +8,332 @@
 #include <bobble_controllers/BobbleBalanceController.h>
 #include <pluginlib/class_list_macros.h>
 
-namespace bobble_controllers
-{	
-	BobbleBalanceController::BobbleBalanceController(void)
-	{
-	}
-	
-	BobbleBalanceController::~BobbleBalanceController(void)
-	{
-		sub_command_.shutdown();
-	}
+namespace bobble_controllers {
+    BobbleBalanceController::BobbleBalanceController(void)
+            :
+            VelocityControlPID(0.0, 0.0, 0.0),
+            TiltControlPID(0.0, 0.0, 0.0),
+            HoldHeadingControlPID(0.0, 0.0, 0.0),
+            TurningControlPID(0.0, 0.0, 0.0) {
+    }
 
-	void BobbleBalanceController::unpackParameter(std::string parameterName, double &referenceToParameter, double defaultValue)
-	{
-		if(!node_.getParam(parameterName, referenceToParameter))
-		{
-			referenceToParameter = defaultValue;
-			ROS_WARN("%s not set for (namespace: %s) using %f.",
-					 parameterName.c_str(),
-					 node_.getNamespace().c_str(),
-			         defaultValue);
-		}
-	}
+    BobbleBalanceController::~BobbleBalanceController(void) {
+        sub_command_.shutdown();
+    }
 
-	bool BobbleBalanceController::init(hardware_interface::EffortJointInterface *robot,ros::NodeHandle &n)
-	{
-		node_=n;
-		robot_=robot;
+    bool BobbleBalanceController::init(hardware_interface::EffortJointInterface *robot, ros::NodeHandle &n) {
+        node_ = n;
+        robot_ = robot;
 
-		XmlRpc::XmlRpcValue joint_names;
-		if(!node_.getParam("joints",joint_names))
-		{
-			ROS_ERROR("No 'joints' in controller. (namespace: %s)",
-			        node_.getNamespace().c_str());
-			return false;
-		}
-		
-		if(joint_names.getType() != XmlRpc::XmlRpcValue::TypeArray)
-		{
-			ROS_ERROR("'joints' is not a struct. (namespace: %s)",
-			        node_.getNamespace().c_str());
-			return false;
-		}
-		
-		for(int i=0; i < joint_names.size();i++)
-		{
-			XmlRpc::XmlRpcValue &name_value=joint_names[i];
-			if(name_value.getType() != XmlRpc::XmlRpcValue::TypeString)
-			{
-				ROS_ERROR("joints are not strings. (namespace: %s)",
-				        node_.getNamespace().c_str());
-				return false;
-			}
-			
-			hardware_interface::JointHandle j=robot->
-			        getHandle((std::string)name_value);
-			joints_.push_back(j);
-		}
+        XmlRpc::XmlRpcValue joint_names;
+        if (!node_.getParam("joints", joint_names)) {
+            ROS_ERROR("No 'joints' in controller. (namespace: %s)",
+                      node_.getNamespace().c_str());
+            return false;
+        }
 
-		unpackParameter("MotorEffortMax", MotorEffortMax, 1.0);
-		unpackParameter("PitchGain", PitchGain, 0.0);
-		unpackParameter("PitchDotGain", PitchDotGain, 0.0);
-		unpackParameter("YawGain", YawGain, 0.0);
-		unpackParameter("YawDotGain", YawDotGain, 0.0);
-		unpackParameter("WheelGain", WheelGain, 0.0);
-		unpackParameter("WheelDotGain", WheelDotGain, 0.0);
-		unpackParameter("WheelIntegralGain", WheelIntegralGain, 0.0);
-		unpackParameter("WheelIntegralSaturation", WheelIntegralSaturation, 0.0);
-		unpackParameter("PendulumStateAlpha", PendulumStateAlpha, 0.0);
-		unpackParameter("WheelStateAlpha", WheelStateAlpha, 0.0);
-		unpackParameter("EffortPendulumAlpha", EffortPendulumAlpha, 0.0);
-		unpackParameter("EffortWheelAlpha", EffortWheelAlpha, 0.0);
-		unpackParameter("RollOffset", RollOffset, 0.0);
-		unpackParameter("PitchOffset", PitchOffset, 0.0);
-		unpackParameter("YawOffset", YawOffset, 0.0);
-		unpackParameter("MaximumPitch", MaximumPitch, 0.0);
-		unpackParameter("WheelVelocityAdjustment", WheelVelocityAdjustment, 1.0);
-		unpackParameter("MotorEffortToTorqueSimFactor", MotorEffortToTorqueSimFactor, 1.0);
+        if (joint_names.getType() != XmlRpc::XmlRpcValue::TypeArray) {
+            ROS_ERROR("'joints' is not a struct. (namespace: %s)",
+                      node_.getNamespace().c_str());
+            return false;
+        }
+
+        for (int i = 0; i < joint_names.size(); i++) {
+            XmlRpc::XmlRpcValue &name_value = joint_names[i];
+            if (name_value.getType() != XmlRpc::XmlRpcValue::TypeString) {
+                ROS_ERROR("joints are not strings. (namespace: %s)",
+                          node_.getNamespace().c_str());
+                return false;
+            }
+
+            hardware_interface::JointHandle j = robot->getHandle((std::string) name_value);
+            joints_.push_back(j);
+        }
+
+        unpackParameter("StartingTiltSafetyLimitDegrees", StartingTiltSafetyLimitDegrees, 4.0);
+        unpackParameter("MaxTiltSafetyLimitDegrees", MaxTiltSafetyLimitDegrees, 20.0);
+        unpackParameter("MotorEffortMax", MotorEffortMax, 0.4);
+        unpackParameter("MotorEffortToTorqueSimFactor", MotorEffortToTorqueSimFactor, 0.832);
+        unpackParameter("WheelBaseDistance", WheelBaseDistance, 0.4);
+        unpackParameter("WheelVelocityAdjustment", WheelVelocityAdjustment, 0.0);
+        unpackParameter("MeasuredTiltFilterGain", MeasuredTiltFilterGain, 0.0);
+        unpackParameter("MeasuredTiltDotFilterGain", MeasuredTiltDotFilterGain, 0.0);
+        unpackParameter("MeasuredHeadingFilterGain", MeasuredHeadingFilterGain, 0.0);
+        unpackParameter("MeasuredTurnRateFilterGain", MeasuredTurnRateFilterGain, 0.0);
+        unpackParameter("LeftWheelVelocityFilterGain", LeftWheelVelocityFilterGain, 0.0);
+        unpackParameter("VelocityCmdScale", VelocityCmdScale, 1.0);
+        unpackParameter("TurnCmdScale", TurnCmdScale, 1.0);
+        unpackParameter("VelocityControlKp", VelocityControlKp, 1.0);
+        unpackParameter("VelocityControlKi", VelocityControlKi, 0.01);
+        unpackParameter("VelocityControlAlphaFilter", VelocityControlAlphaFilter, 0.05);
+        unpackParameter("VelocityControlMaxIntegralOutput", VelocityControlMaxIntegralOutput, 0.6);
+        unpackParameter("VelocityControlOutputLimitDegrees", VelocityControlOutputLimitDegrees, 5.0);
+        unpackParameter("TiltControlKp", TiltControlKp, 1.0);
+        unpackParameter("TiltControlKd", TiltControlKd, 0.01);
+        unpackParameter("TiltControlAlphaFilter", TiltControlAlphaFilter, 0.05);
+        unpackParameter("HoldHeadingControlKp", HoldHeadingControlKp, 1.0);
+        unpackParameter("HoldHeadingControlKd", HoldHeadingControlKd, 0.01);
+        unpackParameter("TurningControlKp", TurningControlKp, 1.0);
+        unpackParameter("TurningControlKi", TurningControlKi, 0.01);
+        unpackParameter("TurningControlKd", TurningControlKd, 0.01);
+
+        // Setup Measured State Filters
+        MeasuredTiltFilter.setGain(MeasuredTiltFilterGain);
+        MeasuredTiltDotFilter.setGain(MeasuredTiltDotFilterGain);
+        MeasuredHeadingFilter.setGain(MeasuredHeadingFilterGain);
+        MeasuredTurnRateFilter.setGain(MeasuredTurnRateFilterGain);
+        LeftWheelVelocityFilter.setGain(LeftWheelVelocityFilterGain);
+
+        // Setup PID Controllers
+        // TODO: Expose the important tunable constants to param file
+        VelocityControlPID.setPID(VelocityControlKp, VelocityControlKi, 0.0);
+        VelocityControlPID.setOutputFilter(VelocityControlAlphaFilter);
+        VelocityControlPID.setMaxIOutput(VelocityControlMaxIntegralOutput);
+        VelocityControlPID.setOutputLimits(VelocityControlOutputLimitDegrees * (M_PI / 180.0),
+                                           VelocityControlOutputLimitDegrees * (M_PI / 180.0));
+        VelocityControlPID.setDirection(true);
+
+        TiltControlPID.setPID(TiltControlKp, 0.0, TiltControlKd);
+        TiltControlPID.setExternalDerivativeError(&TiltDot);
+        TiltControlPID.setOutputFilter(TiltControlAlphaFilter);
+        TiltControlPID.setOutputLimits(-MotorEffortMax, MotorEffortMax);
+        TiltControlPID.setDirection(true);
+        TiltControlPID.setSetpointRange(20.0 * (M_PI / 180.0));
+
+        HoldHeadingControlPID.setPID(HoldHeadingControlKp, 0.0, HoldHeadingControlKd);
+        HoldHeadingControlPID.setOutputFilter(0.05);
+        HoldHeadingControlPID.setOutputLimits(-MotorEffortMax / 2.0, MotorEffortMax / 2.0);
+        HoldHeadingControlPID.setDirection(false);
+        HoldHeadingControlPID.setSetpointRange(90.0 * (M_PI / 180.0));
+
+        TurningControlPID.setPID(TurningControlKp, TurningControlKi, TurningControlKd);
+        TurningControlPID.setOutputFilter(0.05);
+        TurningControlPID.setMaxIOutput(20.0 * (M_PI / 180.0));
+        TurningControlPID.setOutputLimits(-MotorEffortMax / 2.0, MotorEffortMax / 2.0);
+        TurningControlPID.setDirection(false);
+        TurningControlPID.setSetpointRange(45.0 * (M_PI / 180.0));
 
         // Setup publishers and subscribers
-		pub_bobble_status = n.advertise<executive::BobbleBotStatus>("bb_controller_status", 1);
-		sub_imu_sensor_ = node_.subscribe("/imu_bosch/data_raw",1,
-		        &BobbleBalanceController::imuCB, this);
-		sub_command_=node_.subscribe("/bobble/bobble_balance_controller/bb_cmd",1,
-		        &BobbleBalanceController::commandCB, this);
+        pub_bobble_status = n.advertise<executive::BobbleBotStatus>("bb_controller_status", 1);
+        sub_imu_sensor_ = node_.subscribe("/imu_bosch/data_raw", 1, &BobbleBalanceController::imuCB, this);
+        sub_command_ = node_.subscribe("/bobble/bobble_balance_controller/bb_cmd", 1,
+                                       &BobbleBalanceController::commandCB, this);
 
-		return true;
-	}
-	
-	void BobbleBalanceController::starting(const ros::Time& time)
-	{
-		ActiveControlMode = ControlModes::IDLE;
-		DesiredPitch = 0.0;
-		DesiredYaw = 0.0;
-		Pitch = 0.0;
-		RollDot = 0.0;
-		PitchDot = 0.0;
-		YawDot = 0.0;
-		q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;	// quaternion of sensor frame relative to auxiliary frame
-		LeftMotorEffortCmd = 0.0;
-		LeftWheelPosition = 0.0;
-		LeftWheelPositionBias = 0.0;
-		LeftWheelVelocity = 0.0;
-		RightMotorEffortCmd = 0.0;
-		RightWheelPosition = 0.0;
-		RightWheelPositionBias = 0.0;
-		RightWheelVelocity = 0.0;
-        LeftWheelErrorAccumulated = 0.0;
-		RightWheelErrorAccumulated = 0.0;
-        DesiredLeftWheelPosition = 0.0;
-        DesiredRightWheelPosition = 0.0;
-        _EffortRightWheelPrevious = 0.0;
-		_EffortLeftWheelPrevious = 0.0;
-		_EffortPendulumPrevious = 0.0;
-        _RollPrevious = 0.0;
-        _RollDotPrevious = 0.0;
-		_LeftWheelVelocityPrev = 0.0;
-		_RightWheelVelocityPrev = 0.0;
-		_isSafe = false;
-		//WheelGains.setZero();
-		//PendulumGains.setZero();
-		//EstimatedPendulumState.setZero();
+        return true;
+    }
+
+
+    void BobbleBalanceController::starting(const ros::Time &time) {
+        ActiveControlMode = ControlModes::IDLE;
+        StartupCmd = false;
+        DesiredVelocity = 0.0;
+        DesiredTilt = 0.0;
+        DesiredTurnRate = 0.0;
+        DesiredHeading = 0.0;
+        TiltEffort = 0.0;
+        HeadingEffort = 0.0;
+        LeftMotorEffortCmd = 0.0;
+        RightMotorEffortCmd = 0.0;
+        ForwardVelocity = 0.0;
+        Tilt = 0.0;
+        TiltDot = 0.0;
+        Heading = 0.0;
+        TurnRate = 0.0;
+        q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;	// quaternion of sensor frame relative to auxiliary frame
+        // Setup the Real-Time thread
         struct sched_param param;
         // set the priority high, but not so high it overrides the comm
-        param.sched_priority=95;
-        if(sched_setscheduler(0,SCHED_FIFO,&param) == -1)
-        {
-                ROS_WARN("Failed to set real-time scheduler.");
-                return;
+        param.sched_priority = 95;
+        if (sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+            ROS_WARN("Failed to set real-time scheduler.");
+            return;
         }
-        if(mlockall(MCL_CURRENT|MCL_FUTURE) == -1)
-                ROS_WARN("Failed to lock memory.");
-	}
-	
-	void BobbleBalanceController::update(const ros::Time& time, const ros::Duration& duration)
-	{
-		// Set positions
-       	LeftWheelPosition = joints_[0].getPosition() - LeftWheelPositionBias;
-		RightWheelPosition = joints_[1].getPosition() - RightWheelPositionBias;
-		// Filter Velocities
-		LeftWheelVelocity = WheelStateAlpha * _LeftWheelVelocityPrev
-		    + (1.0 - WheelStateAlpha)
-		    * joints_[0].getVelocity();
-		RightWheelVelocity = WheelStateAlpha * _RightWheelVelocityPrev
-		    + (1.0 - WheelStateAlpha)
-		    * joints_[1].getVelocity();
+        if (mlockall(MCL_CURRENT | MCL_FUTURE) == -1) {
+            ROS_WARN("Failed to lock memory.");
+        }
+    }
 
-		LeftWheelVelocity = LeftWheelVelocity * WheelVelocityAdjustment;
-		RightWheelVelocity = RightWheelVelocity * WheelVelocityAdjustment;
-
-		_LeftWheelVelocityPrev = LeftWheelVelocity;
-		_RightWheelVelocityPrev = RightWheelVelocity;
-
-		if(abs(Pitch) > MaximumPitch)
-		{
-			_isSafe = false;
-		} else {
-			_isSafe = true;
-		}
-
-		double pitch_error, pitch_dot_error, yaw_error;
-		if (ActiveControlMode == ControlModes::IDLE)
-		{
-			q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;	// sim only
-			LeftWheelPositionBias = joints_[0].getPosition();
-			RightWheelPositionBias = joints_[1].getPosition();
-			LeftMotorEffortCmd = 0.0;
-			RightMotorEffortCmd = 0.0;
-		}
-		else if (ActiveControlMode == ControlModes::SPIN_MOTORS)
-		{
-			if(_isSafe)
-			{
-				LeftMotorEffortCmd = DesiredPitch;
-				RightMotorEffortCmd = -DesiredPitch;
-			} else {
-				LeftMotorEffortCmd = 0.0;
-				RightMotorEffortCmd = 0.0;
-			}
-		}
-		else if (ActiveControlMode == ControlModes::BALANCE)
-		{
-			if(_isSafe)
-			{
-			    // Calculate Errors
-			    pitch_error = Pitch;
-			    pitch_dot_error = PitchDot;
-
-			    float left_wheel_adj_velocity = LeftWheelVelocity + PitchDot;
-			    float right_wheel_adj_velocity = RightWheelVelocity + PitchDot;
-
-			    yaw_error = Yaw;
-			    // Calculate efforts
-			    double effortLeftWheel = EffortWheelAlpha * _EffortLeftWheelPrevious
-				    + (1.0 - EffortWheelAlpha)
-				    * (WheelDotGain * left_wheel_adj_velocity + WheelGain * LeftWheelPosition);
-			    double effortRightWheel = EffortWheelAlpha * _EffortRightWheelPrevious
-				    + (1.0 - EffortWheelAlpha)
-				    * (WheelDotGain * right_wheel_adj_velocity + WheelGain * RightWheelPosition);
-			    double effortPendulum = EffortPendulumAlpha * _EffortPendulumPrevious
-				    + (1.0 - EffortPendulumAlpha) 
-				    * (PitchGain * Pitch + PitchDotGain * PitchDot);
-			    // Add efforts
-			    LeftMotorEffortCmd = effortPendulum - effortLeftWheel;
-			    RightMotorEffortCmd = effortPendulum - effortRightWheel;
-			    // Store previous commands
-                		_EffortLeftWheelPrevious = effortLeftWheel;
-			    _EffortRightWheelPrevious = effortRightWheel;
-			    _EffortPendulumPrevious = effortPendulum;
-		    } else {
-		    	LeftMotorEffortCmd = 0.0;
-		    	RightMotorEffortCmd = 0.0;
-				_EffortLeftWheelPrevious = 0.0;
-				_EffortRightWheelPrevious = 0.0;
-				_EffortPendulumPrevious = 0.0;
-		    }
-		}
-	    // Send effort commands
-	    if(LeftMotorEffortCmd == 0.0 && LeftMotorEffortCmd !=0.0)
-	    {
-                LeftMotorEffortCmd = 0.0;
-	    }
-	    if(RightMotorEffortCmd == 0.0 && RightMotorEffortCmd !=0.0)
-	    {
-                RightMotorEffortCmd = 0.0;
-	    }
-	    if(LeftMotorEffortCmd > MotorEffortMax)
-	    {
-		LeftMotorEffortCmd = MotorEffortMax;
-	    } else if(LeftMotorEffortCmd < -MotorEffortMax)
-	    {
-		    LeftMotorEffortCmd = -MotorEffortMax;
-	    }
-	    if(RightMotorEffortCmd > MotorEffortMax)
-	    {
-		RightMotorEffortCmd = MotorEffortMax;
-	    } else if(RightMotorEffortCmd < -MotorEffortMax)
-	    {
-		    RightMotorEffortCmd = -MotorEffortMax;
-	    }
-	    joints_[0].setCommand(LeftMotorEffortCmd * MotorEffortToTorqueSimFactor);
-	    joints_[1].setCommand(RightMotorEffortCmd * MotorEffortToTorqueSimFactor);
-        // Write out status message
-        write_controller_status_msg();
-	}
-
-	void BobbleBalanceController::write_controller_status_msg() {
-		executive::BobbleBotStatus sim_status_msg;
-		sim_status_msg.ControlMode = ActiveControlMode;
-		sim_status_msg.DeltaT = 0.0;
-		sim_status_msg.Roll = Roll;
-		sim_status_msg.Pitch = Pitch;
-		sim_status_msg.Yaw = Yaw;
-		sim_status_msg.RollRate = RollDot;
-		sim_status_msg.PitchRate = PitchDot;
-		sim_status_msg.YawRate = YawDot;
-		sim_status_msg.DesiredPitch = DesiredPitch;
-		sim_status_msg.DesiredYaw = DesiredYaw;
-		sim_status_msg.LeftMotorEffortCmd = LeftMotorEffortCmd;
-		sim_status_msg.LeftMotorPosition = LeftWheelPosition;
-		sim_status_msg.LeftMotorVelocity = LeftWheelVelocity;
-		sim_status_msg.RightMotorEffortCmd = RightMotorEffortCmd;
-		sim_status_msg.RightMotorPosition = RightWheelPosition;
-		sim_status_msg.RightMotorVelocity = RightWheelVelocity;
-		pub_bobble_status.publish(sim_status_msg);
-	}
-
-
-	void BobbleBalanceController::imuCB(const sensor_msgs::Imu::ConstPtr &imuData) {
-		    MadgwickAHRSupdateIMU(imuData->angular_velocity.x, imuData->angular_velocity.y, imuData->angular_velocity.z,
+    void BobbleBalanceController::imuCB(const sensor_msgs::Imu::ConstPtr &imuData) {
+ 		    MadgwickAHRSupdateIMU(imuData->angular_velocity.x, imuData->angular_velocity.y, imuData->angular_velocity.z,
 							  imuData->linear_acceleration.x, imuData->linear_acceleration.y,
 							  imuData->linear_acceleration.z);
 		tf::Quaternion q(q0, q1, q2, q3);
 		tf::Matrix3x3 m(q);
 
 		// Set Angular Velocities
-		PitchDot = imuData->angular_velocity.y;
-		RollDot = imuData->angular_velocity.x;
-		YawDot = imuData->angular_velocity.z;
+		MeasuredTiltDot = imuData->angular_velocity.y;
+		//MeasuredRollDot = imuData->angular_velocity.x; \\ not used in this controller
+		MeasuredTurnRate = imuData->angular_velocity.z;
 		// Set Angles
-		m.getRPY(Yaw, Pitch, Roll);
-		Pitch*=-1.0;
+		m.getRPY(MeasuredHeading, MeasuredTilt, MeasuredRoll);
+		MeasuredTilt*=-1.0;
+    }
 
-		Pitch = PendulumStateAlpha * _PitchPrevious
-		    + (1.0 - PendulumStateAlpha)
-		    * (Pitch - PitchOffset);
+    void BobbleBalanceController::commandCB(const bobble_controllers::ControlCommands::ConstPtr &cmd) {
+        StartupCmd = cmd->StartupCmd;
+        IdleCmd = cmd->IdleCmd;
+        DesiredVelocity = VelocityCmdScale * cmd->DesiredVelocity;
+        DesiredTurnRate = TurnCmdScale * cmd->DesiredTurnRate;
+        DesiredHeading = cmd->DesiredHeading;
+    }
 
-		_PitchPrevious = Pitch;
-		PitchDot = PendulumStateAlpha * _PitchDotPrevious
-		    + (1.0 - PendulumStateAlpha)
-		    * PitchDot;
-		_PitchDotPrevious = PitchDot;
-	}
+    void BobbleBalanceController::update(const ros::Time &time, const ros::Duration &duration) {
+        Tilt = MeasuredTiltFilter.filter(MeasuredTilt);
+        TiltDot = MeasuredTiltDotFilter.filter(MeasuredTiltDot);
+        Heading = MeasuredHeadingFilter.filter(MeasuredHeading);
+        TurnRate = MeasuredTurnRateFilter.filter(MeasuredTurnRate);
 
-	void BobbleBalanceController::commandCB(const bobble_controllers::ControlCommands::ConstPtr &cmd)
-	{
-		ActiveControlMode = cmd->ControlMode;
-		DesiredPitch = cmd->DesiredPitch;
-		DesiredYaw = cmd->DesiredYaw;
-	}
+        // Get odometry information. Not using these quite yet.
+        MeasuredLeftMotorPosition = joints_[1].getPosition();
+        MeasuredRightMotorPosition = joints_[0].getPosition();
+        MeasuredLeftMotorVelocity = joints_[1].getVelocity() * WheelVelocityAdjustment + TiltDot;
+        MeasuredRightMotorVelocity = joints_[0].getVelocity() * WheelVelocityAdjustment + TiltDot;
+        // filter wheel velocities?
+        //ForwardVelocity = LeftWheelVelocityFilter.filter(MeasuredLeftMotorVelocity);
+
+        ForwardVelocity = WheelBaseDistance*(MeasuredRightMotorVelocity + MeasuredLeftMotorVelocity)/2; // R * (vR + vL)/2
+
+        // Apply filters to desired values. Filter stick inputs?
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+        /// Perform the desired control depending on BobbleBot controller state
+        /////////////////////////////////////////////////////////////////////////////////////////
+        if (ActiveControlMode == ControlModes::IDLE) {
+            q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;	// sim only
+            TiltEffort = 0.0;
+            HeadingEffort = 0.0;
+            if (StartupCmd) {
+                ActiveControlMode = ControlModes::STARTUP;
+            }
+        } else if (ActiveControlMode == ControlModes::DIAGNOSTIC)
+		{
+			if (abs(Tilt) >= StartingTiltSafetyLimitDegrees * (M_PI / 180.0)) {
+				TiltEffort = DesiredVelocity;
+                HeadingEffort = 0.0;
+			} else {
+				TiltEffort = 0.0;
+                HeadingEffort = 0.0;
+			}
+		} else if (ActiveControlMode == ControlModes::STARTUP) {
+            // Wait until we're safe to proceed to balance mode
+            if (abs(Tilt) >= StartingTiltSafetyLimitDegrees * (M_PI / 180.0)) {
+                TiltEffort = 0.0;
+                HeadingEffort = 0.0;
+            } else {
+                ActiveControlMode = ControlModes::BALANCE;
+            }
+        } else if (ActiveControlMode == ControlModes::BALANCE) {
+            DesiredHeading = Heading;
+            DesiredTilt = VelocityControlPID.getOutput(DesiredVelocity, ForwardVelocity);
+            DesiredTilt = DesiredTilt*-1.0;
+            TiltEffort = TiltControlPID.getOutput(DesiredTilt, Tilt);
+            perform_heading_control();
+            if (IdleCmd) {
+                ActiveControlMode = ControlModes::IDLE;
+            }
+            if (abs(DesiredVelocity) >= 0.1 || abs(DesiredTurnRate) >= 0.1) {
+                ActiveControlMode = ControlModes::DRIVE;
+            }
+        } else if (ActiveControlMode == ControlModes::DRIVE) {
+            DesiredTilt = VelocityControlPID.getOutput(DesiredVelocity, ForwardVelocity);
+            TiltEffort = TiltControlPID.getOutput(DesiredTilt, Tilt);
+            perform_heading_control();
+            if (IdleCmd) {
+                ActiveControlMode = ControlModes::IDLE;
+            }
+        } else {
+            TiltEffort = 0.0;
+            HeadingEffort = 0.0;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+        /// Filter the motor effort commands
+        /////////////////////////////////////////////////////////////////////////////////////////
+        RightMotorEffortCmd = TiltEffort + HeadingEffort;
+        LeftMotorEffortCmd = TiltEffort - HeadingEffort;
+        // TODO
+        //RightMotorEffortCmd = (double) RightMotorLowPassEffortFilter.filter(TiltEffort + HeadingEffort);
+        //LeftMotorEffortCmd = (double) LeftMotorLowPassEffortFilter.filter(TiltEffort - HeadingEffort);
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+        /// Apply safety checks
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // No effort when tilt angle is way out of whack.
+        // You're going down. Don't fight it... just accept it.
+        if (abs(Tilt) >= MaxTiltSafetyLimitDegrees * (M_PI / 180.0)) {
+            RightMotorEffortCmd = 0.0;
+            LeftMotorEffortCmd = 0.0;
+        }
+        // Apply motor effort limits
+        RightMotorEffortCmd = limitEffort(RightMotorEffortCmd);
+        LeftMotorEffortCmd = limitEffort(LeftMotorEffortCmd);
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+        /// Send our motor commands
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // Send the limited effort commands
+        joints_[0].setCommand(RightMotorEffortCmd * MotorEffortToTorqueSimFactor);
+        joints_[1].setCommand(LeftMotorEffortCmd * MotorEffortToTorqueSimFactor);
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+        /// Report our status
+        /////////////////////////////////////////////////////////////////////////////////////////
+        write_controller_status_msg();
+    }
+
+    void BobbleBalanceController::perform_heading_control() {
+        if (DesiredTurnRate == 0) {
+            HeadingEffort = HoldHeadingControlPID.getOutput(Heading, DesiredHeading);
+        } else {
+            HeadingEffort = TurningControlPID.getOutput(TurnRate, DesiredTurnRate);
+        }
+    }
+
+    void BobbleBalanceController::write_controller_status_msg() {
+        executive::BobbleBotStatus sim_status_msg;
+        sim_status_msg.ControlMode = ActiveControlMode;
+        sim_status_msg.DeltaT = 0.0;
+        sim_status_msg.Tilt = Tilt * (180.0 / M_PI);
+        sim_status_msg.TiltRate = TiltDot * (180.0 / M_PI);
+        sim_status_msg.Heading = Heading * (180.0 / M_PI);
+        sim_status_msg.TurnRate = TurnRate * (180.0 / M_PI);
+        sim_status_msg.ForwardVelocity = ForwardVelocity;
+        sim_status_msg.DesiredVelocity = DesiredVelocity;
+        sim_status_msg.DesiredTilt = DesiredTilt * (180.0 / M_PI);
+        sim_status_msg.DesiredTurnRate = DesiredTurnRate * (180.0 / M_PI);
+        sim_status_msg.DesiredHeading = DesiredHeading * (180.0 / M_PI);
+        sim_status_msg.LeftMotorPosition = MeasuredLeftMotorPosition * (180.0 / M_PI);
+        sim_status_msg.LeftMotorVelocity = MeasuredLeftMotorVelocity * (180.0 / M_PI);
+        sim_status_msg.RightMotorPosition = MeasuredRightMotorPosition * (180.0 / M_PI);
+        sim_status_msg.RightMotorVelocity = MeasuredRightMotorVelocity * (180.0 / M_PI);
+        sim_status_msg.TiltEffort = TiltEffort;
+        sim_status_msg.HeadingEffort = HeadingEffort;
+        sim_status_msg.LeftMotorEffortCmd = LeftMotorEffortCmd;
+        sim_status_msg.RightMotorEffortCmd = RightMotorEffortCmd;
+        pub_bobble_status.publish(sim_status_msg);
+    }
+
+    void BobbleBalanceController::unpackParameter(std::string parameterName, double &referenceToParameter,
+                                                  double defaultValue) {
+        if (!node_.getParam(parameterName, referenceToParameter)) {
+            referenceToParameter = defaultValue;
+            ROS_ERROR("%s not set for (namespace: %s) using %f.",
+                      parameterName.c_str(),
+                      node_.getNamespace().c_str(),
+                      defaultValue);
+        }
+    }
+
+    double BobbleBalanceController::limitEffort(double effort_cmd) {
+        if (effort_cmd < -MotorEffortMax) {
+            return -MotorEffortMax;
+        } else if (effort_cmd > MotorEffortMax) {
+            return MotorEffortMax;
+        }
+        return effort_cmd;
+    }
 
 }
 
-PLUGINLIB_EXPORT_CLASS(bobble_controllers::BobbleBalanceController, controller_interface::ControllerBase)
+PLUGINLIB_EXPORT_CLASS(bobble_controllers::BobbleBalanceController, controller_interface::ControllerBase
+)

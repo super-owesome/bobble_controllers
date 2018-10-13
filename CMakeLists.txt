@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
     controller_manager
 	pluginlib
 	chupacabra_comm
+	generic_filter
 	controller_interface
 	control_msgs
 	sensor_msgs
@@ -46,7 +47,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
    LIBRARIES ${PROJECT_NAME}
-   CATKIN_DEPENDS chupacabra_comm controller_interface control_msgs sensor_msgs executive controller_manager pluginlib std_msgs rospy message_runtime
+   CATKIN_DEPENDS generic_filter chupacabra_comm controller_interface control_msgs sensor_msgs executive controller_manager pluginlib std_msgs rospy message_runtime
 #  DEPENDS system_lib
 )
 
@@ -62,12 +63,13 @@ include_directories(include
 
 ## Declare a cpp library
 add_library(bobble_controllers
-  src/MadgwickAHRS.cpp
   src/BobbleBalanceController.cpp
-		)
+  src/PidControl.cpp
+  src/MadgwickAHRS.cpp
+)
 
 ## Declare a cpp executable
-add_executable(BobbleControlNode src/nodes/BobbleControlNode.cpp src/BobbleBotHw.cpp src/MadgwickAHRS.cpp)
+add_executable(BobbleControlNode src/nodes/BobbleControlNode.cpp src/BobbleBotHw.cpp)
 target_link_libraries(BobbleControlNode ${catkin_LIBRARIES})
 install(TARGETS BobbleControlNode
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})

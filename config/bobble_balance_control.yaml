@@ -2,23 +2,31 @@ bobble:
     bobble_balance_controller:
       type: bobble_controllers/BobbleBalanceController
       joints:
-        - left_wheel_hinge
         - right_wheel_hinge
-      PitchGain: 18.75
-      PitchDotGain: 1.5
-      YawGain: 0.0
-      YawDotGain: 0.0
-      WheelGain: 0.0
-      WheelDotGain: 0.00025
-      WheelIntegralGain: 0.00000
-      WheelIntegralSaturation: 1000.0
-      PendulumStateAlpha: 0.15
-      WheelStateAlpha: 0.15
-      EffortPendulumAlpha: 0.1
-      EffortWheelAlpha:  0.1
+        - left_wheel_hinge
+      StartingTiltSafetyLimitDegrees: 4.0
+      MaxTiltSafetyLimitDegrees: 20.0
       MotorEffortMax: 0.2
-      PitchOffset: 0.0 # -2.85
-      MaximumPitch: 0.15
-      WheelVelocityAdjustment: 0.05
       MotorEffortToTorqueSimFactor: 0.832 # Should be set to 1.0 for HW
-      #MotorEffortToTorqueSimFactor: 1.0  # Should be set to 1.0 for HW
+      WheelBaseDistance: 0.4
+      WheelVelocityAdjustment: 0.05
+      MeasuredTiltFilterGain: 0.0
+      MeasuredTiltDotFilterGain: 0.0
+      MeasuredHeadingFilterGain: 0.4
+      MeasuredTurnRateFilterGain: 0.4
+      LeftWheelVelocityFilterGain: 0.0
+      VelocityCmdScale: 1.25
+      TurnCmdScale: 5.0
+      VelocityControlKp: 1.0
+      VelocityControlKi: 0.015
+      VelocityControlAlphaFilter: 0.0
+      VelocityControlMaxIntegralOutput: 0.076
+      VelocityControlOutputLimitDegrees: 5.0
+      TiltControlKp: 2.0
+      TiltControlKd: 0.25
+      TiltControlAlphaFilter: 0.0
+      HoldHeadingControlKp: 1.0
+      HoldHeadingControlKd: 0.1
+      TurningControlKp: 1.0
+      TurningControlKi: 0.015
+      TurningControlKd: 0.1
