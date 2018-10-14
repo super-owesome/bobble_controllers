@@ -224,13 +224,8 @@ namespace bobble_controllers {
             }
         } else if (ActiveControlMode == ControlModes::DIAGNOSTIC)
 		{
-			if (abs(Tilt) >= StartingTiltSafetyLimitDegrees * (M_PI / 180.0)) {
-				TiltEffort = DesiredVelocity;
-                HeadingEffort = 0.0;
-			} else {
-				TiltEffort = 0.0;
-                HeadingEffort = 0.0;
-			}
+			TiltEffort = DesiredVelocity;
+			HeadingEffort = DesiredTurnRate;
             if (IdleCmd) {
                 ActiveControlMode = ControlModes::IDLE;
             }
