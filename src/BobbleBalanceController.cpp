@@ -154,7 +154,11 @@ namespace bobble_controllers {
 
     void BobbleBalanceController::imuCB(const sensor_msgs::Imu::ConstPtr &imuData) {
         // Set Angular Velocities
-        MeasuredTiltDot = imuData->angular_velocity.y;
+        if(InSim) {
+            MeasuredTiltDot = imuData->angular_velocity.y;
+        }else{
+            MeasuredTiltDot = imuData->angular_velocity.x;
+        }
         MeasuredTurnRate = imuData->angular_velocity.z;
         // Use Madgwick orientation filter.
         MadgwickAHRSupdateIMU(imuData->angular_velocity.x, imuData->angular_velocity.y, imuData->angular_velocity.z,
