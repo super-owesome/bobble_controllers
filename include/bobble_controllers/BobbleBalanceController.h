@@ -81,6 +81,7 @@ namespace bobble_controllers {
         /// Control commands (desired states)
         bool StartupCmd;
         bool IdleCmd;
+        bool DiagnosticCmd;
         double DesiredVelocity;
         double DesiredTurnRate;
 
