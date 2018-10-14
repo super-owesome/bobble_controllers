@@ -188,7 +188,7 @@ namespace bobble_controllers {
         Tilt = MeasuredTiltFilter.filter(MeasuredTilt);
         TiltDot = MeasuredTiltDotFilter.filter(MeasuredTiltDot);
         Heading = MeasuredHeadingFilter.filter(MeasuredHeading);
-        TurnRate = MeasuredTurnRateFilter.filter(TurnRate);
+        TurnRate = MeasuredTurnRateFilter.filter(MeasuredTurnRate);
 
         // Get odometry information.
         MeasuredLeftMotorPosition = joints_[1].getPosition();
