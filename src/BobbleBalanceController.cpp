@@ -179,6 +179,7 @@ namespace bobble_controllers {
     void BobbleBalanceController::commandCB(const bobble_controllers::ControlCommands::ConstPtr &cmd) {
         StartupCmd = cmd->StartupCmd;
         IdleCmd = cmd->IdleCmd;
+        DiagnosticCmd = cmd->DiagnosticCmd;
         DesiredVelocity = VelocityCmdScale * cmd->DesiredVelocity;
         DesiredTurnRate = TurnCmdScale * cmd->DesiredTurnRate;
     }
@@ -218,6 +219,9 @@ namespace bobble_controllers {
             if (StartupCmd) {
                 ActiveControlMode = ControlModes::STARTUP;
             }
+            if (DiagnosticCmd) {
+                ActiveControlMode = ControlModes::DIAGNOSTIC;
+            }
         } else if (ActiveControlMode == ControlModes::DIAGNOSTIC)
 		{
 			if (abs(Tilt) >= StartingTiltSafetyLimitDegrees * (M_PI / 180.0)) {
@@ -227,6 +231,9 @@ namespace bobble_controllers {
 				TiltEffort = 0.0;
                 HeadingEffort = 0.0;
 			}
+            if (IdleCmd) {
+                ActiveControlMode = ControlModes::IDLE;
+            }
 		} else if (ActiveControlMode == ControlModes::STARTUP) {
             // Wait until we're safe to proceed to balance mode
             if (abs(Tilt) >= StartingTiltSafetyLimitDegrees * (M_PI / 180.0)) {
