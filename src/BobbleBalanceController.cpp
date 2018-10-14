@@ -74,6 +74,7 @@ namespace bobble_controllers {
         unpackParameter("TurningControlKp", TurningControlKp, 1.0);
         unpackParameter("TurningControlKi", TurningControlKi, 0.01);
         unpackParameter("TurningControlKd", TurningControlKd, 0.01);
+        unpackParameter("TiltOffset", TiltOffset, 0.0);
 
         // Setup Measured State Filters
         MeasuredTiltFilter.setGain(MeasuredTiltFilterGain);
@@ -162,8 +163,17 @@ namespace bobble_controllers {
         tf::Quaternion q(q0, q1, q2, q3);
 		tf::Matrix3x3 m(q);
 		// Set Angles
-		m.getRPY(MeasuredHeading, MeasuredTilt, MeasuredRoll);
-		MeasuredTilt*=-1.0;
+		if(InSim)
+		{
+			m.getRPY(MeasuredHeading, MeasuredTilt, MeasuredRoll);
+			MeasuredTilt*=-1.0;
+		}
+		else
+		{
+			m.getRPY(MeasuredHeading, MeasuredRoll, MeasuredTilt);
+			MeasuredTilt -= TiltOffset;
+		}
+
     }
 
     void BobbleBalanceController::commandCB(const bobble_controllers::ControlCommands::ConstPtr &cmd) {

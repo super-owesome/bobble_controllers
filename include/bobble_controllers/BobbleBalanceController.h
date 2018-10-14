@@ -111,6 +111,7 @@ namespace bobble_controllers {
         double DesiredTilt;
         double Tilt;
         double TiltDot;
+        double TiltOffset;
         double Heading;
         double TurnRate;
         double LeftWheelVelocity;
