@@ -49,11 +49,11 @@ namespace bobble_controllers {
             joints_.push_back(j);
         }
 
+        unpackFlag("InSim", InSim, true);
         unpackParameter("StartingTiltSafetyLimitDegrees", StartingTiltSafetyLimitDegrees, 4.0);
         unpackParameter("MaxTiltSafetyLimitDegrees", MaxTiltSafetyLimitDegrees, 20.0);
         unpackParameter("MotorEffortMax", MotorEffortMax, 0.4);
         unpackParameter("MotorEffortToTorqueSimFactor", MotorEffortToTorqueSimFactor, 0.832);
-        unpackParameter("WheelBaseDistance", WheelBaseDistance, 0.4);
         unpackParameter("WheelVelocityAdjustment", WheelVelocityAdjustment, 0.0);
         unpackParameter("MeasuredTiltFilterGain", MeasuredTiltFilterGain, 0.0);
         unpackParameter("MeasuredTiltDotFilterGain", MeasuredTiltDotFilterGain, 0.0);
@@ -84,7 +84,6 @@ namespace bobble_controllers {
         RightWheelVelocityFilter.setGain(RightWheelVelocityFilterGain);
 
         // Setup PID Controllers
-        // TODO: Expose the important tunable constants to param file
         VelocityControlPID.setPID(VelocityControlKp, VelocityControlKi, 0.0);
         VelocityControlPID.setOutputFilter(VelocityControlAlphaFilter);
         VelocityControlPID.setMaxIOutput(VelocityControlMaxIntegralOutput);
@@ -101,8 +100,8 @@ namespace bobble_controllers {
 
         TurningControlPID.setPID(TurningControlKp, TurningControlKi, TurningControlKd);
         TurningControlPID.setOutputFilter(0.05);
-        TurningControlPID.setMaxIOutput(20.0 * (M_PI / 180.0));
-        TurningControlPID.setOutputLimits(-MotorEffortMax / 2.0, MotorEffortMax / 2.0);
+        TurningControlPID.setMaxIOutput(1.0);
+        TurningControlPID.setOutputLimits(-MotorEffortMax / 5.0, MotorEffortMax / 5.0);
         TurningControlPID.setDirection(false);
         TurningControlPID.setSetpointRange(45.0 * (M_PI / 180.0));
 
@@ -133,7 +132,11 @@ namespace bobble_controllers {
         TurnRate = 0.0;
         LeftWheelVelocity = 0.0;
         RightWheelVelocity = 0.0;
-        q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;	// quaternion of sensor frame relative to auxiliary frame
+        // Reset Madgwick Q on start is a sim only thing. The sim
+        // resets the orientation on transition from Idle to Balance
+        if (InSim) {
+            q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;	// quaternion of sensor frame relative to auxiliary frame
+        }
         // Setup the Real-Time thread
         struct sched_param param;
         // set the priority high, but not so high it overrides the comm
@@ -148,16 +151,16 @@ namespace bobble_controllers {
     }
 
     void BobbleBalanceController::imuCB(const sensor_msgs::Imu::ConstPtr &imuData) {
- 		    MadgwickAHRSupdateIMU(imuData->angular_velocity.x, imuData->angular_velocity.y, imuData->angular_velocity.z,
+        // Set Angular Velocities
+        MeasuredTiltDot = imuData->angular_velocity.y;
+        MeasuredTurnRate = imuData->angular_velocity.z;
+        // Use Madgwick orientation filter.
+        MadgwickAHRSupdateIMU(imuData->angular_velocity.x, imuData->angular_velocity.y, imuData->angular_velocity.z,
 							  imuData->linear_acceleration.x, imuData->linear_acceleration.y,
 							  imuData->linear_acceleration.z);
-		tf::Quaternion q(q0, q1, q2, q3);
+        // Construct a DCM matrix from the quaternion
+        tf::Quaternion q(q0, q1, q2, q3);
 		tf::Matrix3x3 m(q);
-
-		// Set Angular Velocities
-		MeasuredTiltDot = imuData->angular_velocity.y;
-		//MeasuredRollDot = imuData->angular_velocity.x; \\ not used in this controller
-		MeasuredTurnRate = imuData->angular_velocity.z;
 		// Set Angles
 		m.getRPY(MeasuredHeading, MeasuredTilt, MeasuredRoll);
 		MeasuredTilt*=-1.0;
@@ -188,7 +191,7 @@ namespace bobble_controllers {
         RightWheelVelocity = RightWheelVelocityFilter.filter(MeasuredRightMotorVelocity) * WheelVelocityAdjustment + TiltDot;
 
         // Compute estimate forward velocity and turn rate.
-        ForwardVelocity = WheelBaseDistance*(RightWheelVelocity + LeftWheelVelocity)/2;
+        ForwardVelocity = (RightWheelVelocity + LeftWheelVelocity)/2;
 
         // TODO Apply filters to desired values. Filter stick inputs?
 
@@ -196,7 +199,10 @@ namespace bobble_controllers {
         /// Perform the desired control depending on BobbleBot controller state
         /////////////////////////////////////////////////////////////////////////////////////////
         if (ActiveControlMode == ControlModes::IDLE) {
-            q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;	// sim only
+            // Sim only q reset
+            if (InSim) {
+                q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;
+            }
             TiltEffort = 0.0;
             HeadingEffort = 0.0;
             if (StartupCmd) {
@@ -226,9 +232,6 @@ namespace bobble_controllers {
             HeadingEffort = TurningControlPID.getOutput(TurnRate, DesiredTurnRate);
             if (IdleCmd) {
                 ActiveControlMode = ControlModes::IDLE;
-            }
-            if (abs(DesiredVelocity) >= 0.1 || abs(DesiredTurnRate) >= 0.1) {
-                ActiveControlMode = ControlModes::DRIVE;
             }
         } else if (ActiveControlMode == ControlModes::DRIVE) {
             DesiredTilt = VelocityControlPID.getOutput(DesiredVelocity, ForwardVelocity);
@@ -268,11 +271,16 @@ namespace bobble_controllers {
         /// Send our motor commands
         /////////////////////////////////////////////////////////////////////////////////////////
         // Send the limited effort commands
-        joints_[0].setCommand(RightMotorEffortCmd * MotorEffortToTorqueSimFactor);
-        joints_[1].setCommand(LeftMotorEffortCmd * MotorEffortToTorqueSimFactor);
+        if(InSim) {
+            joints_[0].setCommand(RightMotorEffortCmd * MotorEffortToTorqueSimFactor);
+            joints_[1].setCommand(LeftMotorEffortCmd * MotorEffortToTorqueSimFactor);
+        }else {
+            joints_[0].setCommand(RightMotorEffortCmd);
+            joints_[1].setCommand(LeftMotorEffortCmd);
+        }
 
         /////////////////////////////////////////////////////////////////////////////////////////
-        /// Report our status
+        /// Report our status. TODO Use RT safe approach for this.
         /////////////////////////////////////////////////////////////////////////////////////////
         write_controller_status_msg();
     }
@@ -308,6 +316,16 @@ namespace bobble_controllers {
                       parameterName.c_str(),
                       node_.getNamespace().c_str(),
                       defaultValue);
+        }
+    }
+
+    void BobbleBalanceController::unpackFlag(std::string parameterName, bool &referenceToFlag,
+                                             bool defaultValue) {
+        if (!node_.getParam(parameterName, referenceToFlag)) {
+            referenceToFlag = defaultValue;
+            ROS_ERROR("%s not set for (namespace: %s). Setting to false.",
+                      parameterName.c_str(),
+                      node_.getNamespace().c_str());
         }
     }
 

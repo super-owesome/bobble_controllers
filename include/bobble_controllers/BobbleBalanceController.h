@@ -45,11 +45,11 @@ namespace bobble_controllers {
         };
 
         /// Controller config
+        bool InSim; // Temporary hack. Need to re-orient IMU model.
         double StartingTiltSafetyLimitDegrees;
         double MaxTiltSafetyLimitDegrees;
         double MotorEffortMax;
         double MotorEffortToTorqueSimFactor;
-        double WheelBaseDistance;
         double WheelVelocityAdjustment;
         double MotorEffortFilterGain;
         double VelocityCmdScale;
@@ -135,6 +135,8 @@ namespace bobble_controllers {
         void write_controller_status_msg();
 
         void unpackParameter(std::string parameterName, double &referenceToParameter, double defaultValue);
+
+        void unpackFlag(std::string parameterName, bool &referenceToFlag, bool defaultValue);
 
         double limitEffort(double effort_cmd);
 
