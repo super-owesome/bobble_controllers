@@ -13,7 +13,6 @@ namespace bobble_controllers {
             :
             VelocityControlPID(0.0, 0.0, 0.0),
             TiltControlPID(0.0, 0.0, 0.0),
-            HoldHeadingControlPID(0.0, 0.0, 0.0),
             TurningControlPID(0.0, 0.0, 0.0) {
     }
 
@@ -61,6 +60,7 @@ namespace bobble_controllers {
         unpackParameter("MeasuredHeadingFilterGain", MeasuredHeadingFilterGain, 0.0);
         unpackParameter("MeasuredTurnRateFilterGain", MeasuredTurnRateFilterGain, 0.0);
         unpackParameter("LeftWheelVelocityFilterGain", LeftWheelVelocityFilterGain, 0.0);
+        unpackParameter("RightWheelVelocityFilterGain", RightWheelVelocityFilterGain, 0.0);
         unpackParameter("VelocityCmdScale", VelocityCmdScale, 1.0);
         unpackParameter("TurnCmdScale", TurnCmdScale, 1.0);
         unpackParameter("VelocityControlKp", VelocityControlKp, 1.0);
@@ -71,8 +71,6 @@ namespace bobble_controllers {
         unpackParameter("TiltControlKp", TiltControlKp, 1.0);
         unpackParameter("TiltControlKd", TiltControlKd, 0.01);
         unpackParameter("TiltControlAlphaFilter", TiltControlAlphaFilter, 0.05);
-        unpackParameter("HoldHeadingControlKp", HoldHeadingControlKp, 1.0);
-        unpackParameter("HoldHeadingControlKd", HoldHeadingControlKd, 0.01);
         unpackParameter("TurningControlKp", TurningControlKp, 1.0);
         unpackParameter("TurningControlKi", TurningControlKi, 0.01);
         unpackParameter("TurningControlKd", TurningControlKd, 0.01);
@@ -83,6 +81,7 @@ namespace bobble_controllers {
         MeasuredHeadingFilter.setGain(MeasuredHeadingFilterGain);
         MeasuredTurnRateFilter.setGain(MeasuredTurnRateFilterGain);
         LeftWheelVelocityFilter.setGain(LeftWheelVelocityFilterGain);
+        RightWheelVelocityFilter.setGain(RightWheelVelocityFilterGain);
 
         // Setup PID Controllers
         // TODO: Expose the important tunable constants to param file
@@ -99,12 +98,6 @@ namespace bobble_controllers {
         TiltControlPID.setOutputLimits(-MotorEffortMax, MotorEffortMax);
         TiltControlPID.setDirection(true);
         TiltControlPID.setSetpointRange(20.0 * (M_PI / 180.0));
-
-        HoldHeadingControlPID.setPID(HoldHeadingControlKp, 0.0, HoldHeadingControlKd);
-        HoldHeadingControlPID.setOutputFilter(0.05);
-        HoldHeadingControlPID.setOutputLimits(-MotorEffortMax / 2.0, MotorEffortMax / 2.0);
-        HoldHeadingControlPID.setDirection(false);
-        HoldHeadingControlPID.setSetpointRange(90.0 * (M_PI / 180.0));
 
         TurningControlPID.setPID(TurningControlKp, TurningControlKi, TurningControlKd);
         TurningControlPID.setOutputFilter(0.05);
@@ -129,7 +122,6 @@ namespace bobble_controllers {
         DesiredVelocity = 0.0;
         DesiredTilt = 0.0;
         DesiredTurnRate = 0.0;
-        DesiredHeading = 0.0;
         TiltEffort = 0.0;
         HeadingEffort = 0.0;
         LeftMotorEffortCmd = 0.0;
@@ -139,6 +131,8 @@ namespace bobble_controllers {
         TiltDot = 0.0;
         Heading = 0.0;
         TurnRate = 0.0;
+        LeftWheelVelocity = 0.0;
+        RightWheelVelocity = 0.0;
         q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;	// quaternion of sensor frame relative to auxiliary frame
         // Setup the Real-Time thread
         struct sched_param param;
@@ -174,26 +168,29 @@ namespace bobble_controllers {
         IdleCmd = cmd->IdleCmd;
         DesiredVelocity = VelocityCmdScale * cmd->DesiredVelocity;
         DesiredTurnRate = TurnCmdScale * cmd->DesiredTurnRate;
-        DesiredHeading = cmd->DesiredHeading;
     }
 
     void BobbleBalanceController::update(const ros::Time &time, const ros::Duration &duration) {
         Tilt = MeasuredTiltFilter.filter(MeasuredTilt);
         TiltDot = MeasuredTiltDotFilter.filter(MeasuredTiltDot);
         Heading = MeasuredHeadingFilter.filter(MeasuredHeading);
-        TurnRate = MeasuredTurnRateFilter.filter(MeasuredTurnRate);
+        TurnRate = MeasuredTurnRateFilter.filter(TurnRate);
 
-        // Get odometry information. Not using these quite yet.
+        // Get odometry information.
         MeasuredLeftMotorPosition = joints_[1].getPosition();
         MeasuredRightMotorPosition = joints_[0].getPosition();
-        MeasuredLeftMotorVelocity = joints_[1].getVelocity() * WheelVelocityAdjustment + TiltDot;
-        MeasuredRightMotorVelocity = joints_[0].getVelocity() * WheelVelocityAdjustment + TiltDot;
-        // filter wheel velocities?
-        //ForwardVelocity = LeftWheelVelocityFilter.filter(MeasuredLeftMotorVelocity);
+        MeasuredLeftMotorVelocity = joints_[1].getVelocity();
+        MeasuredRightMotorVelocity = joints_[0].getVelocity();
 
-        ForwardVelocity = WheelBaseDistance*(MeasuredRightMotorVelocity + MeasuredLeftMotorVelocity)/2; // R * (vR + vL)/2
+        // Filter wheel velocities and apply a wheel velocity adjustment in order to remove
+        // a perceived wheel motion due to pendulum rotation
+        LeftWheelVelocity = LeftWheelVelocityFilter.filter(MeasuredLeftMotorVelocity) * WheelVelocityAdjustment + TiltDot;
+        RightWheelVelocity = RightWheelVelocityFilter.filter(MeasuredRightMotorVelocity) * WheelVelocityAdjustment + TiltDot;
 
-        // Apply filters to desired values. Filter stick inputs?
+        // Compute estimate forward velocity and turn rate.
+        ForwardVelocity = WheelBaseDistance*(RightWheelVelocity + LeftWheelVelocity)/2;
+
+        // TODO Apply filters to desired values. Filter stick inputs?
 
         /////////////////////////////////////////////////////////////////////////////////////////
         /// Perform the desired control depending on BobbleBot controller state
@@ -223,11 +220,10 @@ namespace bobble_controllers {
                 ActiveControlMode = ControlModes::BALANCE;
             }
         } else if (ActiveControlMode == ControlModes::BALANCE) {
-            DesiredHeading = Heading;
             DesiredTilt = VelocityControlPID.getOutput(DesiredVelocity, ForwardVelocity);
             DesiredTilt = DesiredTilt*-1.0;
             TiltEffort = TiltControlPID.getOutput(DesiredTilt, Tilt);
-            perform_heading_control();
+            HeadingEffort = TurningControlPID.getOutput(TurnRate, DesiredTurnRate);
             if (IdleCmd) {
                 ActiveControlMode = ControlModes::IDLE;
             }
@@ -237,7 +233,7 @@ namespace bobble_controllers {
         } else if (ActiveControlMode == ControlModes::DRIVE) {
             DesiredTilt = VelocityControlPID.getOutput(DesiredVelocity, ForwardVelocity);
             TiltEffort = TiltControlPID.getOutput(DesiredTilt, Tilt);
-            perform_heading_control();
+            HeadingEffort = TurningControlPID.getOutput(TurnRate, DesiredTurnRate);
             if (IdleCmd) {
                 ActiveControlMode = ControlModes::IDLE;
             }
@@ -281,14 +277,6 @@ namespace bobble_controllers {
         write_controller_status_msg();
     }
 
-    void BobbleBalanceController::perform_heading_control() {
-        if (DesiredTurnRate == 0) {
-            HeadingEffort = HoldHeadingControlPID.getOutput(Heading, DesiredHeading);
-        } else {
-            HeadingEffort = TurningControlPID.getOutput(TurnRate, DesiredTurnRate);
-        }
-    }
-
     void BobbleBalanceController::write_controller_status_msg() {
         executive::BobbleBotStatus sim_status_msg;
         sim_status_msg.ControlMode = ActiveControlMode;
@@ -301,7 +289,6 @@ namespace bobble_controllers {
         sim_status_msg.DesiredVelocity = DesiredVelocity;
         sim_status_msg.DesiredTilt = DesiredTilt * (180.0 / M_PI);
         sim_status_msg.DesiredTurnRate = DesiredTurnRate * (180.0 / M_PI);
-        sim_status_msg.DesiredHeading = DesiredHeading * (180.0 / M_PI);
         sim_status_msg.LeftMotorPosition = MeasuredLeftMotorPosition * (180.0 / M_PI);
         sim_status_msg.LeftMotorVelocity = MeasuredLeftMotorVelocity * (180.0 / M_PI);
         sim_status_msg.RightMotorPosition = MeasuredRightMotorPosition * (180.0 / M_PI);

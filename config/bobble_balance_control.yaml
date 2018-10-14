@@ -12,11 +12,12 @@ bobble:
       WheelVelocityAdjustment: 0.05
       MeasuredTiltFilterGain: 0.0
       MeasuredTiltDotFilterGain: 0.0
-      MeasuredHeadingFilterGain: 0.4
+      MeasuredHeadingFilterGain: 0.0
       MeasuredTurnRateFilterGain: 0.4
-      LeftWheelVelocityFilterGain: 0.0
+      LeftWheelVelocityFilterGain: 0.4
+      RightWheelVelocityFilterGain: 0.4
       VelocityCmdScale: 1.25
-      TurnCmdScale: 5.0
+      TurnCmdScale: 0.2
       VelocityControlKp: 1.0
       VelocityControlKi: 0.015
       VelocityControlAlphaFilter: 0.0
@@ -25,8 +26,6 @@ bobble:
       TiltControlKp: 2.0
       TiltControlKd: 0.25
       TiltControlAlphaFilter: 0.0
-      HoldHeadingControlKp: 1.0
-      HoldHeadingControlKd: 0.1
       TurningControlKp: 1.0
-      TurningControlKi: 0.015
-      TurningControlKd: 0.1
+      TurningControlKi: 0.0
+      TurningControlKd: 0.0

@@ -62,8 +62,6 @@ namespace bobble_controllers {
         double TiltControlKp;
         double TiltControlKd;
         double TiltControlAlphaFilter;
-        double HoldHeadingControlKp;
-        double HoldHeadingControlKd;
         double TurningControlKp;
         double TurningControlKi;
         double TurningControlKd;
@@ -85,7 +83,6 @@ namespace bobble_controllers {
         bool IdleCmd;
         double DesiredVelocity;
         double DesiredTurnRate;
-        double DesiredHeading;
 
         /// Filters
         LPFilter MeasuredTiltFilter;
@@ -93,6 +90,7 @@ namespace bobble_controllers {
         LPFilter MeasuredHeadingFilter;
         LPFilter MeasuredTurnRateFilter;
         LPFilter LeftWheelVelocityFilter;
+        LPFilter RightWheelVelocityFilter;
         //LPFilter RightMotorEffortLPFilter;
 
         /// Filter Gains
@@ -101,11 +99,11 @@ namespace bobble_controllers {
         double MeasuredHeadingFilterGain;
         double MeasuredTurnRateFilterGain;
         double LeftWheelVelocityFilterGain;
+        double RightWheelVelocityFilterGain;
 
         /// PID Controllers
         PidControl VelocityControlPID;
         PidControl TiltControlPID;
-        PidControl HoldHeadingControlPID;
         PidControl TurningControlPID;
 
         /// Controller state
@@ -115,9 +113,8 @@ namespace bobble_controllers {
         double TiltDot;
         double Heading;
         double TurnRate;
-        double LastTiltError;
-        double LastHeadingError;
-        double LastTurningError;
+        double LeftWheelVelocity;
+        double RightWheelVelocity;
 
         /// Controller outputs
         double TiltEffort;
@@ -134,12 +131,6 @@ namespace bobble_controllers {
         void commandCB(const bobble_controllers::ControlCommands::ConstPtr &cmd);
 
         void update(const ros::Time &time, const ros::Duration &duration);
-
-        void perform_velocity_control();
-
-        void perform_tilt_control();
-
-        void perform_heading_control();
 
         void write_controller_status_msg();
 
