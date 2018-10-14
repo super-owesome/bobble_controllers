@@ -119,6 +119,7 @@ namespace bobble_controllers {
     void BobbleBalanceController::starting(const ros::Time &time) {
         ActiveControlMode = ControlModes::IDLE;
         StartupCmd = false;
+        DiagnosticCmd = false;
         DesiredVelocity = 0.0;
         DesiredTilt = 0.0;
         DesiredTurnRate = 0.0;
