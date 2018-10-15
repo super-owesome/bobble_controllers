@@ -11,22 +11,24 @@ bobble:
       MotorEffortToTorqueSimFactor: 1.0 # Should be set to 1.0 for HW
       WheelVelocityAdjustment: 0.05
       MeasuredTiltFilterGain: 0.025
-      MeasuredTiltDotFilterGain: 0.025
+      MeasuredTiltDotFilterGain: 0.05
       MeasuredHeadingFilterGain: 0.0
       MeasuredTurnRateFilterGain: 0.10
-      LeftWheelVelocityFilterGain: 0.10
-      RightWheelVelocityFilterGain: 0.10
+      LeftWheelVelocityFilterGain: 0.750
+      RightWheelVelocityFilterGain: 0.750
       VelocityCmdScale: 1.75
-      TurnCmdScale: 0.15
-      VelocityControlKp: 0.40
-      VelocityControlKi: 0.0050
-      VelocityControlAlphaFilter: 0.15
+      TurnCmdScale: 3.75
+      VelocityControlKp: 0.1
+      VelocityControlKi: 0.0 #0.005
+      VelocityControlAlphaFilter: 0.45
       VelocityControlMaxIntegralOutput: 0.076
       VelocityControlOutputLimitDegrees: 5.0
-      TiltControlKp: 2.5
-      TiltControlKd: 0.25
+      TiltControlKp: 2.80
+      TiltControlKd: 0.40
       TiltControlAlphaFilter: 0.02
       TiltOffset: -2.85
-      TurningControlKp: 2.0
+      TurningControlKp: 0.1
       TurningControlKi: 0.0
-      TurningControlKd: 0.8
+      TurningControlKd: 0.0 #0.01
+      TurningOutputFilter: 0.5 #0.01
+

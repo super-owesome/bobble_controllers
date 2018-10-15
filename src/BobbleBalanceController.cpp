@@ -74,6 +74,7 @@ namespace bobble_controllers {
         unpackParameter("TurningControlKp", TurningControlKp, 1.0);
         unpackParameter("TurningControlKi", TurningControlKi, 0.01);
         unpackParameter("TurningControlKd", TurningControlKd, 0.01);
+        unpackParameter("TurningOutputFilter", TurningOutputFilter, 0.0);
         unpackParameter("TiltOffset", TiltOffset, 0.0);
 
         // Setup Measured State Filters
@@ -100,9 +101,9 @@ namespace bobble_controllers {
         TiltControlPID.setSetpointRange(20.0 * (M_PI / 180.0));
 
         TurningControlPID.setPID(TurningControlKp, TurningControlKi, TurningControlKd);
-        TurningControlPID.setOutputFilter(0.05);
+        TurningControlPID.setOutputFilter(TurningOutputFilter);
         TurningControlPID.setMaxIOutput(1.0);
-        TurningControlPID.setOutputLimits(-MotorEffortMax / 5.0, MotorEffortMax / 5.0);
+        TurningControlPID.setOutputLimits(-MotorEffortMax / 2.0, MotorEffortMax / 2.0);
         TurningControlPID.setDirection(false);
         TurningControlPID.setSetpointRange(45.0 * (M_PI / 180.0));
 
@@ -244,6 +245,7 @@ namespace bobble_controllers {
             }
         } else if (ActiveControlMode == ControlModes::BALANCE) {
             DesiredTilt = VelocityControlPID.getOutput(DesiredVelocity, ForwardVelocity);
+	    DesiredTilt *= -1.0;
             TiltEffort = TiltControlPID.getOutput(DesiredTilt, Tilt);
             HeadingEffort = TurningControlPID.getOutput(TurnRate, DesiredTurnRate);
             if (IdleCmd) {
@@ -251,6 +253,7 @@ namespace bobble_controllers {
             }
         } else if (ActiveControlMode == ControlModes::DRIVE) {
             DesiredTilt = VelocityControlPID.getOutput(DesiredVelocity, ForwardVelocity);
+	    DesiredTilt *= -1.0;
             TiltEffort = TiltControlPID.getOutput(DesiredTilt, Tilt);
             HeadingEffort = TurningControlPID.getOutput(TurnRate, DesiredTurnRate);
             if (IdleCmd) {
@@ -264,8 +267,8 @@ namespace bobble_controllers {
         /////////////////////////////////////////////////////////////////////////////////////////
         /// Filter the motor effort commands
         /////////////////////////////////////////////////////////////////////////////////////////
-        RightMotorEffortCmd = TiltEffort + HeadingEffort;
-        LeftMotorEffortCmd = TiltEffort - HeadingEffort;
+        RightMotorEffortCmd = TiltEffort - HeadingEffort;
+        LeftMotorEffortCmd = TiltEffort + HeadingEffort;
         // TODO
         //RightMotorEffortCmd = (double) RightMotorLowPassEffortFilter.filter(TiltEffort + HeadingEffort);
         //LeftMotorEffortCmd = (double) LeftMotorLowPassEffortFilter.filter(TiltEffort - HeadingEffort);
