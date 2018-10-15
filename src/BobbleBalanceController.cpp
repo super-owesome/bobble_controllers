@@ -107,7 +107,7 @@ namespace bobble_controllers {
         TurningControlPID.setSetpointRange(45.0 * (M_PI / 180.0));
 
         // Setup publishers and subscribers
-        pub_bobble_status = n.advertise<executive::BobbleBotStatus>("bb_controller_status", 1);
+        pub_bobble_status = new realtime_tools::RealtimePublisher<executive::BobbleBotStatus>(n, "bb_controller_status", 1);
         sub_imu_sensor_ = node_.subscribe("/imu_bosch/data_raw", 1, &BobbleBalanceController::imuCB, this);
         sub_command_ = node_.subscribe("/bobble/bobble_balance_controller/bb_cmd", 1,
                                        &BobbleBalanceController::commandCB, this);
@@ -302,26 +302,27 @@ namespace bobble_controllers {
     }
 
     void BobbleBalanceController::write_controller_status_msg() {
-        executive::BobbleBotStatus sim_status_msg;
-        sim_status_msg.ControlMode = ActiveControlMode;
-        sim_status_msg.DeltaT = 0.0;
-        sim_status_msg.Tilt = Tilt * (180.0 / M_PI);
-        sim_status_msg.TiltRate = TiltDot * (180.0 / M_PI);
-        sim_status_msg.Heading = Heading * (180.0 / M_PI);
-        sim_status_msg.TurnRate = TurnRate * (180.0 / M_PI);
-        sim_status_msg.ForwardVelocity = ForwardVelocity;
-        sim_status_msg.DesiredVelocity = DesiredVelocity;
-        sim_status_msg.DesiredTilt = DesiredTilt * (180.0 / M_PI);
-        sim_status_msg.DesiredTurnRate = DesiredTurnRate * (180.0 / M_PI);
-        sim_status_msg.LeftMotorPosition = MeasuredLeftMotorPosition * (180.0 / M_PI);
-        sim_status_msg.LeftMotorVelocity = MeasuredLeftMotorVelocity * (180.0 / M_PI);
-        sim_status_msg.RightMotorPosition = MeasuredRightMotorPosition * (180.0 / M_PI);
-        sim_status_msg.RightMotorVelocity = MeasuredRightMotorVelocity * (180.0 / M_PI);
-        sim_status_msg.TiltEffort = TiltEffort;
-        sim_status_msg.HeadingEffort = HeadingEffort;
-        sim_status_msg.LeftMotorEffortCmd = LeftMotorEffortCmd;
-        sim_status_msg.RightMotorEffortCmd = RightMotorEffortCmd;
-        pub_bobble_status.publish(sim_status_msg);
+        if(pub_bobble_status->trylock()) {
+            pub_bobble_status->msg_.ControlMode = ActiveControlMode;
+            pub_bobble_status->msg_.DeltaT = 0.0;
+            pub_bobble_status->msg_.Tilt = Tilt * (180.0 / M_PI);
+            pub_bobble_status->msg_.TiltRate = TiltDot * (180.0 / M_PI);
+            pub_bobble_status->msg_.Heading = Heading * (180.0 / M_PI);
+            pub_bobble_status->msg_.TurnRate = TurnRate * (180.0 / M_PI);
+            pub_bobble_status->msg_.ForwardVelocity = ForwardVelocity;
+            pub_bobble_status->msg_.DesiredVelocity = DesiredVelocity;
+            pub_bobble_status->msg_.DesiredTilt = DesiredTilt * (180.0 / M_PI);
+            pub_bobble_status->msg_.DesiredTurnRate = DesiredTurnRate * (180.0 / M_PI);
+            pub_bobble_status->msg_.LeftMotorPosition = MeasuredLeftMotorPosition * (180.0 / M_PI);
+            pub_bobble_status->msg_.LeftMotorVelocity = MeasuredLeftMotorVelocity * (180.0 / M_PI);
+            pub_bobble_status->msg_.RightMotorPosition = MeasuredRightMotorPosition * (180.0 / M_PI);
+            pub_bobble_status->msg_.RightMotorVelocity = MeasuredRightMotorVelocity * (180.0 / M_PI);
+            pub_bobble_status->msg_.TiltEffort = TiltEffort;
+            pub_bobble_status->msg_.HeadingEffort = HeadingEffort;
+            pub_bobble_status->msg_.LeftMotorEffortCmd = LeftMotorEffortCmd;
+            pub_bobble_status->msg_.RightMotorEffortCmd = RightMotorEffortCmd;
+            pub_bobble_status->unlockAndPublish();
+        }
     }
 
     void BobbleBalanceController::unpackParameter(std::string parameterName, double &referenceToParameter,

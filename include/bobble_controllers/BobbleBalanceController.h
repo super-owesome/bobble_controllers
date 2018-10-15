@@ -12,6 +12,7 @@
 #include <string>
 #include <algorithm>
 
+#include <realtime_tools/realtime_publisher.h>
 #include <ros/node_handle.h>
 #include <hardware_interface/joint_command_interface.h>
 #include <controller_interface/controller.h>
@@ -32,7 +33,7 @@ namespace bobble_controllers {
         ros::NodeHandle node_;
         hardware_interface::EffortJointInterface *robot_;
         std::vector <hardware_interface::JointHandle> joints_;
-        ros::Publisher pub_bobble_status;
+        realtime_tools::RealtimePublisher<executive::BobbleBotStatus>* pub_bobble_status;
         ros::Subscriber sub_imu_sensor_;
         ros::Subscriber sub_command_;
 
