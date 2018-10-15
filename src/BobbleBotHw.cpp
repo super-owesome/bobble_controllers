@@ -12,6 +12,8 @@ BobbleBotHw::BobbleBotHw()
   std::string default_can_channel = "vcan0";
   std::string default_left_joint_name = "left_wheel_hinge";
   std::string default_right_joint_name = "right_wheel_hinge";
+  std::string default_imu_name = "imu";
+  std::string default_imu_link = "chassis_link";
   pnh.param("LeftMotorJointName", left_motor_joint_name, default_left_joint_name);
   pnh.param("LeftMotorChannel", left_motor_chup_can_interface.Channel, default_can_channel);
   pnh.param("LeftMotorChupId", left_motor_chup_can_interface.DeviceId, 291);
@@ -20,6 +22,8 @@ BobbleBotHw::BobbleBotHw()
   pnh.param("RightMotorChannel", right_motor_chup_can_interface.Channel, default_can_channel);
   pnh.param("RightMotorChupId", right_motor_chup_can_interface.DeviceId, 292);
   pnh.param("RightMotorRxOffset", right_motor_chup_can_interface.RxOffset, 0);
+  pnh.param("ImuName", imu_name, default_imu_name);
+  pnh.param("ImuLink", imu_link, default_imu_link);
   left_motor_chup_can_interface.ChannelName = left_motor_joint_name;
   right_motor_chup_can_interface.ChannelName = right_motor_joint_name;
 
@@ -32,13 +36,15 @@ BobbleBotHw::BobbleBotHw()
                                                                 &RightMotorPosition,
                                                                 &RightMotorVelocity,
                                                                 &RightMotorTorque);
-  hardware_interface::ImuSensorHandle imu_handle("imu",
-                                                 "chassis_link",
+
+  bno055Imu.init();
+  hardware_interface::ImuSensorHandle imu_handle(imu_name,
+                                                 imu_link,
                                                  NULL,
                                                  NULL,
-                                                 AngularVelocity,
+                                                 bno055Imu.GyroDataArray,
                                                  NULL,
-                                                 LinearAcceleration,
+                                                 bno055Imu.AccelDataArray,
                                                  NULL);
 
   // connect and register the joint effort interfaces
