@@ -128,7 +128,8 @@ namespace bobble_controllers {
         double LeftMotorEffortCmd;
         double RightMotorEffortCmd;
 
-        bool init(hardware_interface::EffortJointInterface *robot, hardware_interface::ImuSensorInterface *imu, ros::NodeHandle &n);
+        //bool init(hardware_interface::EffortJointInterface *robot, hardware_interface::ImuSensorInterface *imu, ros::NodeHandle &n);
+        bool init(hardware_interface::EffortJointInterface *robot, ros::NodeHandle &n);
 
         void starting(const ros::Time &time);
 

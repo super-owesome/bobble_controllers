@@ -4,11 +4,11 @@ bobble:
       joints:
         - right_wheel_hinge
         - left_wheel_hinge
-      InSim: false
+      InSim: true
       StartingTiltSafetyLimitDegrees: 4.0
       MaxTiltSafetyLimitDegrees: 20.0
       MotorEffortMax: 0.2
-      MotorEffortToTorqueSimFactor: 1.0 # Should be set to 1.0 for HW
+      MotorEffortToTorqueSimFactor: 0.832 # 0.0 # HW this is 1.0
       WheelVelocityAdjustment: 0.05
       MeasuredTiltFilterGain: 0.025
       MeasuredTiltDotFilterGain: 0.05
@@ -17,7 +17,7 @@ bobble:
       LeftWheelVelocityFilterGain: 0.750
       RightWheelVelocityFilterGain: 0.750
       VelocityCmdScale: 1.75
-      TurnCmdScale: 3.75
+      TurnCmdScale: -3.75 # Negative sign for left/right turn in sim
       VelocityControlKp: 0.1
       VelocityControlKi: 0.0 #0.005
       VelocityControlAlphaFilter: 0.45
@@ -26,9 +26,9 @@ bobble:
       TiltControlKp: 2.80
       TiltControlKd: 0.40
       TiltControlAlphaFilter: 0.02
-      TiltOffset: -2.85
+      TiltOffset: 0.0 # HW this is -2.85
       TurningControlKp: 0.1
       TurningControlKi: 0.0
-      TurningControlKd: 0.0 #0.01
-      TurningOutputFilter: 0.5 #0.01
+      TurningControlKd: 0.0
+      TurningOutputFilter: 0.5
 

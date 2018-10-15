@@ -1,7 +1,6 @@
 <launch>
     <rosparam file="$(find bobble_controllers)/config/bobble_hw_config.yaml" command="load"/>
-	<rosparam file="$(find bobble_controllers)/config/bobble_balance_control.yaml"
-		command="load"/>
+    <rosparam file="$(find bobble_controllers)/config/bobble_hw_balance_control.yaml" command="load"/>
     <node name="bobble_bot_control_node" pkg="bobble_controllers" type="BobbleControlNode" ns="/bobble"
         output="screen"/>
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/bobble"

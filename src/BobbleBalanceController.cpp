@@ -20,10 +20,11 @@ namespace bobble_controllers {
         sub_command_.shutdown();
     }
 
-    bool BobbleBalanceController::init(hardware_interface::EffortJointInterface *robot, hardware_interface::ImuSensorInterface *imu, ros::NodeHandle &n) {
+//    bool BobbleBalanceController::init(hardware_interface::EffortJointInterface *robot, hardware_interface::ImuSensorInterface *imu, ros::NodeHandle &n) {
+    bool BobbleBalanceController::init(hardware_interface::EffortJointInterface *robot, ros::NodeHandle &n) {
         node_ = n;
         robot_ = robot;
-        imu_   = imu;
+//        imu_   = imu;
 
         XmlRpc::XmlRpcValue joint_names;
         if (!node_.getParam("joints", joint_names)) {
@@ -50,7 +51,7 @@ namespace bobble_controllers {
             joints_.push_back(j);
         }
 
-        imuData = imu_->getHandle("imu");
+//        imuData = imu_->getHandle("imu");
 
         unpackFlag("InSim", InSim, true);
         unpackParameter("StartingTiltSafetyLimitDegrees", StartingTiltSafetyLimitDegrees, 4.0);
@@ -112,10 +113,13 @@ namespace bobble_controllers {
 
         // Setup publishers and subscribers
         pub_bobble_status = new realtime_tools::RealtimePublisher<executive::BobbleBotStatus>(n, "bb_controller_status", 1);
-        sub_imu_sensor_ = node_.subscribe("/imu_bosch/data_raw", 1, &BobbleBalanceController::imuCB, this);
+        // Only do IMU subscription in sim.
+        //if(InSim){
+            sub_imu_sensor_ = node_.subscribe("/imu_bosch/data_raw", 1, &BobbleBalanceController::imuCB, this);
+        //}
+        // TODO make this RT safe.
         sub_command_ = node_.subscribe("/bobble/bobble_balance_controller/bb_cmd", 1,
                                        &BobbleBalanceController::commandCB, this);
-
         return true;
     }
 
@@ -157,32 +161,31 @@ namespace bobble_controllers {
     }
 
     void BobbleBalanceController::imuCB(const sensor_msgs::Imu::ConstPtr &imuData) {
-        // Set Angular Velocities
+        // NOTE: IMU model in sim uses slightly different reference frames so this
+        // function will have sim specific code. Eventually the hardware will not
+        // rely on this IMU call back at all and therefore this entire function
+        // will be a sim interface only.
         if(InSim) {
             MeasuredTiltDot = imuData->angular_velocity.y;
+            MeasuredTurnRate = -imuData->angular_velocity.z;
         }else{
             MeasuredTiltDot = imuData->angular_velocity.x;
+            MeasuredTurnRate = imuData->angular_velocity.z;
         }
-        MeasuredTurnRate = imuData->angular_velocity.z;
-        // Use Madgwick orientation filter.
+        // Call Madgwick orientation filter.
         MadgwickAHRSupdateIMU(imuData->angular_velocity.x, imuData->angular_velocity.y, imuData->angular_velocity.z,
 							  imuData->linear_acceleration.x, imuData->linear_acceleration.y,
 							  imuData->linear_acceleration.z);
         // Construct a DCM matrix from the quaternion
         tf::Quaternion q(q0, q1, q2, q3);
 		tf::Matrix3x3 m(q);
-		// Set Angles
-		if(InSim)
-		{
+		if(InSim) {
 			m.getRPY(MeasuredHeading, MeasuredTilt, MeasuredRoll);
 			MeasuredTilt*=-1.0;
-		}
-		else
-		{
+		}else {
 			m.getRPY(MeasuredHeading, MeasuredRoll, MeasuredTilt);
 			MeasuredTilt -= TiltOffset;
 		}
-
     }
 
     void BobbleBalanceController::commandCB(const bobble_controllers::ControlCommands::ConstPtr &cmd) {
@@ -223,6 +226,7 @@ namespace bobble_controllers {
             if (InSim) {
                 q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;
             }
+            DesiredTilt = 0.0;
             TiltEffort = 0.0;
             HeadingEffort = 0.0;
             if (StartupCmd) {
@@ -248,7 +252,7 @@ namespace bobble_controllers {
             }
         } else if (ActiveControlMode == ControlModes::BALANCE) {
             DesiredTilt = VelocityControlPID.getOutput(DesiredVelocity, ForwardVelocity);
-	    DesiredTilt *= -1.0;
+	        DesiredTilt *= -1.0;
             TiltEffort = TiltControlPID.getOutput(DesiredTilt, Tilt);
             HeadingEffort = TurningControlPID.getOutput(TurnRate, DesiredTurnRate);
             if (IdleCmd) {
@@ -256,7 +260,7 @@ namespace bobble_controllers {
             }
         } else if (ActiveControlMode == ControlModes::DRIVE) {
             DesiredTilt = VelocityControlPID.getOutput(DesiredVelocity, ForwardVelocity);
-	    DesiredTilt *= -1.0;
+	        DesiredTilt *= -1.0;
             TiltEffort = TiltControlPID.getOutput(DesiredTilt, Tilt);
             HeadingEffort = TurningControlPID.getOutput(TurnRate, DesiredTurnRate);
             if (IdleCmd) {
@@ -268,13 +272,10 @@ namespace bobble_controllers {
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
-        /// Filter the motor effort commands
+        /// Combine heading and tilt efforts to achieve velocity, tilt, and turning control.
         /////////////////////////////////////////////////////////////////////////////////////////
         RightMotorEffortCmd = TiltEffort - HeadingEffort;
         LeftMotorEffortCmd = TiltEffort + HeadingEffort;
-        // TODO
-        //RightMotorEffortCmd = (double) RightMotorLowPassEffortFilter.filter(TiltEffort + HeadingEffort);
-        //LeftMotorEffortCmd = (double) LeftMotorLowPassEffortFilter.filter(TiltEffort - HeadingEffort);
 
         /////////////////////////////////////////////////////////////////////////////////////////
         /// Apply safety checks
@@ -302,7 +303,7 @@ namespace bobble_controllers {
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
-        /// Report our status. TODO Use RT safe approach for this.
+        /// Report our status out using RT safe publisher
         /////////////////////////////////////////////////////////////////////////////////////////
         write_controller_status_msg();
     }

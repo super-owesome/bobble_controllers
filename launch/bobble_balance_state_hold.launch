@@ -6,7 +6,7 @@
 		<arg name="paused" value="$(arg paused)"/>
 	</include>
 
-	<rosparam file="$(find bobble_controllers)/config/bobble_balance_control.yaml"
+	<rosparam file="$(find bobble_controllers)/config/bobble_sim_balance_control.yaml"
 		command="load"/>
 
 	<node name="controller_spawner" pkg="controller_manager" type="spawner"
