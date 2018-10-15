@@ -65,6 +65,7 @@ namespace bobble_controllers {
         double TurningControlKp;
         double TurningControlKi;
         double TurningControlKd;
+        double TurningOutputFilter;
 
         /// Measured state
         double MeasuredTilt;
