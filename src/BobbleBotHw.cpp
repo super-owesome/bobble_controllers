@@ -32,6 +32,15 @@ BobbleBotHw::BobbleBotHw()
                                                                 &RightMotorPosition,
                                                                 &RightMotorVelocity,
                                                                 &RightMotorTorque);
+  hardware_interface::ImuSensorHandle imu_handle("imu",
+                                                 "chassis_link",
+                                                 NULL,
+                                                 NULL,
+                                                 AngularVelocity,
+                                                 NULL,
+                                                 LinearAcceleration,
+                                                 NULL);
+
   // connect and register the joint effort interfaces
   hardware_interface::JointHandle left_joint_effort_handle(left_joint_state_handle,
                                                             &LeftMotorCmdVoltage);

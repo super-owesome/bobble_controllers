@@ -8,6 +8,7 @@
 #include <hardware_interface/robot_hw.h>
 #include <hardware_interface/joint_command_interface.h>
 #include <hardware_interface/joint_state_interface.h>
+#include <hardware_interface/imu_sensor_interface.h>
 #include <chupacabra_comm/LinuxTransporter.h>
 #include <chupacabra_comm/ChupCanLinuxDriver.h>
 
@@ -29,6 +30,7 @@ public:
 
 private:
     hardware_interface::EffortJointInterface jnt_effort_interface;
+    hardware_interface::ImuSensorInterface imu_interface;
     LinuxTransporter   left_motor_chup_can_transporter;
     LinuxTransporter   right_motor_chup_can_transporter;
     double LeftMotorPosition;
@@ -39,6 +41,8 @@ private:
     double RightMotorVelocity;
     double RightMotorTorque;
     double RightMotorCmdVoltage;
+    double LinearAcceleration[3];
+    double AngularVelocity[3];
 
 };
 
