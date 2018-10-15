@@ -15,6 +15,7 @@
 #include <realtime_tools/realtime_publisher.h>
 #include <ros/node_handle.h>
 #include <hardware_interface/joint_command_interface.h>
+#include <hardware_interface/imu_sensor_interface.h>
 #include <controller_interface/controller.h>
 #include <trajectory_msgs/JointTrajectoryPoint.h>
 #include <sensor_msgs/Imu.h>
@@ -32,11 +33,12 @@ namespace bobble_controllers {
     Controller<hardware_interface::EffortJointInterface> {
         ros::NodeHandle node_;
         hardware_interface::EffortJointInterface *robot_;
+        hardware_interface::ImuSensorInterface *imu_;
         std::vector <hardware_interface::JointHandle> joints_;
         realtime_tools::RealtimePublisher<executive::BobbleBotStatus>* pub_bobble_status;
         ros::Subscriber sub_imu_sensor_;
         ros::Subscriber sub_command_;
-
+        hardware_interface::ImuSensorHandle imuData;
         enum ControlModes {
             IDLE,
             STARTUP,
@@ -126,7 +128,7 @@ namespace bobble_controllers {
         double LeftMotorEffortCmd;
         double RightMotorEffortCmd;
 
-        bool init(hardware_interface::EffortJointInterface *robot, ros::NodeHandle &n);
+        bool init(hardware_interface::EffortJointInterface *robot, hardware_interface::ImuSensorInterface *imu, ros::NodeHandle &n);
 
         void starting(const ros::Time &time);
 
