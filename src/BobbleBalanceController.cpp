@@ -20,8 +20,12 @@ namespace bobble_controllers {
         sub_command_.shutdown();
     }
 
-    bool BobbleBalanceController::initRequest(hardware_interface::RobotHW *robot, ros::NodeHandle &n) {
-        node_ = n;
+    bool BobbleBalanceController::initRequest(hardware_interface::RobotHW* robot_hw,
+                             ros::NodeHandle&             root_nh,
+                             ros::NodeHandle&             controller_nh,
+                             ClaimedResources&            claimed_resources)
+    {
+        node_ = root_nh;
 
         XmlRpc::XmlRpcValue joint_names;
         if (!node_.getParam("joints", joint_names)) {
@@ -44,11 +48,11 @@ namespace bobble_controllers {
                 return false;
             }
 
-            hardware_interface::JointHandle j = robot->get<hardware_interface::EffortJointInterface>()->getHandle((std::string) name_value);
+            hardware_interface::JointHandle j = robot_hw->get<hardware_interface::EffortJointInterface>()->getHandle((std::string) name_value);
             joints_.push_back(j);
         }
 
-        imuData = robot->get<hardware_interface::ImuSensorInterface>()->getHandle("imu");
+        imuData = robot_hw->get<hardware_interface::ImuSensorInterface>()->getHandle("imu");
 
         unpackFlag("InSim", InSim, true);
         unpackParameter("StartingTiltSafetyLimitDegrees", StartingTiltSafetyLimitDegrees, 4.0);
@@ -109,7 +113,7 @@ namespace bobble_controllers {
         TurningControlPID.setSetpointRange(45.0 * (M_PI / 180.0));
 
         // Setup publishers and subscribers
-        pub_bobble_status = new realtime_tools::RealtimePublisher<executive::BobbleBotStatus>(n, "bb_controller_status", 1);
+        pub_bobble_status = new realtime_tools::RealtimePublisher<executive::BobbleBotStatus>(root_nh, "bb_controller_status", 1);
         // Only do IMU subscription in sim.
         //if(InSim){
             sub_imu_sensor_ = node_.subscribe("/imu_bosch/data_raw", 1, &BobbleBalanceController::imuCB, this);
