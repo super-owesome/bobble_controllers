@@ -1,6 +1,7 @@
 #include <ros/ros.h>
 #include <pthread.h>
 #include <sys/mman.h>
+#include <bobble_controllers/RtStatus.h>
 #include <bobble_controllers/BobbleBotHw.h>
 #include <controller_manager/controller_manager.h>
 
@@ -35,6 +36,10 @@ int main(int argc, char **argv)
   ros::Time prev_time = ros::Time::now();
   ros::Rate rate(loop_rate);
 
+  // Setup rt status publisher
+  realtime_tools::RealtimePublisher<bobble_controllers::RtStatus>* pub_rt_status;
+  pub_rt_status = new realtime_tools::RealtimePublisher<bobble_controllers::RtStatus>(pnh, "rt_status", 1);
+
   // Initialize the robot hw
   bobble_bot.init();
 
@@ -47,6 +52,12 @@ int main(int argc, char **argv)
     bobble_bot.read();
     cm.update(time, period);
     bobble_bot.write();
+    // Do RT safe publish of loop delta-t. This is for monitoring the
+    // loop rate jitter.
+    if(pub_rt_status->trylock()) {
+      pub_rt_status->msg_.DeltaT = period.toSec();
+      pub_rt_status->unlockAndPublish();
+    }
     rate.sleep();
   }
   return 0;

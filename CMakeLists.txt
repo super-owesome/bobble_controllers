@@ -28,6 +28,7 @@ catkin_python_setup()
 add_message_files(
   FILES
   ControlCommands.msg
+  RtStatus.msg
 )
 
 ## Generate added messages and services with any dependencies listed here
