@@ -25,7 +25,7 @@ namespace bobble_controllers {
                              ros::NodeHandle&             controller_nh,
                              ClaimedResources&            claimed_resources)
     {
-        node_ = root_nh;
+        node_ = controller_nh;
 
         XmlRpc::XmlRpcValue joint_names;
         if (!node_.getParam("joints", joint_names)) {
@@ -52,7 +52,7 @@ namespace bobble_controllers {
             joints_.push_back(j);
         }
 
-        imuData = robot_hw->get<hardware_interface::ImuSensorInterface>()->getHandle("imu");
+        //imuData = robot_hw->get<hardware_interface::ImuSensorInterface>()->getHandle("imu");
 
         unpackFlag("InSim", InSim, true);
         unpackParameter("StartingTiltSafetyLimitDegrees", StartingTiltSafetyLimitDegrees, 4.0);
