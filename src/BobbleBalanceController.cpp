@@ -20,11 +20,8 @@ namespace bobble_controllers {
         sub_command_.shutdown();
     }
 
-//    bool BobbleBalanceController::init(hardware_interface::EffortJointInterface *robot, hardware_interface::ImuSensorInterface *imu, ros::NodeHandle &n) {
-    bool BobbleBalanceController::init(hardware_interface::EffortJointInterface *robot, ros::NodeHandle &n) {
+    bool BobbleBalanceController::init(hardware_interface::RobotHW *robot, ros::NodeHandle &n) {
         node_ = n;
-        robot_ = robot;
-//        imu_   = imu;
 
         XmlRpc::XmlRpcValue joint_names;
         if (!node_.getParam("joints", joint_names)) {
@@ -47,11 +44,11 @@ namespace bobble_controllers {
                 return false;
             }
 
-            hardware_interface::JointHandle j = robot->getHandle((std::string) name_value);
+            hardware_interface::JointHandle j = robot->get<hardware_interface::EffortJointInterface>()->getHandle((std::string) name_value);
             joints_.push_back(j);
         }
 
-//        imuData = imu_->getHandle("imu");
+        imuData = robot->get<hardware_interface::ImuSensorInterface>()->getHandle("imu");
 
         unpackFlag("InSim", InSim, true);
         unpackParameter("StartingTiltSafetyLimitDegrees", StartingTiltSafetyLimitDegrees, 4.0);

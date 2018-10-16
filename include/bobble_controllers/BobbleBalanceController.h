@@ -32,9 +32,9 @@ namespace bobble_controllers {
     class BobbleBalanceController : public controller_interface::
     Controller<hardware_interface::EffortJointInterface> {
         ros::NodeHandle node_;
-        hardware_interface::EffortJointInterface *robot_;
-        hardware_interface::ImuSensorInterface *imu_;
+        hardware_interface::RobotHw *robot_;
         std::vector <hardware_interface::JointHandle> joints_;
+        hardware_interface::ImuSensorInterface *imu_;
         realtime_tools::RealtimePublisher<executive::BobbleBotStatus>* pub_bobble_status;
         ros::Subscriber sub_imu_sensor_;
         ros::Subscriber sub_command_;
@@ -128,8 +128,7 @@ namespace bobble_controllers {
         double LeftMotorEffortCmd;
         double RightMotorEffortCmd;
 
-        //bool init(hardware_interface::EffortJointInterface *robot, hardware_interface::ImuSensorInterface *imu, ros::NodeHandle &n);
-        bool init(hardware_interface::EffortJointInterface *robot, ros::NodeHandle &n);
+        bool init(hardware_interface::RobotHW *robot, ros::NodeHandle &n);
 
         void starting(const ros::Time &time);
 
