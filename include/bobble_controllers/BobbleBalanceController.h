@@ -32,7 +32,7 @@ namespace bobble_controllers {
     class BobbleBalanceController : public controller_interface::
     Controller<hardware_interface::EffortJointInterface> {
         ros::NodeHandle node_;
-        hardware_interface::RobotHw *robot_;
+        hardware_interface::RobotHW *robot_;
         std::vector <hardware_interface::JointHandle> joints_;
         hardware_interface::ImuSensorInterface *imu_;
         realtime_tools::RealtimePublisher<executive::BobbleBotStatus>* pub_bobble_status;
