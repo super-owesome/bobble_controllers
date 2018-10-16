@@ -128,7 +128,6 @@ namespace bobble_controllers {
         double LeftMotorEffortCmd;
         double RightMotorEffortCmd;
 
-        bool init(hardware_interface::RobotHW *robot, ros::NodeHandle &n);
 
         void starting(const ros::Time &time);
 
@@ -146,6 +145,8 @@ namespace bobble_controllers {
 
         double limitEffort(double effort_cmd);
 
+    protected:
+        virtual bool initRequest(hardware_interface::RobotHW *robot, ros::NodeHandle &n);
     public:
         BobbleBalanceController(void);
 

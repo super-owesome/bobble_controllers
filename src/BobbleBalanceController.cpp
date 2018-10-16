@@ -20,7 +20,7 @@ namespace bobble_controllers {
         sub_command_.shutdown();
     }
 
-    bool BobbleBalanceController::init(hardware_interface::RobotHW *robot, ros::NodeHandle &n) {
+    bool BobbleBalanceController::initRequest(hardware_interface::RobotHW *robot, ros::NodeHandle &n) {
         node_ = n;
 
         XmlRpc::XmlRpcValue joint_names;
