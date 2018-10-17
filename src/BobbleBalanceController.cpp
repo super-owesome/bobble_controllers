@@ -25,6 +25,20 @@ namespace bobble_controllers {
                              ros::NodeHandle&             controller_nh,
                              ClaimedResources&            claimed_resources)
     {
+        // check if construction finished cleanly
+        if (state_ != CONSTRUCTED){
+            ROS_ERROR("Cannot initialize this controller because it failed to be constructed");
+            return false;
+        }
+
+        // get a pointer to the effort interface
+        hardware_interface::EffortJointInterface* effort_hw = robot_hw->get<hardware_interface::EffortJointInterface>();
+        if (!effort_hw)
+        {
+            ROS_ERROR("This controller requires a hardware interface of type hardware_interface::EffortJointInterface.");
+            return false;
+        }
+
         node_ = controller_nh;
 
         XmlRpc::XmlRpcValue joint_names;
@@ -115,12 +129,14 @@ namespace bobble_controllers {
         // Setup publishers and subscribers
         pub_bobble_status = new realtime_tools::RealtimePublisher<executive::BobbleBotStatus>(root_nh, "bb_controller_status", 1);
         // Only do IMU subscription in sim.
-        //if(InSim){
-            sub_imu_sensor_ = node_.subscribe("/imu_bosch/data_raw", 1, &BobbleBalanceController::imuCB, this);
-        //}
+        if(InSim){
+        sub_imu_sensor_ = node_.subscribe("/imu_bosch/data_raw", 1, &BobbleBalanceController::imuCB, this);
+        }
         // TODO make this RT safe.
         sub_command_ = node_.subscribe("/bobble/bobble_balance_controller/bb_cmd", 1,
                                        &BobbleBalanceController::commandCB, this);
+
+        state_ = INITIALIZED;
         return true;
     }
 
