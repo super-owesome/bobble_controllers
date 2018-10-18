@@ -47,7 +47,8 @@ BobbleBotHw::BobbleBotHw()
                                                  bno055Imu.AccelDataArray,
                                                  NULL);
 
-  registerInterface(&imu_handle);
+  imu_interface.registerHandle(imu_handle);
+  registerInterface(&imu_interface);
   // connect and register the joint effort interfaces
   hardware_interface::JointHandle left_joint_effort_handle(left_joint_state_handle,
                                                             &LeftMotorCmdVoltage);
