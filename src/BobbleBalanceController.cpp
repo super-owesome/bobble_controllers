@@ -196,6 +196,8 @@ namespace bobble_controllers {
         tf::Matrix3x3 m(q);
         m.getRPY(MeasuredHeading, MeasuredRoll, MeasuredTilt);
         MeasuredTilt -= TiltOffset;
+        MeasuredTiltDot = imuData.getAngularVelocity()[0];
+        MeasuredTurnRate = imuData.getAngularVelocity()[2];
     }
 
     void BobbleBalanceController::imuCB(const sensor_msgs::Imu::ConstPtr &imuData) {
@@ -388,10 +390,10 @@ namespace bobble_controllers {
     {
         if (!node_.getParam(parameterName, referenceToParameter)) {
             referenceToParameter = defaultValue;
-            ROS_ERROR("%s not set for (namespace: %s) using %f.",
+            ROS_ERROR("%s not set for (namespace: %s) using %s.",
                       parameterName.c_str(),
                       node_.getNamespace().c_str(),
-                      defaultValue);
+                      defaultValue.c_str());
         }
     }
 
