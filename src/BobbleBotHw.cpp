@@ -71,6 +71,7 @@ void BobbleBotHw::init(){
 }
 
 void BobbleBotHw::read(){
+  bno055Imu.read();
   left_motor_chup_can_interface.ReadTelemetry();
   right_motor_chup_can_interface.ReadTelemetry();
   CommData left_chup_data = left_motor_chup_can_interface.getCommData();
