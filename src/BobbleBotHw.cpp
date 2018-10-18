@@ -12,7 +12,7 @@ BobbleBotHw::BobbleBotHw()
   std::string default_can_channel = "vcan0";
   std::string default_left_joint_name = "left_wheel_hinge";
   std::string default_right_joint_name = "right_wheel_hinge";
-  std::string default_imu_name = "imu";
+  std::string default_imu_name = "bno055";
   std::string default_imu_link = "bno055_imu_link";
   pnh.param("LeftMotorJointName", left_motor_joint_name, default_left_joint_name);
   pnh.param("LeftMotorChannel", left_motor_chup_can_interface.Channel, default_can_channel);

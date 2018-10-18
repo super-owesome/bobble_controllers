@@ -128,6 +128,8 @@ namespace bobble_controllers {
         double LeftMotorEffortCmd;
         double RightMotorEffortCmd;
 
+        /// Imu Name
+        std::string ImuName;
 
         void starting(const ros::Time &time);
 
@@ -140,10 +142,13 @@ namespace bobble_controllers {
         void write_controller_status_msg();
 
         void unpackParameter(std::string parameterName, double &referenceToParameter, double defaultValue);
+        void unpackParameter(std::string parameterName, std::string &referenceToParameter, std::string defaultValue);
 
         void unpackFlag(std::string parameterName, bool &referenceToFlag, bool defaultValue);
 
         double limitEffort(double effort_cmd);
+
+        void populateImuData();
 
     protected:
         virtual bool initRequest(hardware_interface::RobotHW* robot_hw,
