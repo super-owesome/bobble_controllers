@@ -66,6 +66,25 @@ namespace bobble_controllers {
             joints_.push_back(j);
         }
 
+        // get a pointer to the imu interface
+        hardware_interface::ImuSensorInterface* imu_hw = robot_hw->get<hardware_interface::ImuSensorInterface>();
+        if (!imu_hw)
+        {
+            ROS_ERROR("This controller requires a hardware interface of type hardware_interface::ImuSensorInterface.");
+            return false;
+        }
+
+        // return which resources are claimed by this controller
+        imu_hw->clearClaims();
+        const std::vector<std::string>& imuNames = imu_hw->getNames();
+        for(unsigned int i=0; i<imuNames.size(); i++)
+        {
+            std::cout << "IMU!!!!" << std::endl;
+            std::cout << imuNames[i] << std::endl;
+        }
+
+        imu_hw->clearClaims();
+
         //imuData = robot_hw->get<hardware_interface::ImuSensorInterface>()->getHandle("imu");
 
         unpackFlag("InSim", InSim, true);
