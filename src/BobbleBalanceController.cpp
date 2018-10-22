@@ -195,8 +195,9 @@ namespace bobble_controllers {
         tf::Quaternion q(q0, q1, q2, q3);
         tf::Matrix3x3 m(q);
         m.getRPY(MeasuredHeading, MeasuredRoll, MeasuredTilt);
-        MeasuredTilt -= TiltOffset;
-        MeasuredTiltDot = imuData.getAngularVelocity()[0];
+	MeasuredTilt = -MeasuredTilt;
+        MeasuredTilt += TiltOffset;
+        MeasuredTiltDot = -imuData.getAngularVelocity()[0];
         MeasuredTurnRate = imuData.getAngularVelocity()[2];
     }
 
