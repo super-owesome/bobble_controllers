@@ -37,14 +37,16 @@ BobbleBotHw::BobbleBotHw()
                                                                 &RightMotorVelocity,
                                                                 &RightMotorTorque);
 
-  bno055Imu.init();
+  adxl345_i2c.init();
+  itg3200_i2c.init();
+
   hardware_interface::ImuSensorHandle imu_handle(imu_name,
                                                  imu_link,
                                                  NULL,
                                                  NULL,
-                                                 bno055Imu.GyroDataArray,
+                                                 itg3200_i2c.GyroDataArray,
                                                  NULL,
-                                                 bno055Imu.AccelDataArray,
+                                                 adxl345.AccelDataArray,
                                                  NULL);
 
   imu_interface.registerHandle(imu_handle);
@@ -71,7 +73,8 @@ void BobbleBotHw::init(){
 }
 
 void BobbleBotHw::read(){
-  bno055Imu.read();
+  adxl345_i2c.read();
+  itg3200_i2c.read();
   left_motor_chup_can_interface.ReadTelemetry();
   right_motor_chup_can_interface.ReadTelemetry();
   CommData left_chup_data = left_motor_chup_can_interface.getCommData();

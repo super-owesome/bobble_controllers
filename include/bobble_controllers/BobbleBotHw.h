@@ -11,7 +11,8 @@
 #include <hardware_interface/imu_sensor_interface.h>
 #include <chupacabra_comm/LinuxTransporter.h>
 #include <chupacabra_comm/ChupCanLinuxDriver.h>
-#include "bno055_ros_node/BoschBno055Uart.h"
+#include "adxl345_ros_node/adxl345_i2c.h"
+#include "itg3200_ros_node/itg3200_i2c.h"
 
 class BobbleBotHw : public hardware_interface::RobotHW
 {
@@ -32,7 +33,8 @@ public:
     ChupCanLinuxDriver left_motor_chup_can_interface;
     ChupCanLinuxDriver right_motor_chup_can_interface;
 
-    bno055_ros_node::BoschBno055Uart bno055Imu;
+    adxl345_ros_node::ADXL345_I2C adxl345_i2c;
+    itg3200_ros_node::ITG3200_I2C itg3200_i2c;
 
 private:
     hardware_interface::EffortJointInterface jnt_effort_interface;
