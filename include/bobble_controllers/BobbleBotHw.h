@@ -33,8 +33,8 @@ public:
     ChupCanLinuxDriver left_motor_chup_can_interface;
     ChupCanLinuxDriver right_motor_chup_can_interface;
 
-    adxl345_ros_node::ADXL345_I2C adxl345_i2c;
-    itg3200_ros_node::ITG3200_I2C itg3200_i2c;
+    adxl345_i2c::ADXL345_I2C adxl345_i2c;
+    itg3200_i2c::ITG3200_I2C itg3200_i2c;
 
 private:
     hardware_interface::EffortJointInterface jnt_effort_interface;

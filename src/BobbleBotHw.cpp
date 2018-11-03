@@ -46,7 +46,7 @@ BobbleBotHw::BobbleBotHw()
                                                  NULL,
                                                  itg3200_i2c.GyroDataArray,
                                                  NULL,
-                                                 adxl345.AccelDataArray,
+                                                 adxl345_i2c.AccelDataArray,
                                                  NULL);
 
   imu_interface.registerHandle(imu_handle);
