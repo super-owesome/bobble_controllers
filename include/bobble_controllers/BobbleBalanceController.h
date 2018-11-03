@@ -43,7 +43,6 @@ namespace bobble_controllers {
             IDLE,
             STARTUP,
             BALANCE,
-            DRIVE,
             DIAGNOSTIC
         };
 
@@ -90,6 +89,7 @@ namespace bobble_controllers {
         double DesiredTurnRate;
 
         /// Filters
+        double MadgwickFilterGain;
         LPFilter MeasuredTiltFilter;
         LPFilter MeasuredTiltDotFilter;
         LPFilter MeasuredHeadingFilter;

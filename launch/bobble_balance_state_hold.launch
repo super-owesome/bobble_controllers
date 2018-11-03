@@ -13,10 +13,6 @@
 		respawn="false" output="screen" ns="/bobble"
 		args="bobble_balance_controller"/>
 
-	<node name="robot_state_publisher" pkg="robot_state_publisher"
-	    type="state_publisher"
-	    ns="/bobble" />
-
 	<node pkg="bobble_description" type="BobbleStateHold" name="BobbleBotStateHolder" output="screen">
     </node>
 </launch>
