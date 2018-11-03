@@ -22,12 +22,10 @@
 // Definitions
 
 #define sampleFreq	100.0f		// sample frequency in Hz
-#define betaDef		0.20f		// 2 * proportional gain
 
 //---------------------------------------------------------------------------------------------------
 // Variable definitions
 
-volatile float beta = betaDef;								// 2 * proportional gain (Kp)
 volatile float q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;	// quaternion of sensor frame relative to auxiliary frame
 
 //---------------------------------------------------------------------------------------------------
@@ -41,7 +39,7 @@ float invSqrt(float x);
 //---------------------------------------------------------------------------------------------------
 // AHRS algorithm update
 
-void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz) {
+void MadgwickAHRSupdate(float beta, float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz) {
 	float recipNorm;
 	float s0, s1, s2, s3;
 	float qDot1, qDot2, qDot3, qDot4;
@@ -50,7 +48,7 @@ void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float 
 
 	// Use IMU algorithm if magnetometer measurement invalid (avoids NaN in magnetometer normalisation)
 	if((mx == 0.0f) && (my == 0.0f) && (mz == 0.0f)) {
-		MadgwickAHRSupdateIMU(gx, gy, gz, ax, ay, az);
+		MadgwickAHRSupdateIMU(beta, gx, gy, gz, ax, ay, az);
 		return;
 	}
 
@@ -140,7 +138,7 @@ void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float 
 //---------------------------------------------------------------------------------------------------
 // IMU algorithm update
 
-void MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az) {
+void MadgwickAHRSupdateIMU(float beta, float gx, float gy, float gz, float ax, float ay, float az) {
 	float recipNorm;
 	float s0, s1, s2, s3;
 	float qDot1, qDot2, qDot3, qDot4;

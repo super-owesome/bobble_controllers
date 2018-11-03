@@ -10,6 +10,7 @@ bobble:
       MotorEffortMax: 0.2
       MotorEffortToTorqueSimFactor: 1.0 # Should be set to 1.0 for HW
       WheelVelocityAdjustment: 0.05
+      MadgwickFilterGain: 0.20
       MeasuredTiltFilterGain: 0.025
       MeasuredTiltDotFilterGain: 0.025
       MeasuredHeadingFilterGain: 0.0
