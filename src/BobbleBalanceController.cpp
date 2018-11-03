@@ -193,7 +193,7 @@ namespace bobble_controllers {
         // Construct a DCM matrix from the quaternion
         tf::Quaternion q(q0, q1, q2, q3);
         tf::Matrix3x3 m(q);
-        m.getRPY(MeasuredHeading, MeasuredRoll, MeasuredTilt);
+        m.getRPY(MeasuredHeading, MeasuredTilt, MeasuredRoll);
 	    MeasuredTilt = -MeasuredTilt;
         MeasuredTilt += TiltOffset;
         MeasuredTiltDot = -imuData.getAngularVelocity()[0];
