@@ -293,7 +293,7 @@ namespace bobble_controllers {
             DesiredTilt = VelocityControlPID.getOutput(DesiredVelocity, ForwardVelocity);
 	        DesiredTilt *= -1.0;
             TiltEffort = TiltControlPID.getOutput(DesiredTilt, Tilt);
-            HeadingEffort = TurningControlPID.getOutput(TurnRate, DesiredTurnRate);
+            HeadingEffort = TurningControlPID.getOutput(DesiredTurnRate, TurnRate);
             if (IdleCmd) {
                 ActiveControlMode = ControlModes::IDLE;
             }
