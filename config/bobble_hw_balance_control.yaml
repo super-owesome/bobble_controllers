@@ -17,17 +17,20 @@ bobble:
       MeasuredTurnRateFilterGain: 0.10
       LeftWheelVelocityFilterGain: 0.150
       RightWheelVelocityFilterGain: 0.150
-      VelocityCmdScale: 7.5
-      TurnCmdScale: 3.75
+      VelocityCmdScale: 30.0
+      TurnCmdScale: 7.5
       VelocityControlKp: 0.025
       VelocityControlKi: 0.0
       VelocityControlAlphaFilter: 0.45
       VelocityControlMaxIntegralOutput: 0.076
       VelocityControlOutputLimitDegrees: 5.0
-      TiltControlKp: 2.0
-      TiltControlKd: 0.075
+      TiltControlKp: 0.7 #1.0
+      TiltControlKd: 0.05 #0.0150
       TiltControlAlphaFilter: 0.05
-      TiltOffset: 2.88
+      TiltOffset: 0.20
+      TiltDotOffset: -0.148
+      RollDotOffset: 0.0
+      YawDotOffset: -0.0087
       TurningControlKp: 0.075
       TurningControlKi: 0.0
       TurningControlKd: 0.0
