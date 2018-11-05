@@ -69,6 +69,9 @@ namespace bobble_controllers {
         unpackParameter("TurningControlKd", TurningControlKd, 0.01);
         unpackParameter("TurningOutputFilter", TurningOutputFilter, 0.0);
         unpackParameter("TiltOffset", TiltOffset, 0.0);
+        unpackParameter("TiltDotOffset", TiltDotOffset, 0.0);
+        unpackParameter("RollDotOffset", RollDotOffset, 0.0);
+        unpackParameter("YawDotOffset", YawDotOffset, 0.0);
         unpackParameter("ImuName", ImuName, "bno055");
 
         XmlRpc::XmlRpcValue joint_names;
@@ -188,16 +191,16 @@ namespace bobble_controllers {
 
     void BobbleBalanceController::populateImuData()
     {
-        MadgwickAHRSupdateIMU(MadgwickFilterGain, imuData.getAngularVelocity()[0], imuData.getAngularVelocity()[1], imuData.getAngularVelocity()[2],
+        MeasuredRollDot = imuData.getAngularVelocity()[0] + RollDotOffset;
+        MeasuredTiltDot = imuData.getAngularVelocity()[1] + TiltDotOffset;
+        MeasuredTurnRate = imuData.getAngularVelocity()[2] + YawDotOffset;
+        MadgwickAHRSupdateIMU(MadgwickFilterGain, MeasuredRollDot, MeasuredTiltDot, MeasuredTurnRate,
                               imuData.getLinearAcceleration()[0], imuData.getLinearAcceleration()[1], imuData.getLinearAcceleration()[2]);
         // Construct a DCM matrix from the quaternion
         tf::Quaternion q(q0, q1, q2, q3);
         tf::Matrix3x3 m(q);
         m.getRPY(MeasuredHeading, MeasuredTilt, MeasuredRoll);
-	    MeasuredTilt = -MeasuredTilt;
         MeasuredTilt += TiltOffset;
-        MeasuredTiltDot = -imuData.getAngularVelocity()[0];
-        MeasuredTurnRate = imuData.getAngularVelocity()[2];
     }
 
     void BobbleBalanceController::imuCB(const sensor_msgs::Imu::ConstPtr &imuData) {

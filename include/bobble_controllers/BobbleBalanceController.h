@@ -73,6 +73,7 @@ namespace bobble_controllers {
         double MeasuredTilt;
         double MeasuredHeading;
         double MeasuredRoll;
+        double MeasuredRollDot;
         double MeasuredTiltDot;
         double MeasuredTurnRate;
         double MeasuredRightMotorPosition;
@@ -117,6 +118,9 @@ namespace bobble_controllers {
         double Tilt;
         double TiltDot;
         double TiltOffset;
+        double TiltDotOffset;
+        double RollDotOffset;
+        double YawDotOffset;
         double Heading;
         double TurnRate;
         double LeftWheelVelocity;
