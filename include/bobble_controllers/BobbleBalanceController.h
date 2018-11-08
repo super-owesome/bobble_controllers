@@ -56,8 +56,12 @@ namespace bobble_controllers {
             double DesiredTurnRate;
         } CommandStruct;
 
-        static void runSubscriber();
-        static void subscriberCallBack(const bobble_controllers::ControlCommands::ConstPtr &cmd);
+        std::mutex control_command_mutex;
+
+	std::thread* subscriberThread;
+        CommandStruct commandStruct;
+        void runSubscriber();
+        void subscriberCallBack(const bobble_controllers::ControlCommands::ConstPtr &cmd);
 
         /// Controller config
         bool InSim; // Temporary hack. Need to re-orient IMU model.
@@ -96,7 +100,6 @@ namespace bobble_controllers {
         double ForwardVelocity;
 
         /// Control commands (desired states)
-        CommandStruct commandStruct;
         bool StartupCmd;
         bool IdleCmd;
         bool DiagnosticCmd;

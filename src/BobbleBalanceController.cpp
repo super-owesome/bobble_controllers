@@ -10,13 +10,11 @@
 
 namespace bobble_controllers {
 
-    std::mutex control_command_mutex;
-
     void BobbleBalanceController::runSubscriber() {
         ros::NodeHandle n;
         ros::Subscriber sub = n.subscribe("/bobble/bobble_balance_controller/bb_cmd", 1,
-                                          &BobbleBalanceCommandSubscriber::callBack);
-        ros::spin();
+                                          &BobbleBalanceController::subscriberCallBack, this);
+	while(ros::ok());
         sub.shutdown();
     }
 
@@ -39,6 +37,7 @@ namespace bobble_controllers {
     }
 
     BobbleBalanceController::~BobbleBalanceController(void) {
+	    subscriberThread->join();
     }
 
     bool BobbleBalanceController::initRequest(hardware_interface::RobotHW* robot_hw,
@@ -135,7 +134,8 @@ namespace bobble_controllers {
             }
             imuData = robot_hw->get<hardware_interface::ImuSensorInterface>()->getHandle(ImuName);
         }
-        std::thread subscriberThread(&BobbleBalanceController::run, void);
+
+        subscriberThread = new std::thread(&BobbleBalanceController::runSubscriber, this);
 
         // Setup Measured State Filters
         MeasuredTiltFilter.setGain(MeasuredTiltFilterGain);
