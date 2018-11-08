@@ -85,6 +85,7 @@ namespace bobble_controllers {
         unpackParameter("LeftWheelVelocityFilterGain", LeftWheelVelocityFilterGain, 0.0);
         unpackParameter("RightWheelVelocityFilterGain", RightWheelVelocityFilterGain, 0.0);
         unpackParameter("VelocityCmdScale", VelocityCmdScale, 1.0);
+        unpackParameter("MaxVelocityCmd", MaxVelocityCmd, 0.5);
         unpackParameter("TurnCmdScale", TurnCmdScale, 1.0);
         unpackParameter("VelocityControlKp", VelocityControlKp, 1.0);
         unpackParameter("VelocityControlKi", VelocityControlKi, 0.01);
@@ -263,6 +264,15 @@ namespace bobble_controllers {
         DesiredTurnRate = commandStruct.DesiredTurnRate * TurnCmdScale;
         control_command_mutex.unlock();
 
+        if(DesiredVelocity > MaxVelocityCmd)
+        {
+            DesiredVelocity = MaxVelocityCmd;
+        }
+        else if(DesiredVelocity < -MaxVelocityCmd)
+        {
+            DesiredVelocity = -MaxVelocityCmd;
+        }
+
         if(!InSim){
            populateImuData();
         }
@@ -283,7 +293,7 @@ namespace bobble_controllers {
         RightWheelVelocity = RightWheelVelocityFilter.filter(MeasuredRightMotorVelocity) * WheelVelocityAdjustment;
 
         // Compute estimate forward velocity and turn rate.
-        ForwardVelocity = (RightWheelVelocity + LeftWheelVelocity)/2;
+        ForwardVelocity = (RightWheelVelocity + LeftWheelVelocity)/2.0;
 
         // TODO Apply filters to desired values. Filter stick inputs?
 

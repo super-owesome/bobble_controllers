@@ -73,6 +73,7 @@ namespace bobble_controllers {
         double MotorEffortToTorqueSimFactor;
         double WheelVelocityAdjustment;
         double MotorEffortFilterGain;
+        double MaxVelocityCmd;
         double VelocityCmdScale;
         double TurnCmdScale;
         double VelocityControlKp;
