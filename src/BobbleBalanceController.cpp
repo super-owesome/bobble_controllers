@@ -9,6 +9,32 @@
 #include <pluginlib/class_list_macros.h>
 
 namespace bobble_controllers {
+
+    std::mutex control_command_mutex;
+
+    void BobbleBalanceCommandSubscriber::run() {
+        ros::NodeHandle n;
+        ros::Subscriber sub = n.subscribe("/bobble/bobble_balance_controller/bb_cmd", 1,
+                                          &callBack, this);
+        ros::spin();
+    }
+
+    void BobbleBalanceCommandSubscriber::callBack(const bobble_controllers::ControlCommands::ConstPtr &cmd) {
+        if(control_command_mutex.try_lock()) {
+            commandStruct->StartupCmd = cmd->StartupCmd;
+            commandStruct->IdleCmd = cmd->IdleCmd;
+            commandStruct->DiagnosticCmd = cmd->DiagnosticCmd;
+            commandStruct->DesiredVelocity = cmd->DesiredVelocity;
+            commandStruct->DesiredTurnRate = cmd->DesiredTurnRate;
+            control_command_mutex.unlock();
+        }
+    }
+
+    void BobbleBalanceCommandSubscriber::BobbleBalanceCommandSubscriber(bobble_controllers::CommandStruct *cs)
+    {
+        this->commandStruct = cs;
+    }
+
     BobbleBalanceController::BobbleBalanceController(void)
             :
             VelocityControlPID(0.0, 0.0, 0.0),
@@ -115,8 +141,8 @@ namespace bobble_controllers {
             imuData = robot_hw->get<hardware_interface::ImuSensorInterface>()->getHandle(ImuName);
         }
         // TODO make this RT safe.
-        sub_command_ = node_.subscribe("/bobble/bobble_balance_controller/bb_cmd", 1,
-                                       &BobbleBalanceController::commandCB, this);
+        BobbleBalanceCommandSubscriber bb_CommandSubscriber(&commandStruct);
+        std::thread subscriberThread(bb_CommandSubscriber.run, void);
 
         // Setup Measured State Filters
         MeasuredTiltFilter.setGain(MeasuredTiltFilterGain);
@@ -221,15 +247,20 @@ namespace bobble_controllers {
         MeasuredTilt*=-1.0;
     }
 
-    void BobbleBalanceController::commandCB(const bobble_controllers::ControlCommands::ConstPtr &cmd) {
-        StartupCmd = cmd->StartupCmd;
-        IdleCmd = cmd->IdleCmd;
-        DiagnosticCmd = cmd->DiagnosticCmd;
-        DesiredVelocity = VelocityCmdScale * cmd->DesiredVelocity;
-        DesiredTurnRate = TurnCmdScale * cmd->DesiredTurnRate;
-    }
+
 
     void BobbleBalanceController::update(const ros::Time &time, const ros::Duration &duration) {
+        /// Get commands
+        if(control_command_mutex.try_lock())
+        {
+            StartupCmd = commandStruct.StartupCmd;
+            IdleCmd = commandStruct.IdleCmd;
+            DiagnosticCmd = commandStruct.DiagnosticCmd;
+            DesiredVelocity = commandStruct.DesiredVelocity * VelocityCmdScale;
+            DesiredTurnRate = commandStruct.DesiredTurnRate * TurnCmdScale;
+            control_command_mutex.unlock();
+        }
+
         if(!InSim){
            populateImuData();
         }

@@ -11,6 +11,8 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <thread>
+#include <mutex>
 
 #include <realtime_tools/realtime_publisher.h>
 #include <ros/node_handle.h>
@@ -28,6 +30,24 @@
 #include <tf/transform_datatypes.h>
 
 namespace bobble_controllers {
+
+    typedef struct {
+        bool StartupCmd;
+        bool IdleCmd;
+        bool DiagnosticCmd;
+        double DesiredVelocity;
+        double DesiredTurnRate;
+    } CommandStruct;
+
+    class BobbleBalanceCommandSubscriber
+    {
+    public:
+        BobbleBalanceCommandSubscriber(CommandStruct* cs);
+        void run();
+    private:
+        CommandStruct* commandStruct;
+        void callBack(const bobble_controllers::ControlCommands::ConstPtr &cmd);
+    };
 
     class BobbleBalanceController : public controller_interface::
     Controller<hardware_interface::EffortJointInterface> {
@@ -83,6 +103,7 @@ namespace bobble_controllers {
         double ForwardVelocity;
 
         /// Control commands (desired states)
+        CommandStruct commandStruct;
         bool StartupCmd;
         bool IdleCmd;
         bool DiagnosticCmd;
@@ -138,8 +159,6 @@ namespace bobble_controllers {
         void starting(const ros::Time &time);
 
         void imuCB(const sensor_msgs::Imu::ConstPtr &imuData);
-
-        void commandCB(const bobble_controllers::ControlCommands::ConstPtr &cmd);
 
         void update(const ros::Time &time, const ros::Duration &duration);
 
