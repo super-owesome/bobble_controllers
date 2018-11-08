@@ -12,12 +12,7 @@ namespace bobble_controllers {
 
     std::mutex control_command_mutex;
 
-    BobbleBalanceCommandSubscriber::BobbleBalanceCommandSubscriber()
-    {
-    }
-
-    void BobbleBalanceCommandSubscriber::run(CommandStruct *cs) {
-        commandStruct = cs;
+    void BobbleBalanceController::runSubscriber() {
         ros::NodeHandle n;
         ros::Subscriber sub = n.subscribe("/bobble/bobble_balance_controller/bb_cmd", 1,
                                           &BobbleBalanceCommandSubscriber::callBack);
@@ -25,13 +20,13 @@ namespace bobble_controllers {
         sub.shutdown();
     }
 
-    void BobbleBalanceCommandSubscriber::callBack(const bobble_controllers::ControlCommands::ConstPtr &cmd) {
+    void BobbleBalanceController::subscriberCallBack(const bobble_controllers::ControlCommands::ConstPtr &cmd) {
         if(control_command_mutex.try_lock()) {
-            commandStruct->StartupCmd = cmd->StartupCmd;
-            commandStruct->IdleCmd = cmd->IdleCmd;
-            commandStruct->DiagnosticCmd = cmd->DiagnosticCmd;
-            commandStruct->DesiredVelocity = cmd->DesiredVelocity;
-            commandStruct->DesiredTurnRate = cmd->DesiredTurnRate;
+            commandStruct.StartupCmd = cmd->StartupCmd;
+            commandStruct.IdleCmd = cmd->IdleCmd;
+            commandStruct.DiagnosticCmd = cmd->DiagnosticCmd;
+            commandStruct.DesiredVelocity = cmd->DesiredVelocity;
+            commandStruct.DesiredTurnRate = cmd->DesiredTurnRate;
             control_command_mutex.unlock();
         }
     }
@@ -140,7 +135,7 @@ namespace bobble_controllers {
             }
             imuData = robot_hw->get<hardware_interface::ImuSensorInterface>()->getHandle(ImuName);
         }
-        std::thread subscriberThread(&BobbleBalanceCommandSubscriber::run, &commandStruct);
+        std::thread subscriberThread(&BobbleBalanceController::run, void);
 
         // Setup Measured State Filters
         MeasuredTiltFilter.setGain(MeasuredTiltFilterGain);

@@ -31,24 +31,6 @@
 
 namespace bobble_controllers {
 
-    typedef struct {
-        bool StartupCmd;
-        bool IdleCmd;
-        bool DiagnosticCmd;
-        double DesiredVelocity;
-        double DesiredTurnRate;
-    } CommandStruct;
-
-    class BobbleBalanceCommandSubscriber
-    {
-    public:
-        BobbleBalanceCommandSubscriber();
-        static void run(CommandStruct* cs);
-    private:
-        static CommandStruct* commandStruct;
-        static void callBack(const bobble_controllers::ControlCommands::ConstPtr &cmd);
-    };
-
     class BobbleBalanceController : public controller_interface::
     Controller<hardware_interface::EffortJointInterface> {
         ros::NodeHandle node_;
@@ -65,6 +47,17 @@ namespace bobble_controllers {
             BALANCE,
             DIAGNOSTIC
         };
+
+        typedef struct {
+            bool StartupCmd;
+            bool IdleCmd;
+            bool DiagnosticCmd;
+            double DesiredVelocity;
+            double DesiredTurnRate;
+        } CommandStruct;
+
+        static void runSubscriber();
+        static void subscriberCallBack(const bobble_controllers::ControlCommands::ConstPtr &cmd);
 
         /// Controller config
         bool InSim; // Temporary hack. Need to re-orient IMU model.
