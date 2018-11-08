@@ -17,14 +17,14 @@ namespace bobble_controllers {
         ros::Rate loop_rate(20);
 	while(ros::ok() && runThread)
     {
-        if(control_command_mutex.lock()) {
-            commandStruct.StartupCmd = commandStructTmp.StartupCmd;
-            commandStruct.IdleCmd = commandStructTmp.IdleCmd;
-            commandStruct.DiagnosticCmd = commandStructTmp.DiagnosticCmd;
-            commandStruct.DesiredVelocity = commandStructTmp.DesiredVelocity;
-            commandStruct.DesiredTurnRate = commandStructTmp.DesiredTurnRate;
-            control_command_mutex.unlock();
-        }
+        control_command_mutex.lock();
+        commandStruct.StartupCmd = commandStructTmp.StartupCmd;
+        commandStruct.IdleCmd = commandStructTmp.IdleCmd;
+        commandStruct.DiagnosticCmd = commandStructTmp.DiagnosticCmd;
+        commandStruct.DesiredVelocity = commandStructTmp.DesiredVelocity;
+        commandStruct.DesiredTurnRate = commandStructTmp.DesiredTurnRate;
+        control_command_mutex.unlock();
+
         loop_rate.sleep();
     }
         sub.shutdown();
@@ -255,15 +255,13 @@ namespace bobble_controllers {
 
     void BobbleBalanceController::update(const ros::Time &time, const ros::Duration &duration) {
         /// Get commands
-        if(control_command_mutex.lock())
-        {
-            StartupCmd = commandStruct.StartupCmd;
-            IdleCmd = commandStruct.IdleCmd;
-            DiagnosticCmd = commandStruct.DiagnosticCmd;
-            DesiredVelocity = commandStruct.DesiredVelocity * VelocityCmdScale;
-            DesiredTurnRate = commandStruct.DesiredTurnRate * TurnCmdScale;
-            control_command_mutex.unlock();
-        }
+        control_command_mutex.lock();
+        StartupCmd = commandStruct.StartupCmd;
+        IdleCmd = commandStruct.IdleCmd;
+        DiagnosticCmd = commandStruct.DiagnosticCmd;
+        DesiredVelocity = commandStruct.DesiredVelocity * VelocityCmdScale;
+        DesiredTurnRate = commandStruct.DesiredTurnRate * TurnCmdScale;
+        control_command_mutex.unlock();
 
         if(!InSim){
            populateImuData();
