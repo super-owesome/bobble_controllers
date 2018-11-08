@@ -54,6 +54,11 @@ int main(int argc, char **argv)
     bobble_bot.write();
     // Do RT safe publish of loop delta-t. This is for monitoring the
     // loop rate jitter.
+    float period_sec = period.toSec();
+    if(period_sec > 0.02)
+    {
+        ROS_ERROR("SIGNIFICANT DELAY: %f", period_sec);
+    }
     if(pub_rt_status->trylock()) {
       pub_rt_status->msg_.DeltaT = period.toSec();
       pub_rt_status->unlockAndPublish();
