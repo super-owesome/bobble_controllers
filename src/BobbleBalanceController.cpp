@@ -279,8 +279,8 @@ namespace bobble_controllers {
 
         // Filter wheel velocities and apply a wheel velocity adjustment in order to remove
         // a perceived wheel motion due to pendulum rotation
-        LeftWheelVelocity = LeftWheelVelocityFilter.filter(MeasuredLeftMotorVelocity) * WheelVelocityAdjustment + TiltDot;
-        RightWheelVelocity = RightWheelVelocityFilter.filter(MeasuredRightMotorVelocity) * WheelVelocityAdjustment + TiltDot;
+        LeftWheelVelocity = LeftWheelVelocityFilter.filter(MeasuredLeftMotorVelocity) * WheelVelocityAdjustment;
+        RightWheelVelocity = RightWheelVelocityFilter.filter(MeasuredRightMotorVelocity) * WheelVelocityAdjustment;
 
         // Compute estimate forward velocity and turn rate.
         ForwardVelocity = (RightWheelVelocity + LeftWheelVelocity)/2;
