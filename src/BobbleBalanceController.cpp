@@ -17,10 +17,10 @@ namespace bobble_controllers {
     }
 
     void BobbleBalanceCommandSubscriber::run(CommandStruct *cs) {
-        this->commandStruct = cs;
+        commandStruct = cs;
         ros::NodeHandle n;
         ros::Subscriber sub = n.subscribe("/bobble/bobble_balance_controller/bb_cmd", 1,
-                                          &BobbleBalanceCommandSubscriber::callBack, this);
+                                          &BobbleBalanceCommandSubscriber::callBack);
         ros::spin();
         sub.shutdown();
     }

@@ -43,9 +43,9 @@ namespace bobble_controllers {
     {
     public:
         BobbleBalanceCommandSubscriber();
-        void run(CommandStruct* cs);
+        static void run(CommandStruct* cs);
     private:
-        CommandStruct* commandStruct;
+        static CommandStruct* commandStruct;
         static void callBack(const bobble_controllers::ControlCommands::ConstPtr &cmd);
     };
 
