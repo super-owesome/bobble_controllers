@@ -60,6 +60,7 @@ namespace bobble_controllers {
 
 	std::thread* subscriberThread;
         CommandStruct commandStruct;
+	bool runThread;
         void runSubscriber();
         void subscriberCallBack(const bobble_controllers::ControlCommands::ConstPtr &cmd);
 

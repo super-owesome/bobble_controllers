@@ -14,7 +14,7 @@ namespace bobble_controllers {
         ros::NodeHandle n;
         ros::Subscriber sub = n.subscribe("/bobble/bobble_balance_controller/bb_cmd", 1,
                                           &BobbleBalanceController::subscriberCallBack, this);
-	while(ros::ok());
+	while(ros::ok() && runThread);
         sub.shutdown();
     }
 
@@ -37,6 +37,7 @@ namespace bobble_controllers {
     }
 
     BobbleBalanceController::~BobbleBalanceController(void) {
+	    runThread = false;
 	    subscriberThread->join();
     }
 
@@ -135,6 +136,7 @@ namespace bobble_controllers {
             imuData = robot_hw->get<hardware_interface::ImuSensorInterface>()->getHandle(ImuName);
         }
 
+	runThread = true;
         subscriberThread = new std::thread(&BobbleBalanceController::runSubscriber, this);
 
         // Setup Measured State Filters
