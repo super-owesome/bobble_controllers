@@ -42,11 +42,11 @@ namespace bobble_controllers {
     class BobbleBalanceCommandSubscriber
     {
     public:
-        BobbleBalanceCommandSubscriber(CommandStruct* cs);
-        void run();
+        BobbleBalanceCommandSubscriber();
+        void run(CommandStruct* cs);
     private:
         CommandStruct* commandStruct;
-        void callBack(const bobble_controllers::ControlCommands::ConstPtr &cmd);
+        static void callBack(const bobble_controllers::ControlCommands::ConstPtr &cmd);
     };
 
     class BobbleBalanceController : public controller_interface::
