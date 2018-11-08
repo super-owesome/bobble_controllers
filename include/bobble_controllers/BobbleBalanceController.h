@@ -58,9 +58,10 @@ namespace bobble_controllers {
 
         std::mutex control_command_mutex;
 
-	std::thread* subscriberThread;
+	    std::thread* subscriberThread;
         CommandStruct commandStruct;
-	bool runThread;
+        CommandStruct commandStructTmp;
+	    bool runThread;
         void runSubscriber();
         void subscriberCallBack(const bobble_controllers::ControlCommands::ConstPtr &cmd);
 

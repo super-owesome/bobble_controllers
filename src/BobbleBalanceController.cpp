@@ -14,19 +14,28 @@ namespace bobble_controllers {
         ros::NodeHandle n;
         ros::Subscriber sub = n.subscribe("/bobble/bobble_balance_controller/bb_cmd", 1,
                                           &BobbleBalanceController::subscriberCallBack, this);
-	while(ros::ok() && runThread);
+        ros::Rate loop_rate(20);
+	while(ros::ok() && runThread)
+    {
+        if(control_command_mutex.lock()) {
+            commandStruct.StartupCmd = commandStructTmp.StartupCmd;
+            commandStruct.IdleCmd = commandStructTmp.IdleCmd;
+            commandStruct.DiagnosticCmd = commandStructTmp.DiagnosticCmd;
+            commandStruct.DesiredVelocity = commandStructTmp.DesiredVelocity;
+            commandStruct.DesiredTurnRate = commandStructTmp.DesiredTurnRate;
+            control_command_mutex.unlock();
+        }
+        loop_rate.sleep();
+    }
         sub.shutdown();
     }
 
     void BobbleBalanceController::subscriberCallBack(const bobble_controllers::ControlCommands::ConstPtr &cmd) {
-        if(control_command_mutex.try_lock()) {
-            commandStruct.StartupCmd = cmd->StartupCmd;
-            commandStruct.IdleCmd = cmd->IdleCmd;
-            commandStruct.DiagnosticCmd = cmd->DiagnosticCmd;
-            commandStruct.DesiredVelocity = cmd->DesiredVelocity;
-            commandStruct.DesiredTurnRate = cmd->DesiredTurnRate;
-            control_command_mutex.unlock();
-        }
+        commandStructTmp.StartupCmd = cmd->StartupCmd;
+        commandStructTmp.IdleCmd = cmd->IdleCmd;
+        commandStructTmp.DiagnosticCmd = cmd->DiagnosticCmd;
+        commandStructTmp.DesiredVelocity = cmd->DesiredVelocity;
+        commandStructTmp.DesiredTurnRate = cmd->DesiredTurnRate;
     }
 
     BobbleBalanceController::BobbleBalanceController(void)
@@ -246,7 +255,7 @@ namespace bobble_controllers {
 
     void BobbleBalanceController::update(const ros::Time &time, const ros::Duration &duration) {
         /// Get commands
-        if(control_command_mutex.try_lock())
+        if(control_command_mutex.lock())
         {
             StartupCmd = commandStruct.StartupCmd;
             IdleCmd = commandStruct.IdleCmd;
