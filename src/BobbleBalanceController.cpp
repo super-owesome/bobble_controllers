@@ -239,8 +239,8 @@ namespace bobble_controllers {
         // function will have sim specific code. Eventually the hardware will not
         // rely on this IMU call back at all and therefore this entire function
         // will be a sim interface only.
-        MeasuredTiltDot = imuData->angular_velocity.y;
-        MeasuredTurnRate = -imuData->angular_velocity.z;
+        MeasuredTiltDot = -imuData->angular_velocity.y;
+        MeasuredTurnRate = imuData->angular_velocity.z;
         // Call Madgwick orientation filter.
         MadgwickAHRSupdateIMU(MadgwickFilterGain, imuData->angular_velocity.x, imuData->angular_velocity.y, imuData->angular_velocity.z,
 							  imuData->linear_acceleration.x, imuData->linear_acceleration.y,
@@ -249,7 +249,7 @@ namespace bobble_controllers {
         tf::Quaternion q(q0, q1, q2, q3);
 		tf::Matrix3x3 m(q);
         m.getRPY(MeasuredHeading, MeasuredTilt, MeasuredRoll);
-        MeasuredTilt*=-1.0;
+        MeasuredTilt *= -1.0;
     }
 
 
