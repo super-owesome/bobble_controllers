@@ -50,7 +50,20 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
    LIBRARIES ${PROJECT_NAME}
-   CATKIN_DEPENDS generic_filter chupacabra_comm controller_interface control_msgs sensor_msgs executive controller_manager pluginlib std_msgs rospy message_runtime
+   CATKIN_DEPENDS
+		generic_filter
+		chupacabra_comm
+		controller_interface
+		control_msgs
+		sensor_msgs
+		executive
+		controller_manager
+		pluginlib
+		std_msgs
+		rospy
+		message_runtime
+		adxl345_ros_node
+		itg3200_ros_node
 #  DEPENDS system_lib
 )
 
@@ -61,8 +74,6 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(include
-  adxl345_ros_node
-  itg3200_ros_node
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -75,7 +86,7 @@ add_library(bobble_controllers
 
 ## Declare a cpp executable
 add_executable(BobbleControlNode src/nodes/BobbleControlNode.cpp src/BobbleBotHw.cpp)
-target_link_libraries(BobbleControlNode wiringPi ${catkin_LIBRARIES})
+target_link_libraries(BobbleControlNode ${catkin_LIBRARIES} wiringPi)
 install(TARGETS BobbleControlNode
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
@@ -86,6 +97,7 @@ add_dependencies(bobble_controllers bobble_controllers_generate_messages_cpp)
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
+  wiringPi
 )
 
 #############
