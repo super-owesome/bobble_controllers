@@ -8,8 +8,8 @@ bobble:
       StartingTiltSafetyLimitDegrees: 4.0
       MaxTiltSafetyLimitDegrees: 20.0
       MotorEffortMax: 0.2
-      MotorEffortToTorqueSimFactor: 0.832 # 0.0 # HW this is 1.0
-      WheelVelocityAdjustment: 1.0 # Not used in sim
+      MotorEffortToTorqueSimFactor: 0.832
+      WheelVelocityAdjustment: 1.0
       MadgwickFilterGain: 0.015
       MeasuredTiltFilterGain: 0.025
       MeasuredTiltDotFilterGain: 0.025
@@ -17,18 +17,23 @@ bobble:
       MeasuredTurnRateFilterGain: 0.10
       LeftWheelVelocityFilterGain: 0.150
       RightWheelVelocityFilterGain: 0.150
-      VelocityCmdScale: 30.5
-      TurnCmdScale: -7.5 # Negative sign for left/right turn in sim
-      VelocityControlKp: 0.0085
-      VelocityControlKi: 0.0006 #0.0 #0.0001
+      WheelRadiusMeters: 0.05
+      VelocityCmdScale: 20.0
+      MaxVelocityCmd: 100.0
+      TurnCmdScale: 4.0
+      VelocityControlKp: 0.015
+      VelocityControlKi: 0.0000 # 0.0001
       VelocityControlAlphaFilter: 0.01
-      VelocityControlMaxIntegralOutput: 0.01
+      VelocityControlMaxIntegralOutput: 0.006
       VelocityControlOutputLimitDegrees: 15.0
-      TiltControlKp: 2.6
-      TiltControlKd: 0.175
+      TiltControlKp: 0.95
+      TiltControlKd: 0.075
       TiltControlAlphaFilter: 0.05
-      TiltOffset: 0.0 # HW this is 2.88
-      TurningControlKp: 0.5
+      TiltOffset: 0.0
+      TiltDotOffset: 0.0
+      RollDotOffset: 0.0
+      YawDotOffset: 0.0
+      TurningControlKp: 0.25
       TurningControlKi: 0.0
       TurningControlKd: 0.0
       TurningOutputFilter: 0.5

@@ -17,9 +17,10 @@ bobble:
       MeasuredTurnRateFilterGain: 0.10
       LeftWheelVelocityFilterGain: 0.150
       RightWheelVelocityFilterGain: 0.150
+      WheelRadiusMeters: 0.05
       VelocityCmdScale: 30.0
       TurnCmdScale: 7.5
-      VelocityControlKp: 0.025
+      VelocityControlKp: 0.00125
       VelocityControlKi: 0.0
       VelocityControlAlphaFilter: 0.45
       VelocityControlMaxIntegralOutput: 0.076

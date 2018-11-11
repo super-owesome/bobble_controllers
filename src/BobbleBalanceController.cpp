@@ -84,6 +84,7 @@ namespace bobble_controllers {
         unpackParameter("MeasuredTurnRateFilterGain", MeasuredTurnRateFilterGain, 0.0);
         unpackParameter("LeftWheelVelocityFilterGain", LeftWheelVelocityFilterGain, 0.0);
         unpackParameter("RightWheelVelocityFilterGain", RightWheelVelocityFilterGain, 0.0);
+        unpackParameter("WheelRadiusMeters", WheelRadiusMeters, 0.05);
         unpackParameter("VelocityCmdScale", VelocityCmdScale, 1.0);
         unpackParameter("MaxVelocityCmd", MaxVelocityCmd, 0.5);
         unpackParameter("TurnCmdScale", TurnCmdScale, 1.0);
@@ -293,7 +294,7 @@ namespace bobble_controllers {
         RightWheelVelocity = RightWheelVelocityFilter.filter(MeasuredRightMotorVelocity) * WheelVelocityAdjustment;
 
         // Compute estimate forward velocity and turn rate.
-        ForwardVelocity = (RightWheelVelocity + LeftWheelVelocity)/2.0;
+        ForwardVelocity = WheelRadiusMeters*(RightWheelVelocity + LeftWheelVelocity)/2.0;
 
         // TODO Apply filters to desired values. Filter stick inputs?
 
