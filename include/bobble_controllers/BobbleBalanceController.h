@@ -106,6 +106,8 @@ namespace bobble_controllers {
         bool StartupCmd;
         bool IdleCmd;
         bool DiagnosticCmd;
+        double DesiredVelocityRaw;
+        double DesiredTurnRateRaw;
         double DesiredVelocity;
         double DesiredTurnRate;
 
@@ -117,6 +119,8 @@ namespace bobble_controllers {
         LPFilter MeasuredTurnRateFilter;
         LPFilter LeftWheelVelocityFilter;
         LPFilter RightWheelVelocityFilter;
+        LPFilter DesiredForwardVelocityFilter;
+        LPFilter DesiredTurnRateFilter;
         //LPFilter RightMotorEffortLPFilter;
 
         /// Filter Gains
@@ -126,6 +130,8 @@ namespace bobble_controllers {
         double MeasuredTurnRateFilterGain;
         double LeftWheelVelocityFilterGain;
         double RightWheelVelocityFilterGain;
+        double DesiredForwardVelocityFilterGain;
+        double DesiredTurnRateFilterGain;
 
         /// PID Controllers
         PidControl VelocityControlPID;

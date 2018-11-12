@@ -84,6 +84,8 @@ namespace bobble_controllers {
         unpackParameter("MeasuredTurnRateFilterGain", MeasuredTurnRateFilterGain, 0.0);
         unpackParameter("LeftWheelVelocityFilterGain", LeftWheelVelocityFilterGain, 0.0);
         unpackParameter("RightWheelVelocityFilterGain", RightWheelVelocityFilterGain, 0.0);
+        unpackParameter("DesiredForwardVelocityFilterGain", DesiredForwardVelocityFilterGain, 0.0);
+        unpackParameter("DesiredTurnRateFilterGain", DesiredTurnRateFilterGain, 0.0);
         unpackParameter("VelocityCmdScale", VelocityCmdScale, 1.0);
         unpackParameter("MaxVelocityCmd", MaxVelocityCmd, 0.5);
         unpackParameter("TurnCmdScale", TurnCmdScale, 1.0);
@@ -156,6 +158,8 @@ namespace bobble_controllers {
         MeasuredTurnRateFilter.setGain(MeasuredTurnRateFilterGain);
         LeftWheelVelocityFilter.setGain(LeftWheelVelocityFilterGain);
         RightWheelVelocityFilter.setGain(RightWheelVelocityFilterGain);
+        DesiredForwardVelocityFilter.setGain(DesiredForwardVelocityFilterGain);
+        DesiredTurnRateFilter.setGain(DesiredTurnRateFilterGain);
 
         // Setup PID Controllers
         VelocityControlPID.setPID(VelocityControlKp, VelocityControlKi, 0.0);
@@ -189,8 +193,10 @@ namespace bobble_controllers {
         StartupCmd = false;
         DiagnosticCmd = false;
         DesiredVelocity = 0.0;
+        DesiredVelocityRaw = 0.0;
         DesiredTilt = 0.0;
         DesiredTurnRate = 0.0;
+        DesiredTurnRateRaw = 0.0;
         TiltEffort = 0.0;
         HeadingEffort = 0.0;
         LeftMotorEffortCmd = 0.0;
@@ -260,8 +266,8 @@ namespace bobble_controllers {
         StartupCmd = commandStruct.StartupCmd;
         IdleCmd = commandStruct.IdleCmd;
         DiagnosticCmd = commandStruct.DiagnosticCmd;
-        DesiredVelocity = commandStruct.DesiredVelocity * VelocityCmdScale;
-        DesiredTurnRate = commandStruct.DesiredTurnRate * TurnCmdScale;
+        DesiredVelocityRaw = commandStruct.DesiredVelocity * VelocityCmdScale;
+        DesiredTurnRateRaw = commandStruct.DesiredTurnRate * TurnCmdScale;
         control_command_mutex.unlock();
 
         /// Limit Velocity Command
@@ -282,6 +288,10 @@ namespace bobble_controllers {
 
         // Compute estimate forward velocity and turn rate.
         ForwardVelocity = (RightWheelVelocity + LeftWheelVelocity)/2.0;
+
+        // Filter Command Inputs
+        DesiredVelocity = DesiredForwardVelocityFilter.filter(DesiredVelocityRaw);
+        DesiredTurnRate = DesiredTurnRateFilter.filter(DesiredTurnRateRaw);
 
         // TODO Apply filters to desired values. Filter stick inputs?
     }
