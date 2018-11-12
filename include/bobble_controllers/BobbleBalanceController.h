@@ -163,14 +163,21 @@ namespace bobble_controllers {
 
         void write_controller_status_msg();
 
+
         void unpackParameter(std::string parameterName, double &referenceToParameter, double defaultValue);
         void unpackParameter(std::string parameterName, std::string &referenceToParameter, std::string defaultValue);
 
         void unpackFlag(std::string parameterName, bool &referenceToFlag, bool defaultValue);
 
-        double limitEffort(double effort_cmd);
+        double limit(double cmd, double max);
 
         void populateImuData();
+        void populateCommands();
+        void populateOdometry();
+
+        void applyFilters();
+        void applySafety();
+
 
     protected:
         virtual bool initRequest(hardware_interface::RobotHW* robot_hw,

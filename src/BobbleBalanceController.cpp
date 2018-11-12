@@ -146,7 +146,7 @@ namespace bobble_controllers {
             imuData = robot_hw->get<hardware_interface::ImuSensorInterface>()->getHandle(ImuName);
         }
 
-	runThread = true;
+	    runThread = true;
         subscriberThread = new std::thread(&BobbleBalanceController::runSubscriber, this);
 
         // Setup Measured State Filters
@@ -252,10 +252,10 @@ namespace bobble_controllers {
         MeasuredTilt *= -1.0;
     }
 
-
-
-    void BobbleBalanceController::update(const ros::Time &time, const ros::Duration &duration) {
+    void BobbleBalanceController::populateCommands()
+    {
         /// Get commands
+        /// Lock mutex to prevent subscriber from writing to the commands
         control_command_mutex.lock();
         StartupCmd = commandStruct.StartupCmd;
         IdleCmd = commandStruct.IdleCmd;
@@ -264,28 +264,16 @@ namespace bobble_controllers {
         DesiredTurnRate = commandStruct.DesiredTurnRate * TurnCmdScale;
         control_command_mutex.unlock();
 
-        if(DesiredVelocity > MaxVelocityCmd)
-        {
-            DesiredVelocity = MaxVelocityCmd;
-        }
-        else if(DesiredVelocity < -MaxVelocityCmd)
-        {
-            DesiredVelocity = -MaxVelocityCmd;
-        }
+        /// Limit Velocity Command
+        limit(DesiredVelocity, MaxVelocityCmd);
+    }
 
-        if(!InSim){
-           populateImuData();
-        }
+    void BobbleBalanceController::applyFilters()
+    {
         Tilt = MeasuredTiltFilter.filter(MeasuredTilt);
         TiltDot = MeasuredTiltDotFilter.filter(MeasuredTiltDot);
         Heading = MeasuredHeadingFilter.filter(MeasuredHeading);
         TurnRate = MeasuredTurnRateFilter.filter(MeasuredTurnRate);
-
-        // Get odometry information.
-        MeasuredLeftMotorPosition = joints_[1].getPosition();
-        MeasuredRightMotorPosition = joints_[0].getPosition();
-        MeasuredLeftMotorVelocity = joints_[1].getVelocity();
-        MeasuredRightMotorVelocity = joints_[0].getVelocity();
 
         // Filter wheel velocities and apply a wheel velocity adjustment in order to remove
         // a perceived wheel motion due to pendulum rotation
@@ -296,6 +284,38 @@ namespace bobble_controllers {
         ForwardVelocity = (RightWheelVelocity + LeftWheelVelocity)/2.0;
 
         // TODO Apply filters to desired values. Filter stick inputs?
+    }
+
+    void BobbleBalanceController::populateOdometry()
+    {
+        // Get odometry information.
+        MeasuredLeftMotorPosition = joints_[1].getPosition();
+        MeasuredRightMotorPosition = joints_[0].getPosition();
+        MeasuredLeftMotorVelocity = joints_[1].getVelocity();
+        MeasuredRightMotorVelocity = joints_[0].getVelocity();
+    }
+
+    void BobbleBalanceController::applySafety()
+    {
+        // No effort when tilt angle is way out of whack.
+        // You're going down. Don't fight it... just accept it.
+        if (abs(Tilt) >= MaxTiltSafetyLimitDegrees * (M_PI / 180.0)) {
+            RightMotorEffortCmd = 0.0;
+            LeftMotorEffortCmd = 0.0;
+        }
+    }
+
+    void BobbleBalanceController::update(const ros::Time &time, const ros::Duration &duration) {
+        /// Populate Command Variables
+        populateCommands();
+        /// If not in simulation, populate the IMU data from sensor handles
+        if(!InSim){
+           populateImuData();
+        }
+        /// Populate Odometry from the wheels
+        populateOdometry();
+        /// Apply Filtering
+        applyFilters();
 
         /////////////////////////////////////////////////////////////////////////////////////////
         /// Perform the desired control depending on BobbleBot controller state
@@ -354,15 +374,10 @@ namespace bobble_controllers {
         /////////////////////////////////////////////////////////////////////////////////////////
         /// Apply safety checks
         /////////////////////////////////////////////////////////////////////////////////////////
-        // No effort when tilt angle is way out of whack.
-        // You're going down. Don't fight it... just accept it.
-        if (abs(Tilt) >= MaxTiltSafetyLimitDegrees * (M_PI / 180.0)) {
-            RightMotorEffortCmd = 0.0;
-            LeftMotorEffortCmd = 0.0;
-        }
+        applySafety();
         // Apply motor effort limits
-        RightMotorEffortCmd = limitEffort(RightMotorEffortCmd);
-        LeftMotorEffortCmd = limitEffort(LeftMotorEffortCmd);
+        RightMotorEffortCmd = limit(RightMotorEffortCmd, MotorEffortMax);
+        LeftMotorEffortCmd = limit(LeftMotorEffortCmd, MotorEffortMax);
 
         /////////////////////////////////////////////////////////////////////////////////////////
         /// Send our motor commands
@@ -438,13 +453,13 @@ namespace bobble_controllers {
         }
     }
 
-    double BobbleBalanceController::limitEffort(double effort_cmd) {
-        if (effort_cmd < -MotorEffortMax) {
-            return -MotorEffortMax;
-        } else if (effort_cmd > MotorEffortMax) {
-            return MotorEffortMax;
+    double BobbleBalanceController::limit(double cmd, double max) {
+        if (cmd < -max) {
+            return -max;
+        } else if (cmd > max) {
+            return max;
         }
-        return effort_cmd;
+        return cmd;
     }
 
 }
