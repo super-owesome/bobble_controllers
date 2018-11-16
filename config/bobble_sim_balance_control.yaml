@@ -5,30 +5,38 @@ bobble:
         - right_wheel_hinge
         - left_wheel_hinge
       InSim: true
-      StartingTiltSafetyLimitDegrees: 4.0
+      StartingTiltSafetyLimitDegrees: 8.0
       MaxTiltSafetyLimitDegrees: 20.0
       MotorEffortMax: 0.2
-      MotorEffortToTorqueSimFactor: 0.832 # 0.0 # HW this is 1.0
-      WheelVelocityAdjustment: 1.0 # Not used in sim
+      MotorEffortToTorqueSimFactor: 0.832
+      WheelVelocityAdjustment: 1.0
       MadgwickFilterGain: 0.015
-      MeasuredTiltFilterGain: 0.025
-      MeasuredTiltDotFilterGain: 0.025
-      MeasuredHeadingFilterGain: 0.0
-      MeasuredTurnRateFilterGain: 0.10
-      LeftWheelVelocityFilterGain: 0.150
-      RightWheelVelocityFilterGain: 0.150
-      VelocityCmdScale: 30.5
-      TurnCmdScale: -7.5 # Negative sign for left/right turn in sim
-      VelocityControlKp: 0.0085
-      VelocityControlKi: 0.0006 #0.0 #0.0001
-      VelocityControlAlphaFilter: 0.01
-      VelocityControlMaxIntegralOutput: 0.01
-      VelocityControlOutputLimitDegrees: 15.0
-      TiltControlKp: 2.6
-      TiltControlKd: 0.175
+      MeasuredTiltFilterGain: 0.15
+      MeasuredTiltDotFilterGain: 0.15
+      MeasuredHeadingFilterGain: 0.5
+      MeasuredTurnRateFilterGain: 0.1
+      LeftWheelVelocityFilterGain: 0.25
+      RightWheelVelocityFilterGain: 0.25
+      DesiredForwardVelocityFilterGain: 0.25
+      DesiredTurnRateFilterGain: 0.25
+      MaxVelocityCmd: 0.45 # 1 mph
+      MaxTurnRateCmd: 1.517 # 90 deg/s
+      WheelRadiusMeters: 0.05
+      VelocityCmdScale: 3.0
+      TurnCmdScale: 10.0
+      VelocityControlKp: 0.2
+      VelocityControlKi: 0.001 # 0.0001
+      VelocityControlAlphaFilter: 0.45
+      VelocityControlMaxIntegralOutput: 0.5
+      VelocityControlOutputLimitDegrees: 12.0
+      TiltControlKp: 1.0
+      TiltControlKd: 0.12
       TiltControlAlphaFilter: 0.05
-      TiltOffset: 0.0 # HW this is 2.88
-      TurningControlKp: 0.5
+      TiltOffset: 0.0
+      TiltDotOffset: 0.0
+      RollDotOffset: 0.0
+      YawDotOffset: 0.0
+      TurningControlKp: 0.075
       TurningControlKi: 0.0
       TurningControlKd: 0.0
       TurningOutputFilter: 0.5
