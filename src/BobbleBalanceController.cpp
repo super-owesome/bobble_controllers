@@ -411,14 +411,15 @@ namespace bobble_controllers {
     void BobbleBalanceController::write_controller_status_msg() {
         if(pub_bobble_status->trylock()) {
             pub_bobble_status->msg_.ControlMode = ActiveControlMode;
-            pub_bobble_status->msg_.DeltaT = 0.0;
+            pub_bobble_status->msg_.MeasuredTiltDot = MeasuredTiltDot * (180.0 / M_PI);
+            pub_bobble_status->msg_.MeasuredTurnRate = MeasuredTurnRate * (180.0 / M_PI);
             pub_bobble_status->msg_.Tilt = Tilt * (180.0 / M_PI);
             pub_bobble_status->msg_.TiltRate = TiltDot * (180.0 / M_PI);
             pub_bobble_status->msg_.Heading = Heading * (180.0 / M_PI);
             pub_bobble_status->msg_.TurnRate = TurnRate * (180.0 / M_PI);
             pub_bobble_status->msg_.ForwardVelocity = ForwardVelocity;
             pub_bobble_status->msg_.DesiredVelocity = DesiredVelocity;
-            pub_bobble_status->msg_.DesiredTilt = DesiredTilt * (180.0 / M_PI);
+	        pub_bobble_status->msg_.DesiredTilt = DesiredTilt * (180.0 / M_PI);
             pub_bobble_status->msg_.DesiredTurnRate = DesiredTurnRate * (180.0 / M_PI);
             pub_bobble_status->msg_.LeftMotorPosition = MeasuredLeftMotorPosition * (180.0 / M_PI);
             pub_bobble_status->msg_.LeftMotorVelocity = MeasuredLeftMotorVelocity * (180.0 / M_PI);

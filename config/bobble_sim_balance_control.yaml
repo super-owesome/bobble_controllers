@@ -5,7 +5,7 @@ bobble:
         - right_wheel_hinge
         - left_wheel_hinge
       InSim: true
-      StartingTiltSafetyLimitDegrees: 8.0
+      StartingTiltSafetyLimitDegrees: 10.0
       MaxTiltSafetyLimitDegrees: 20.0
       MotorEffortMax: 0.2
       MotorEffortToTorqueSimFactor: 0.832
@@ -19,13 +19,13 @@ bobble:
       RightWheelVelocityFilterGain: 0.25
       DesiredForwardVelocityFilterGain: 0.25
       DesiredTurnRateFilterGain: 0.25
-      MaxVelocityCmd: 0.45 # 1 mph
-      MaxTurnRateCmd: 1.517 # 90 deg/s
+      MaxVelocityCmd: 1.25 # 3 mph
+      MaxTurnRateCmd: 3.141 # 90 deg/s
       WheelRadiusMeters: 0.05
-      VelocityCmdScale: 3.0
-      TurnCmdScale: 10.0
+      VelocityCmdScale: 3.75
+      TurnCmdScale: 20.0
       VelocityControlKp: 0.2
-      VelocityControlKi: 0.001 # 0.0001
+      VelocityControlKi: 0.001
       VelocityControlAlphaFilter: 0.45
       VelocityControlMaxIntegralOutput: 0.5
       VelocityControlOutputLimitDegrees: 12.0
