@@ -10,25 +10,25 @@ bobble:
       MotorEffortMax: 0.2
       MotorEffortToTorqueSimFactor: 1.0 # Should be set to 1.0 for HW
       WheelVelocityAdjustment: 0.05
-      MadgwickFilterGain: 0.20
+      MadgwickFilterGain: 0.35
       MeasuredTiltFilterGain: 0.15
       MeasuredTiltDotFilterGain: 0.15
       MeasuredHeadingFilterGain: 0.5
       MeasuredTurnRateFilterGain: 0.1
-      LeftWheelVelocityFilterGain: 0.25
-      RightWheelVelocityFilterGain: 0.25
-      DesiredForwardVelocityFilterGain: 0.25
-      DesiredTurnRateFilterGain: 0.25
+      LeftWheelVelocityFilterGain: 0.5
+      RightWheelVelocityFilterGain: 0.5
+      DesiredForwardVelocityFilterGain: 0.1
+      DesiredTurnRateFilterGain: 0.1
       MaxVelocityCmd: 1.25  # 3 mph
-      MaxTurnRateCmd: 3.141 # 90 deg/s
+      MaxTurnRateCmd: 2.6 # 150 deg/s
       WheelRadiusMeters: 1.0
-      VelocityCmdScale: 3.75
+      VelocityCmdScale: 2.85
       TurnCmdScale: 20.0
-      VelocityControlKp: 0.2
-      VelocityControlKi: 0.0 #0.001
-      VelocityControlAlphaFilter: 0.45
-      VelocityControlMaxIntegralOutput: 0.5
-      VelocityControlOutputLimitDegrees: 12.0
+      VelocityControlKp: 0.20
+      VelocityControlKi: 0.001
+      VelocityControlAlphaFilter: 0.15
+      VelocityControlMaxIntegralOutput: 0.08
+      VelocityControlOutputLimitDegrees: 10.0
       TiltControlKp: 1.0
       TiltControlKd: 0.05
       TiltControlAlphaFilter: 0.05
@@ -36,7 +36,7 @@ bobble:
       TiltDotOffset: -0.1457
       RollDotOffset: 0.0
       YawDotOffset: -0.0137
-      TurningControlKp: 0.075
+      TurningControlKp: 0.1
       TurningControlKi: 0.0
       TurningControlKd: 0.0
       TurningOutputFilter: 0.5
