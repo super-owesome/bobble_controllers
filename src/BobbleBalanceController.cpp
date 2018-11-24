@@ -167,7 +167,7 @@ namespace bobble_controllers {
         VelocityControlPID.setPID(VelocityControlKp, VelocityControlKi, 0.0);
         VelocityControlPID.setOutputFilter(VelocityControlAlphaFilter);
         VelocityControlPID.setMaxIOutput(VelocityControlMaxIntegralOutput);
-        VelocityControlPID.setOutputLimits(VelocityControlOutputLimitDegrees * (M_PI / 180.0),
+        VelocityControlPID.setOutputLimits(-VelocityControlOutputLimitDegrees * (M_PI / 180.0),
                                            VelocityControlOutputLimitDegrees * (M_PI / 180.0));
         VelocityControlPID.setDirection(true);
 
