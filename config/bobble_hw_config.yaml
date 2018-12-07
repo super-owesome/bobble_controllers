@@ -3,9 +3,9 @@ bobble:
      LoopRate: 200 # hz
      LeftMotorJointName: "left_wheel_hinge"
      LeftMotorChannel: "can0"
-     LeftMotorChupId: 0x100
+     LeftMotorChupId: 0x101
      LeftMotorRxOffset: 0x100
      RightMotorJointName: "right_wheel_hinge"
-     RightMotorChannel: "vcan0"
-     RightMotorChupId: 0x101
+     RightMotorChannel: "can0"
+     RightMotorChupId: 0x102
      RightMotorRxOffset: 0x100
