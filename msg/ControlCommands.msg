@@ -1,3 +1,5 @@
-int32 ControlMode
-float32 DesiredPitch
-float32 DesiredYaw
+bool StartupCmd
+bool IdleCmd
+bool DiagnosticCmd
+float32 DesiredVelocity
+float32 DesiredTurnRate

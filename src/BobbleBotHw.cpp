@@ -4,12 +4,16 @@
 BobbleBotHw::BobbleBotHw()
  :
    left_motor_chup_can_interface(left_motor_chup_can_transporter),
-   right_motor_chup_can_interface(right_motor_chup_can_transporter)
+   right_motor_chup_can_interface(right_motor_chup_can_transporter),
+   LeftMotorCmdVoltage(0.0),
+   RightMotorCmdVoltage(0.0)
 {
   ros::NodeHandle pnh("~");
   std::string default_can_channel = "vcan0";
   std::string default_left_joint_name = "left_wheel_hinge";
   std::string default_right_joint_name = "right_wheel_hinge";
+  std::string default_imu_name = "bno055";
+  std::string default_imu_link = "bno055_imu_link";
   pnh.param("LeftMotorJointName", left_motor_joint_name, default_left_joint_name);
   pnh.param("LeftMotorChannel", left_motor_chup_can_interface.Channel, default_can_channel);
   pnh.param("LeftMotorChupId", left_motor_chup_can_interface.DeviceId, 291);
@@ -18,6 +22,8 @@ BobbleBotHw::BobbleBotHw()
   pnh.param("RightMotorChannel", right_motor_chup_can_interface.Channel, default_can_channel);
   pnh.param("RightMotorChupId", right_motor_chup_can_interface.DeviceId, 292);
   pnh.param("RightMotorRxOffset", right_motor_chup_can_interface.RxOffset, 0);
+  pnh.param("ImuName", imu_name, default_imu_name);
+  pnh.param("ImuLink", imu_link, default_imu_link);
   left_motor_chup_can_interface.ChannelName = left_motor_joint_name;
   right_motor_chup_can_interface.ChannelName = right_motor_joint_name;
 
@@ -30,6 +36,21 @@ BobbleBotHw::BobbleBotHw()
                                                                 &RightMotorPosition,
                                                                 &RightMotorVelocity,
                                                                 &RightMotorTorque);
+
+  adxl345_i2c.init();
+  itg3200_i2c.init();
+
+  hardware_interface::ImuSensorHandle imu_handle(imu_name,
+                                                 imu_link,
+                                                 NULL,
+                                                 NULL,
+                                                 itg3200_i2c.GyroDataArray,
+                                                 NULL,
+                                                 adxl345_i2c.AccelDataArray,
+                                                 NULL);
+
+  imu_interface.registerHandle(imu_handle);
+  registerInterface(&imu_interface);
   // connect and register the joint effort interfaces
   hardware_interface::JointHandle left_joint_effort_handle(left_joint_state_handle,
                                                             &LeftMotorCmdVoltage);
@@ -52,6 +73,8 @@ void BobbleBotHw::init(){
 }
 
 void BobbleBotHw::read(){
+  adxl345_i2c.read();
+  itg3200_i2c.read();
   left_motor_chup_can_interface.ReadTelemetry();
   right_motor_chup_can_interface.ReadTelemetry();
   CommData left_chup_data = left_motor_chup_can_interface.getCommData();
@@ -66,8 +89,8 @@ void BobbleBotHw::read(){
 
 void BobbleBotHw::write(){
   CommData left_chup_cmd, right_chup_cmd;
-  left_chup_cmd.CmdVoltage = (double) LeftMotorCmdVoltage;
-  right_chup_cmd.CmdVoltage = (double) RightMotorCmdVoltage;
+  left_chup_cmd.CmdVoltage = LeftMotorCmdVoltage;
+  right_chup_cmd.CmdVoltage = RightMotorCmdVoltage;
   left_motor_chup_can_interface.SendCommands(left_chup_cmd);
   right_motor_chup_can_interface.SendCommands(right_chup_cmd);
 }
