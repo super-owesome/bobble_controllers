@@ -19,16 +19,16 @@ bobble:
       RightWheelVelocityFilterGain: 0.15
       DesiredForwardVelocityFilterGain: 0.01
       DesiredTurnRateFilterGain: 0.01
-      MaxVelocityCmd: 0.35  # XX mph
-      MaxTurnRateCmd: 3.25 # XX deg/s
+      MaxVelocityCmd: 3.35  # XX mph
+      MaxTurnRateCmd: 6.25 # XX deg/s
       WheelRadiusMeters: 1.0
-      VelocityCmdScale: 2.65
+      VelocityCmdScale: 4.0
       TurnCmdScale: 12.5
       VelocityControlKp: 0.2
-      VelocityControlKi: 0.001
+      VelocityControlKi: 0.0 #0.001
       VelocityControlAlphaFilter: 0.15
       VelocityControlMaxIntegralOutput: 0.8
-      VelocityControlOutputLimitDegrees: 8.0
+      VelocityControlOutputLimitDegrees: 12.0
       TiltControlKp: 1.0
       TiltControlKd: 0.05
       TiltControlAlphaFilter: 0.15
