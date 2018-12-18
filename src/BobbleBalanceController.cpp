@@ -135,7 +135,7 @@ namespace bobble_controllers {
         }
 
         // Setup publishers and subscribers
-        pub_bobble_status = new realtime_tools::RealtimePublisher<executive::BobbleBotStatus>(root_nh, "bobble_balance_controller/bb_controller_status", 1);
+        pub_bobble_status = new realtime_tools::RealtimePublisher<bobble_controllers::BobbleBotStatus>(root_nh, "bobble_balance_controller/bb_controller_status", 1);
         // Only do IMU subscription in sim.
         if(InSim){
             sub_imu_sensor_ = node_.subscribe("/imu_bosch/data_raw", 1, &BobbleBalanceController::imuCB, this);

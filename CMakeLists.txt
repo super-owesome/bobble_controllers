@@ -10,14 +10,10 @@ find_package(catkin REQUIRED COMPONENTS
     rospy
     controller_manager
 	pluginlib
-	chupacabra_comm
-	adxl345_ros_node
-	itg3200_ros_node
 	generic_filter
 	controller_interface
 	control_msgs
 	sensor_msgs
-    executive
 )
 find_package(cmake_modules REQUIRED)
 
@@ -29,7 +25,7 @@ catkin_python_setup()
 add_message_files(
   FILES
   ControlCommands.msg
-  RtStatus.msg
+  BobbleBotStatus.msg
 )
 
 ## Generate added messages and services with any dependencies listed here
@@ -52,18 +48,14 @@ catkin_package(
    LIBRARIES ${PROJECT_NAME}
    CATKIN_DEPENDS
 		generic_filter
-		chupacabra_comm
 		controller_interface
 		control_msgs
 		sensor_msgs
-		executive
 		controller_manager
 		pluginlib
 		std_msgs
 		rospy
 		message_runtime
-		adxl345_ros_node
-		itg3200_ros_node
 #  DEPENDS system_lib
 )
 
@@ -84,12 +76,6 @@ add_library(bobble_controllers
   src/MadgwickAHRS.cpp
 )
 
-## Declare a cpp executable
-add_executable(BobbleControlNode src/nodes/BobbleControlNode.cpp src/BobbleBotHw.cpp)
-target_link_libraries(BobbleControlNode ${catkin_LIBRARIES} wiringPi)
-install(TARGETS BobbleControlNode
-        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
-
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(bobble_controllers bobble_controllers_generate_messages_cpp)
@@ -97,7 +83,6 @@ add_dependencies(bobble_controllers bobble_controllers_generate_messages_cpp)
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
-  wiringPi
 )
 
 #############

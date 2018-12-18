@@ -26,7 +26,7 @@
 #include <bobble_controllers/PidControl.h>
 #include "bobble_controllers/MadgwickAHRS.h"
 #include <generic_filter/Filter.h>
-#include <executive/BobbleBotStatus.h>
+#include <bobble_controllers/BobbleBotStatus.h>
 #include <tf/transform_datatypes.h>
 
 namespace bobble_controllers {
@@ -37,7 +37,7 @@ namespace bobble_controllers {
         hardware_interface::RobotHW *robot_;
         std::vector <hardware_interface::JointHandle> joints_;
         hardware_interface::ImuSensorInterface *imu_;
-        realtime_tools::RealtimePublisher<executive::BobbleBotStatus>* pub_bobble_status;
+        realtime_tools::RealtimePublisher<bobble_controllers::BobbleBotStatus>* pub_bobble_status;
         ros::Subscriber sub_imu_sensor_;
         ros::Subscriber sub_command_;
         hardware_interface::ImuSensorHandle imuData;
