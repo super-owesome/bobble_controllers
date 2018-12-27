@@ -14,6 +14,8 @@ namespace bobble_controllers {
         ros::NodeHandle n;
         ros::Subscriber sub = n.subscribe("/bobble/bobble_balance_controller/bb_cmd", 1,
                                           &BobbleBalanceController::subscriberCallBack, this);
+        ros::Subscriber sub_cmd_vel = n.subscribe("/bobble/bobble_balance_controller/cmd_vel", 1,
+                                          &BobbleBalanceController::cmdVelCallback, this);
         ros::Rate loop_rate(20);
 	while(ros::ok() && runThread)
     {
@@ -28,14 +30,18 @@ namespace bobble_controllers {
         loop_rate.sleep();
     }
         sub.shutdown();
+    	sub_cmd_vel.shutdown();
     }
 
     void BobbleBalanceController::subscriberCallBack(const bobble_controllers::ControlCommands::ConstPtr &cmd) {
         commandStructTmp.StartupCmd = cmd->StartupCmd;
         commandStructTmp.IdleCmd = cmd->IdleCmd;
         commandStructTmp.DiagnosticCmd = cmd->DiagnosticCmd;
-        commandStructTmp.DesiredVelocity = cmd->DesiredVelocity;
-        commandStructTmp.DesiredTurnRate = cmd->DesiredTurnRate;
+    }
+
+    void BobbleBalanceController::cmdVelCallback(const geometry_msgs::Twist& command) {
+        commandStructTmp.DesiredVelocity = command.linear.x;
+        commandStructTmp.DesiredTurnRate = command.angular.z;
     }
 
     BobbleBalanceController::BobbleBalanceController(void)

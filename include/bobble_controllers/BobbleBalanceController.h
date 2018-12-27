@@ -20,6 +20,7 @@
 #include <hardware_interface/imu_sensor_interface.h>
 #include <controller_interface/controller.h>
 #include <trajectory_msgs/JointTrajectoryPoint.h>
+#include <geometry_msgs/Twist.h>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/JointState.h>
 #include <bobble_controllers/ControlCommands.h>
@@ -64,6 +65,11 @@ namespace bobble_controllers {
 	    bool runThread;
         void runSubscriber();
         void subscriberCallBack(const bobble_controllers::ControlCommands::ConstPtr &cmd);
+        /**
+         * \brief Velocity command callback
+         * \param command Velocity command message (twist)
+        */
+        void cmdVelCallback(const geometry_msgs::Twist& command);
 
         /// Controller config
         bool InSim; // Temporary hack. Need to re-orient IMU model.
