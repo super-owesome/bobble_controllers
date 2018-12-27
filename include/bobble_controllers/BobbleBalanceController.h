@@ -25,7 +25,7 @@
 #include <bobble_controllers/ControlCommands.h>
 #include <bobble_controllers/PidControl.h>
 #include "bobble_controllers/MadgwickAHRS.h"
-#include <generic_filter/Filter.h>
+#include <bobble_controllers/Filter.h>
 #include <bobble_controllers/BobbleBotStatus.h>
 #include <tf/transform_datatypes.h>
 

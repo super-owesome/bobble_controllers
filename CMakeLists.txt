@@ -10,7 +10,6 @@ find_package(catkin REQUIRED COMPONENTS
     rospy
     controller_manager
 	pluginlib
-	generic_filter
 	controller_interface
 	control_msgs
 	sensor_msgs
@@ -47,7 +46,6 @@ catkin_package(
 #  INCLUDE_DIRS include
    LIBRARIES ${PROJECT_NAME}
    CATKIN_DEPENDS
-		generic_filter
 		controller_interface
 		control_msgs
 		sensor_msgs
@@ -72,6 +70,7 @@ include_directories(include
 ## Declare a cpp library
 add_library(bobble_controllers
   src/BobbleBalanceController.cpp
+  src/Filter.cpp
   src/PidControl.cpp
   src/MadgwickAHRS.cpp
 )
