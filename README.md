@@ -64,7 +64,6 @@ The default controls are depicted below:
 
 ![Joystick Controls](imgs/JoystickControls.png)
 
-
 ## Development setup
 
 TODO section.
@@ -90,29 +89,6 @@ below to see the controller in action on the real system.
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=bg6ksWbVXSk" 
 target="_blank"><img src="http://img.youtube.com/vi/bg6ksWbVXSk/0.jpg" 
 alt="BobbleBot Testing" width="840" height="380" border="10" /></a>
-
-## Release History
-
-* 0.2.1
-    * CHANGE: Update docs (module code remains unchanged)
-* 0.2.0
-    * CHANGE: Remove `setDefaultXYZ()`
-    * ADD: Add `init()`
-* 0.1.1
-    * FIX: Crash when calling `baz()` (Thanks @GenerousContributorName!)
-* 0.1.0
-    * The first proper release
-    * CHANGE: Rename `foo()` to `bar()`
-* 0.0.1
-    * Work in progress
-
-## Meta
-
-Your Name – [@YourTwitter](https://twitter.com/dbader_org) – YourEmail@example.com
-
-Distributed under the BSD license. See ``LICENSE`` for more information.
-
-[https://github.com/super-owesome](https://github.com/super-owesome/)
 
 ## Contributing
 
