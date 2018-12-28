@@ -3,11 +3,9 @@
 
 One to two paragraph statement about your product and what it does.
 
-<center>
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=hS7kfhN-8V8
-" target="_blank"><img src="imgs/BobbleBotGazebo.png" 
+" target="_blank"><img align="center" src="imgs/BobbleBotGazebo.png" 
 alt="BobbleBot Simulation" width="480" height="360" border="10" /></a>
-</center>
 
 ## Installation
 
