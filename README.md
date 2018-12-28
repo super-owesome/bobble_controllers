@@ -5,7 +5,7 @@ One to two paragraph statement about your product and what it does.
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=hS7kfhN-8V8" 
 target="_blank"><img src="imgs/BobbleBotGazebo.png" 
-alt="BobbleBot Simulation" width="640" height="480" border="10" /></a>
+alt="BobbleBot Simulation" width="840" height="380" border="10" /></a>
 
 
 ## Quick Start
@@ -87,7 +87,7 @@ controller in action.
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=bg6ksWbVXSk&t" 
 target="_blank"><img src="http://img.youtube.com/vi/bg6ksWbVXSk&t/0.jpg" 
-alt="BobbleBot Testing" width="640" height="480" border="10" /></a>
+alt="BobbleBot Testing" width="840" height="380" border="10" /></a>
 
 Check out the [parts list](https://soe/bobble-parts) to learn how to build your own.
 
