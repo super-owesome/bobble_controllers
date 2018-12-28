@@ -1,30 +1,22 @@
-# BobbleBot - An Open Source ROS Robot
-> Gazebo simulation of a self-balancing ROS robot.
+# BobbleBot Simulator
+> A Gazebo simulation of the self-balancing ROS robot, BobbleBot.
 
 One to two paragraph statement about your product and what it does.
 
-<p align="center">
-    <a href="http://www.youtube.com/watch?feature=player_embedded&v=hS7kfhN-8V8
-    " target="_blank"><img src="imgs/BobbleBotGazebo.png" 
-    alt="BobbleBot Simulation" width="480" height="360" border="10" /></a>
-</p>
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=hS7kfhN-8V8" 
+target="_blank"><img src="imgs/BobbleBotGazebo.png" 
+alt="BobbleBot Simulation" width="640" height="480" border="10" /></a>
 
-## Installation
+
+## Quick Start
 
 TODO debian based install instructions.
 
 ```sh
-npm install my-crazy-module --save
+sudo apt-get install bobble-sim
 ```
 
-## Quick Start
-
-A few motivating and useful examples of how your product can be used. Spice this up with code 
-blocks and potentially more screenshots.
-
-For more examples and usage, please refer to the [Wiki][wiki]._
-
-## Keyboard Control
+### Keyboard Control
 Here's how to control BobbleBot with the keyboard.
 
 Launch the simulation using the command below.
@@ -56,7 +48,7 @@ Speed Up/Down:
 CTRL-C to quit
 ```
 
-## Joystick Control
+### Joystick Control
 The bobble_description package comes with a Joystick control node that is defaulted with a mapping 
 that is suitable for an Xbox 1 controller. To use joystick control, follow 
 [these instructions](https://www.maketecheasier.com/set-up-xbox-one-controller-ubuntu/) 
@@ -74,12 +66,30 @@ The default controls are depicted below:
 
 ## Development setup
 
-Describe how to install all development dependencies and how to run an automated test-suite of some kind. Potentially do this for multiple platforms.
+TODO section.
+Describe how to install all development dependencies and how to run an automated test-suite of some kind. 
+Potentially do this for multiple platforms via docker containers.
 
 ```sh
-make install
-npm test
+mkdir -p bobble_workspace/src
+cd bobble_workspace/src
+catkin init
+git clone https://github.com/super-owesome/bobble_controllers.git
+git clone https://github.com/super-owesome/bobble_description.git
+catkin build
+catkin run_tests
 ```
+
+## Build Your Own BobbleBot
+BobbleBot is a real robot built by the robotics team at SOE. The controller provided in 
+this repository is currently in use by the real BobbleBot. See video below for this 
+controller in action. 
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=bg6ksWbVXSk&t" 
+target="_blank"><img src="http://img.youtube.com/vi/bg6ksWbVXSk&t/0.jpg" 
+alt="BobbleBot Testing" width="640" height="480" border="10" /></a>
+
+Check out the [parts list](https://soe/bobble-parts) to learn how to build your own.
 
 ## Release History
 
@@ -100,22 +110,17 @@ npm test
 
 Your Name – [@YourTwitter](https://twitter.com/dbader_org) – YourEmail@example.com
 
-Distributed under the XYZ license. See ``LICENSE`` for more information.
+Distributed under the BSD license. See ``LICENSE`` for more information.
 
-[https://github.com/yourname/github-link](https://github.com/dbader/)
+[https://github.com/super-owesome](https://github.com/super-owesome/)
 
 ## Contributing
 
-1. Fork it (<https://github.com/yourname/yourproject/fork>)
+1. Fork [bobble_controllers](<https://github.com/super-owesome/bobble_controllers/fork>) and [bobble_description](<https://github.com/super-owesome/bobble_description/fork>)
 2. Create your feature branch (`git checkout -b feature/fooBar`)
 3. Commit your changes (`git commit -am 'Add some fooBar'`)
 4. Push to the branch (`git push origin feature/fooBar`)
 5. Create a new Pull Request
 
 <!-- Markdown link & img dfn's -->
-[npm-image]: https://img.shields.io/npm/v/datadog-metrics.svg?style=flat-square
-[npm-url]: https://npmjs.org/package/datadog-metrics
-[npm-downloads]: https://img.shields.io/npm/dm/datadog-metrics.svg?style=flat-square
-[travis-image]: https://img.shields.io/travis/dbader/node-datadog-metrics/master.svg?style=flat-square
-[travis-url]: https://travis-ci.org/dbader/node-datadog-metrics
-[wiki]: https://github.com/yourname/yourproject/wiki
+[wiki]: https://github.com/super-owesome/bobble_controllers/wiki
