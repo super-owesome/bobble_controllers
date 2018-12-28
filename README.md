@@ -1,4 +1,4 @@
-# Product Name
+# BobbleBot Simulation
 > Short blurb about what your product does.
 
 [![NPM Version][npm-image]][npm-url]
@@ -7,27 +7,69 @@
 
 One to two paragraph statement about your product and what it does.
 
-![](header.png)
+![BobbleBot Sim](imgs/BobbleBotGazebo.png)
 
 ## Installation
 
-OS X & Linux:
+TODO debian based install instructions.
 
 ```sh
 npm install my-crazy-module --save
 ```
 
-Windows:
+## Quick Start
 
+A few motivating and useful examples of how your product can be used. Spice this up with code 
+blocks and potentially more screenshots.
+
+For more examples and usage, please refer to the [Wiki][wiki]._
+
+## Keyboard Control
+Here's how to control BobbleBot with the keyboard.
+
+Launch the simulation using the command below.
 ```sh
-edit autoexec.bat
+roslaunch bobble_description run_sim.launch
 ```
 
-## Usage example
+In a separate terminal (with the ROS environment sourced) launch the keyboard control node using the 
+command below.
+```sh
+rosrun bobble_description KeyboardControl
+```
 
-A few motivating and useful examples of how your product can be used. Spice this up with code blocks and potentially more screenshots.
+The controls are summarized below. The terminal used to launch the keyboard control node must 
+have the active focus.
+```sh
+BobbleBot Keyboard Controller
+---------------------------
+Activate/Deactivate command:
+    Activate/Shutdown: space bar
+Moving around:
+    Forward : w
+    Backward : s
+    Left : a
+    Right : d
+Speed Up/Down: 
+    15% Increase: q
+    15% Decrease: e
+CTRL-C to quit
+```
 
-_For more examples and usage, please refer to the [Wiki][wiki]._
+## Joystick Control
+The bobble_description package comes with a Joystick control node that is defaulted with a mapping 
+that is suitable for an Xbox 1 controller. To use joystick control, follow 
+[these instructions](https://www.maketecheasier.com/set-up-xbox-one-controller-ubuntu/) 
+to setup your Xbox 1 controller. Next, make sure you have the [ROS joy package installed](http://wiki.ros.org/joy). 
+With those two steps out of the way, you can then launch the simulator using the command below.
+
+```sh
+roslaunch bobble_description run_sim_with_joystick.launch
+```
+
+The default controls are depicted below:
+![Joystick Controls](imgs/JoystickControls.png)
+
 
 ## Development setup
 
