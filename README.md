@@ -1,13 +1,11 @@
-# BobbleBot Simulation
-> Short blurb about what your product does.
-
-[![NPM Version][npm-image]][npm-url]
-[![Build Status][travis-image]][travis-url]
-[![Downloads Stats][npm-downloads]][npm-url]
+# BobbleBot - An Open Source ROS Robot
+> Gazebo simulation of a self-balancing ROS robot.
 
 One to two paragraph statement about your product and what it does.
 
-![BobbleBot Sim](imgs/BobbleBotGazebo.png)
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=hS7kfhN-8V8
+" target="_blank"><img src="http://img.youtube.com/vi/hS7kfhN-8V8/0.jpg" 
+alt="BobbleBot Simulation" width="240" height="180" border="10" /></a>
 
 ## Installation
 
