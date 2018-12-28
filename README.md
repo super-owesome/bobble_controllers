@@ -1,7 +1,8 @@
 # BobbleBot Simulator
 > A Gazebo simulation of the self-balancing ROS robot, BobbleBot.
 
-One to two paragraph statement about your product and what it does.
+TODO section.
+One or two paragraphs about BobbleBot.
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=hS7kfhN-8V8" 
 target="_blank"><img src="imgs/BobbleBotGazebo.png" 
@@ -68,7 +69,7 @@ The default controls are depicted below:
 
 TODO section.
 Describe how to install all development dependencies and how to run an automated test-suite of some kind. 
-Potentially do this for multiple platforms via docker containers.
+Potentially do this for multiple platforms via docker containers. CI tests should test these steps.
 
 ```sh
 mkdir -p bobble_workspace/src
@@ -81,15 +82,14 @@ catkin run_tests
 ```
 
 ## Build Your Own BobbleBot
-BobbleBot is a real robot built by the robotics team at SOE. The controller provided in 
-this repository is currently in use by the real BobbleBot. See video below for this 
-controller in action. 
+BobbleBot is a real robot built by the robotics team at SOE. Check out the 
+[parts list](https://soe/bobble-parts) to learn how to build your own. The controller 
+provided in this repository is currently in use by the real BobbleBot. Check out the video 
+below to see the controller in action on the real system.
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=bg6ksWbVXSk" 
 target="_blank"><img src="http://img.youtube.com/vi/bg6ksWbVXSk/0.jpg" 
 alt="BobbleBot Testing" width="840" height="380" border="10" /></a>
-
-Check out the [parts list](https://soe/bobble-parts) to learn how to build your own.
 
 ## Release History
 
