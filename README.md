@@ -68,6 +68,7 @@ roslaunch bobble_description run_sim_with_joystick.launch
 ```
 
 The default controls are depicted below:
+
 ![Joystick Controls](imgs/JoystickControls.png)
 
 
