@@ -85,8 +85,8 @@ BobbleBot is a real robot built by the robotics team at SOE. The controller prov
 this repository is currently in use by the real BobbleBot. See video below for this 
 controller in action. 
 
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=bg6ksWbVXSk&t" 
-target="_blank"><img src="http://img.youtube.com/vi/bg6ksWbVXSk&t/0.jpg" 
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=bg6ksWbVXSk" 
+target="_blank"><img src="http://img.youtube.com/vi/bg6ksWbVXSk/0.jpg" 
 alt="BobbleBot Testing" width="840" height="380" border="10" /></a>
 
 Check out the [parts list](https://soe/bobble-parts) to learn how to build your own.
