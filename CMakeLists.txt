@@ -6,9 +6,9 @@ add_compile_options(-std=c++11)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  control_msgs
   controller_manager
   controller_interface
+  control_msgs
   message_generation
   pluginlib
   rospy
@@ -21,8 +21,8 @@ catkin_python_setup()
 
 add_message_files(
   FILES
-  ControlCommands.msg
   BobbleBotStatus.msg
+  ControlCommands.msg
 )
 
 ## Generate added messages and services with any dependencies listed here
@@ -41,18 +41,17 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-   INCLUDE_DIRS include
-   LIBRARIES ${PROJECT_NAME}
-   CATKIN_DEPENDS
-		controller_interface
-		control_msgs
-		sensor_msgs
-		controller_manager
-		pluginlib
-		std_msgs
-		rospy
-		message_runtime
-#  DEPENDS system_lib
+  INCLUDE_DIRS include
+  LIBRARIES ${PROJECT_NAME}
+  CATKIN_DEPENDS
+  controller_interface
+  controller_manager
+  control_msgs
+  message_runtime
+  pluginlib
+  rospy
+  sensor_msgs
+  std_msgs
 )
 
 ###########
@@ -66,11 +65,11 @@ include_directories(include
 add_library(${PROJECT_NAME}
   src/BobbleBalanceController.cpp
   src/Filter.cpp
-  src/PidControl.cpp
   src/MadgwickAHRS.cpp
+  src/PidControl.cpp
 )
 
-add_dependencies(${PROJECT_NAME} bobble_controllers_generate_messages_cpp)
+add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_generate_messages_cpp)
 
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
