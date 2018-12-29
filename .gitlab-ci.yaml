@@ -8,7 +8,7 @@ before_script:
 - git clone https://gitlab.com/VictorLamoine/ros_gitlab_ci.git
 - source ros_gitlab_ci/gitlab-ci.bash >/dev/null
 
-# catkin_lint
+# catkin_lint.
 catkin lint:
   stage: build
   image: ros:melodic-ros-core
