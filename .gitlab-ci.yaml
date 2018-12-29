@@ -11,6 +11,8 @@ before_script:
 # catkin_lint
 catkin lint:
   stage: build
+  tags:
+  - bobble-bot
   image: ros:melodic-ros-core
   before_script:
   - apt update  >/dev/null 2>&1
@@ -21,21 +23,29 @@ catkin lint:
 # catkin_make
 catkin_make:
   stage: build
+  tags:
+  - bobble-bot
   script:
   - catkin_make
 
 catkin_make tests:
   stage: test
+  tags:
+  - bobble-bot
   script:
   - catkin_make run_tests
 
 # catkin tools
 catkin_tools:
   stage: build
+  tags:
+  - bobble-bot
   script:
   - catkin build --summarize --no-status --force-color
 
 catkin tools_tests:
   stage: test
+  tags:
+  - bobble-bot
   script:
   - catkin run_tests --no-status --force-color
