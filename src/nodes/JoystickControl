@@ -1,0 +1,60 @@
+#!/usr/bin/python
+import rospy
+from sensor_msgs.msg import Joy
+from geometry_msgs.msg import Twist
+from bobble_controllers.msg import ControlCommands
+PKG = 'bobble_description'
+
+FWD_VEL_AXIS = 1
+TURN_RATE_AXIS = 2
+ACTIVATE_BUTTON = 0
+RESET_BUTTON = 4
+JOYSTICK_MIN = -1.0
+JOYSTICK_MAX = 1.0
+JOYSTICK_RANGE = JOYSTICK_MAX - JOYSTICK_MIN
+OUTPUT_MIN = -0.2
+OUTPUT_MAX = 0.2
+OUTPUT_RANGE = OUTPUT_MAX - OUTPUT_MIN
+
+
+class JoystickControl(object):
+
+    def __init__(self):
+        rospy.Subscriber('joy', Joy, self.joystickCallback)
+        self.mode_cmd_pub = rospy.Publisher('/bobble/bobble_balance_controller/bb_cmd', ControlCommands, queue_size = 1)
+        self.cmd_vel_pub = rospy.Publisher('/bobble/bobble_balance_controller/cmd_vel', Twist, queue_size = 1)
+        self.mode_cmd = ControlCommands()
+        self.cmd_vel = Twist()
+        rospy.spin()
+
+    def remap_joystick_range(self, axis_value):
+        return (((axis_value - JOYSTICK_MIN) * OUTPUT_RANGE) / JOYSTICK_RANGE) + OUTPUT_MIN
+
+    def joystickCallback(self, jsData):
+        for axisNumber, axisValue in enumerate(jsData.axes):
+            if axisNumber == FWD_VEL_AXIS:
+                self.cmd_vel.linear.x = self.remap_joystick_range(axisValue)
+            elif axisNumber == TURN_RATE_AXIS:
+                self.cmd_vel.angular.z = self.remap_joystick_range(axisValue)
+        for buttonNumber, buttonValue in enumerate(jsData.buttons):
+            if buttonNumber == ACTIVATE_BUTTON and buttonValue:
+                self.mode_cmd.IdleCmd = False
+                self.mode_cmd.StartupCmd = True
+                self.mode_cmd.DiagnosticCmd = False
+                self.mode_cmd_pub.publish(self.mode_cmd)
+                print('BobbleBot Active!')
+            elif buttonNumber == RESET_BUTTON and buttonValue:
+                self.mode_cmd.IdleCmd = True
+                self.mode_cmd.StartupCmd = False
+                self.mode_cmd.DiagnosticCmd = False
+                self.mode_cmd_pub.publish(self.mode_cmd)
+                print('Resetting BobbleBot')
+        self.cmd_vel_pub.publish(self.cmd_vel)
+
+# Main function.
+if __name__ == '__main__':
+    rospy.init_node('JoystickController', log_level=rospy.DEBUG)
+    try:
+        JoystickControl()
+    except rospy.ROSInterruptException:
+        pass

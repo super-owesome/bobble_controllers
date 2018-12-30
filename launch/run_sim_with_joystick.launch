@@ -1,0 +1,13 @@
+<launch>
+    <arg name="paused" default="false"/>
+    <include file="$(find bobble_controllers)/launch/bobble_balance_state_hold.launch">
+        <arg name="paused" value="$(arg paused)"/>
+    </include>
+    <node respawn="true" pkg="joy"
+          type="joy_node" name="joy_test" >
+        <param name="dev" type="string" value="/dev/input/js0" />
+        <param name="deadzone" value="0.2" />
+    </node>
+	<node pkg="bobble_controllers" type="JoystickControl" name="JoystickController" output="screen">
+    </node>
+</launch>

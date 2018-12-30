@@ -90,6 +90,15 @@ install(DIRECTORY include/${PROJECT_NAME}/
    DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
 
+catkin_install_python(
+   PROGRAMS
+   src/nodes/BobbleStateHold
+   src/nodes/JoystickControl
+   src/nodes/KeyboardControl
+   DESTINATION
+   ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
 install(DIRECTORY launch
 		DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 

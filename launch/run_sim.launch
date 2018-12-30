@@ -1,0 +1,6 @@
+<launch>
+    <arg name="paused" default="false"/>
+    <include file="$(find bobble_controllers)/launch/bobble_balance_state_hold.launch">
+        <arg name="paused" value="$(arg paused)"/>
+    </include>
+</launch>
