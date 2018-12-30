@@ -1,4 +1,4 @@
-image: ros:melodic-robot
+image: osrf/ros:melodic-desktop-full-bionic
 
 cache:
   paths:
@@ -11,7 +11,6 @@ before_script:
 # catkin_lint.
 catkin_lint:
   stage: build
-  image: ros:melodic-ros-core
   before_script:
   - apt update  >/dev/null 2>&1
   - apt install -y python-catkin-lint >/dev/null 2>&1
