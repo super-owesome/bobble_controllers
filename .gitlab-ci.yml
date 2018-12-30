@@ -27,6 +27,7 @@ catkin_make:
 catkin_make_tests:
   stage: test
   script:
+  - catkin_make
   - catkin_make run_tests -j1
 
 # catkin tools
@@ -38,4 +39,5 @@ catkin_tools:
 catkin_tools_tests:
   stage: test
   script:
+  - catkin build --summarize --no-status --force-color
   - catkin run_tests --no-status --force-color -j1

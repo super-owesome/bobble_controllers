@@ -6,8 +6,8 @@ find_package(
   catkin
   REQUIRED COMPONENTS
   control_msgs
-  controller_manager
   controller_interface
+  controller_manager
   message_generation
   pluginlib
   rospy
