@@ -2,7 +2,7 @@
 import rospy
 from bobble_controllers.msg import BobbleBotStatus
 from gazebo_msgs.srv import *
-PKG = 'bobble_description'
+PKG = 'bobble_controllers'
 
 class BobbleStateHold(object):
 

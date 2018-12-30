@@ -32,6 +32,9 @@
   <run_depend>sensor_msgs</run_depend>
   <run_depend>std_msgs</run_depend>
 
+  <test_depend>rostest</test_depend>
+  <test_depend>xacro</test_depend>
+
   <export>
     <controller_interface plugin="${prefix}/bobble_controllers_plugins.xml"/>
   </export>

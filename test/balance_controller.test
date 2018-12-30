@@ -1,0 +1,12 @@
+<launch>
+  <!-- Load common test stuff -->
+  <include file="$(find bobble_controllers)/test/common.launch" />
+  <rosparam file="$(find bobble_controllers)/test/good_balance_control_config.yaml"
+			  command="load"/>
+  <!-- Controller test -->
+  <test test-name="balance_controller_test"
+        pkg="bobble_controllers"
+        type="balance_controller_test"
+        time-limit="40.0">
+  </test>
+</launch>

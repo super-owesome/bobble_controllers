@@ -3,7 +3,7 @@ import rospy
 from sensor_msgs.msg import Joy
 from geometry_msgs.msg import Twist
 from bobble_controllers.msg import ControlCommands
-PKG = 'bobble_description'
+PKG = 'bobble_controllers'
 
 FWD_VEL_AXIS = 1
 TURN_RATE_AXIS = 2

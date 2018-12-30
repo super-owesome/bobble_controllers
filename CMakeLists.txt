@@ -111,7 +111,19 @@ install(FILES ${PROJECT_NAME}_plugins.xml
 #############
 ## Testing ##
 #############
+if (CATKIN_ENABLE_TESTING)
+  find_package(catkin REQUIRED COMPONENTS controller_manager rostest)
+  include_directories(include ${catkin_INCLUDE_DIRS})
 
+  add_rostest_gtest(balance_controller_test
+          test/balance_controller.test
+          test/balance_controller_test.cpp)
+  target_link_libraries(balance_controller_test ${catkin_LIBRARIES})
+  add_rostest_gtest(no_balance_test
+          test/no_balance.test
+          test/no_balance_test.cpp)
+  target_link_libraries(no_balance_test ${catkin_LIBRARIES})
+endif()
 ## Add gtest based cpp test target and link libraries
 # catkin_add_gtest(${PROJECT_NAME}-test test/test_bobble_controllers.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
