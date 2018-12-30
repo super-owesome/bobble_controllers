@@ -2,20 +2,19 @@ cmake_minimum_required(VERSION 2.8.3)
 project(bobble_controllers)
 add_compile_options(-std=c++11)
 
-## Find catkin macros and libraries
-## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
-## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS
+find_package(
+  catkin
+  REQUIRED COMPONENTS
+  control_msgs
   controller_manager
   controller_interface
-  control_msgs
   message_generation
   pluginlib
   rospy
+  rostest
   sensor_msgs
   std_msgs
 )
-find_package(cmake_modules REQUIRED)
 
 catkin_python_setup()
 
@@ -25,31 +24,22 @@ add_message_files(
   ControlCommands.msg
 )
 
-## Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
-  std_msgs  # Or other packages containing msgs
+  std_msgs
 )
 
-###################################
-## catkin specific configuration ##
-###################################
-## The catkin_package macro generates cmake config files for your package
-## Declare things to be passed to dependent projects
-## INCLUDE_DIRS: uncomment this if you package contains header files
-## LIBRARIES: libraries you create in this project that dependent projects also need
-## CATKIN_DEPENDS: catkin_packages dependent projects also need
-## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS
+  control_msgs
   controller_interface
   controller_manager
-  control_msgs
   message_runtime
   pluginlib
   rospy
+  rostest
   sensor_msgs
   std_msgs
 )
@@ -57,7 +47,6 @@ catkin_package(
 ###########
 ## Build ##
 ###########
-
 include_directories(include
   ${catkin_INCLUDE_DIRS}
 )
@@ -78,8 +67,6 @@ target_link_libraries(${PROJECT_NAME}
 #############
 ## Install ##
 #############
-
-## Mark executables and/or libraries for installation
 install(TARGETS ${PROJECT_NAME}
    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
@@ -112,9 +99,7 @@ install(FILES ${PROJECT_NAME}_plugins.xml
 ## Testing ##
 #############
 if (CATKIN_ENABLE_TESTING)
-  find_package(catkin REQUIRED COMPONENTS controller_manager rostest)
   include_directories(include ${catkin_INCLUDE_DIRS})
-
   add_rostest_gtest(balance_controller_test
           test/balance_controller.test
           test/balance_controller_test.cpp)
@@ -124,11 +109,3 @@ if (CATKIN_ENABLE_TESTING)
           test/no_balance_test.cpp)
   target_link_libraries(no_balance_test ${catkin_LIBRARIES})
 endif()
-## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_bobble_controllers.cpp)
-# if(TARGET ${PROJECT_NAME}-test)
-#   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
-# endif()
-
-## Add folders to be run by python nosetests
-# catkin_add_nosetests(test)
