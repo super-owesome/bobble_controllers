@@ -8,7 +8,6 @@ before_script:
 - git clone https://gitlab.com/VictorLamoine/ros_gitlab_ci.git
 - source ros_gitlab_ci/gitlab-ci.bash >/dev/null
 
-# catkin_lint.
 catkin_lint:
   stage: build
   before_script:
@@ -17,25 +16,12 @@ catkin_lint:
   script:
   - catkin_lint -W3 .
 
-# catkin_make
-catkin_make:
-  stage: build
-  script:
-  - catkin_make
-
-catkin_make_tests:
-  stage: test
-  script:
-  - catkin_make
-  - catkin_make run_tests -j1
-
-# catkin tools
-catkin_tools:
+build:
   stage: build
   script:
   - catkin build --summarize --no-status --force-color
 
-catkin_tools_tests:
+test:
   stage: test
   script:
   - catkin build --summarize --no-status --force-color
