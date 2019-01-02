@@ -1,28 +1,26 @@
-# BobbleBot Simulator
+# Bobble-Bot Simulator
 > A Gazebo simulation of the self-balancing ROS robot, Bobble-Bot.
 
-<img src="imgs/BobbleCAD.png" alt="BobbleBot CAD" width="380" height="440" border="1" /></a>
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=hS7kfhN-8V8" 
+target="_blank"><img src="imgs/BobbleBotGazebo.png" 
+alt="BobbleBot Simulation" width="800" height="330" border="1" /></a>
 
 Bobble-Bot is [SOE's](https://github.com/super-owesome) take on a classical problem in control theory. The robot represents 
 a unique solution to the well understood problem of control of a two wheeled inverted pendulum.
 The source code found in this repository constitutes the robot's balance control logic. The controller comes 
 with a handy Gazebo simulation which was used extensively during the development 
 of the robot. The source code is being provided as open-source software in order to help others learn about feedback 
-control and the Robot Operating System (ROS). Please consult the ``LICENSE`` agreement.
+control and the Robot Operating System (ROS).
 
-The image below links to a video of the simulation in action.
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=hS7kfhN-8V8" 
-target="_blank"><img src="imgs/BobbleBotGazebo.png" 
-alt="BobbleBot Simulation" width="840" height="380" border="1" /></a>
-
-A video of the robot that inspired this work.
+A video of the balance controller in development.
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=bg6ksWbVXSk" 
 target="_blank"><img src="http://img.youtube.com/vi/bg6ksWbVXSk/0.jpg" 
 alt="BobbleBot Testing" width="840" height="380" border="1" /></a>
 
-To get started, follow the [installation instructions](debian-install), or if you're more 
-of the DIY type, [build the simulation from source](build-from-source) 
-and learn how to [build your own Bobble-Bot](build-your-own).
+
+To get started, follow the [installation instructions](#debian-install), or if you're more 
+of the DIY type, [build the simulation from source](#build-from-source) 
+and learn how to [build your own Bobble-Bot](#build-your-own).
  
 ## Debian Install
 
@@ -32,9 +30,12 @@ the instructions below to build from source.
 
 ## Build from source
 
-The BobbleBot simulator requires ROS and Gazebo. Follow the instructions here to get ros-melodic-desktop-full. 
-The simulator also makes use of the Hector Gazebo ROS plugins. Those can be installed 
-using the command below.
+The BobbleBot simulator requires ROS and Gazebo. Follow the instructions 
+[here](http://wiki.ros.org/melodic/Installation/Ubuntu)
+and install ROS Melodic Desktop. Other recent versions of ROS should also work, 
+but they are not officially  supported at this time.
+The simulator also makes use of the [Hector Gazebo](http://wiki.ros.org/hector_gazebo_plugins) 
+plugins. Those can be installed using the command below.
 
 ```sh
 apt-get install ros-melodic-hector-gazebo-plugins
@@ -112,17 +113,18 @@ The default controls are depicted below:
 ![Joystick Controls](imgs/JoystickControls.png)
 
 ## Docker Setup
-Docker is blah blah. If you do not want to use Docker, then follow the [Debian install](debian-install) 
-instructions or [build from source](build-from-source).
+A Bobble-Bot simulation Docker image is available over on [Docker Hub](). If you do 
+not know what Docker is, we highly suggest checking it out. Docker can be used 
+to quickly experiment with the simulation without polluting your system with additional 
+packages. See this [page](https://docs.docker.com/get-started/) to get started.
+This particular image relies on [nvidia-docker](https://github.com/NVIDIA/nvidia-docker). 
+For now, an NVidia GPU is required if you want to run the graphics from within the container.
 
-https://hub.docker.com/_/ros/
-nvidia-docker link.
-
-Launch the simulator (for now this requires an nvidia GPU)
+Run the simulation from within a container
 ```sh
 git clone https://github.com/super-owesome/bobble_docker.git
 cd bobble_docker
-docker build -t bobble_sim_image .
+docker pull superowesome/bobble-sim:latest
 ./run_bobble_sim.bash
 ```
 
@@ -133,14 +135,13 @@ cd bobble_docker
 ```
 
 ## Build Your Own BobbleBot
+
+<img src="imgs/BobbleCAD.png" alt="BobbleBot CAD" width="250" height="350" border="1" /></a>
+
 BobbleBot is a real robot built by the robotics team at SOE. Check out the 
 [parts list](https://soe/bobble-parts) to learn how to build your own. The controller 
 provided in this repository is currently in use by the real robot. Check out the video 
 below to see the controller in action.
-
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=bg6ksWbVXSk" 
-target="_blank"><img src="http://img.youtube.com/vi/bg6ksWbVXSk/0.jpg" 
-alt="BobbleBot Testing" width="840" height="380" border="1" /></a>
 
 ## Contributing
 
