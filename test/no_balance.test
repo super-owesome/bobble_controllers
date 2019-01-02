@@ -7,6 +7,7 @@
   <test test-name="no_balance_test"
         pkg="bobble_controllers"
         type="no_balance_test"
-        time-limit="15.0">
+        time-limit="30.0">
   </test>
+  <node pkg="rosbag" type="record" name="rosbag_record_standard_data" respawn="true" output="screen" args="-o $(find bobble_controllers)/test/no_balance_test_data /bobble/bobble_balance_controller/bb_controller_status" />
 </launch>
