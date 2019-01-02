@@ -3,7 +3,7 @@
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=hS7kfhN-8V8" 
 target="_blank"><img src="imgs/BobbleBotGazebo.png" 
-alt="BobbleBot Simulation" width="800" height="330" border="1" /></a>
+alt="BobbleBot Simulation" width="820" height="360" border="1" /></a>
 
 Bobble-Bot is [SOE's](https://github.com/super-owesome) take on a classical problem in control theory. The robot represents 
 a unique solution to the well understood problem of control of a two wheeled inverted pendulum.
@@ -15,7 +15,7 @@ control and the Robot Operating System (ROS).
 A video of the balance controller in development.
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=bg6ksWbVXSk" 
 target="_blank"><img src="http://img.youtube.com/vi/bg6ksWbVXSk/0.jpg" 
-alt="BobbleBot Testing" width="840" height="380" border="1" /></a>
+alt="BobbleBot Testing" width="820" height="360" border="1" /></a>
 
 
 To get started, follow the [installation instructions](#debian-install), or if you're more 
@@ -134,14 +134,12 @@ cd bobble_docker
 ./run_keyboard_control.bash
 ```
 
-## Build Your Own BobbleBot
+## Build Your Own
 
 <img src="imgs/BobbleCAD.png" alt="BobbleBot CAD" width="250" height="350" border="1" /></a>
 
 BobbleBot is a real robot built by the robotics team at SOE. Check out the 
-[parts list](https://soe/bobble-parts) to learn how to build your own. The controller 
-provided in this repository is currently in use by the real robot. Check out the video 
-below to see the controller in action.
+[parts list](https://soe/bobble-parts) to learn how to build your own.
 
 ## Contributing
 
