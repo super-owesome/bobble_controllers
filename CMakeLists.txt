@@ -67,6 +67,21 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 #############
+## Testing ##
+#############
+if (CATKIN_ENABLE_TESTING)
+    include_directories(include ${catkin_INCLUDE_DIRS})
+    add_rostest_gtest(balance_controller_test
+          test/balance_controller.test
+          test/balance_controller_test.cpp)
+    target_link_libraries(balance_controller_test ${catkin_LIBRARIES})
+    add_rostest_gtest(no_balance_test
+          test/no_balance.test
+          test/no_balance_test.cpp)
+    target_link_libraries(no_balance_test ${catkin_LIBRARIES})
+endif()
+
+#############
 ## Install ##
 #############
 install(TARGETS ${PROJECT_NAME}
@@ -97,17 +112,6 @@ install(DIRECTORY config
 install(FILES ${PROJECT_NAME}_plugins.xml
 		DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
-#############
-## Testing ##
-#############
-if (CATKIN_ENABLE_TESTING)
-  include_directories(include ${catkin_INCLUDE_DIRS})
-  add_rostest_gtest(balance_controller_test
-          test/balance_controller.test
-          test/balance_controller_test.cpp)
-  target_link_libraries(balance_controller_test ${catkin_LIBRARIES})
-  add_rostest_gtest(no_balance_test
-          test/no_balance.test
-          test/no_balance_test.cpp)
-  target_link_libraries(no_balance_test ${catkin_LIBRARIES})
-endif()
+install(DIRECTORY
+        test
+        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
