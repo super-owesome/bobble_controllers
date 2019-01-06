@@ -9,7 +9,7 @@
   <rosparam file="$(find bobble_controllers)/test/good_balance_control_config.yaml" command="load"/>
   <node pkg="bobble_controllers" type="ApplyImpulse" name="ApplyImpulse" output="screen" required="true">
     <param name="impulse" value="-2000.0"/>
-    <param name="data_output_file" value="$(find bobble_controllers)/test/impulse_test_data"/>
+    <param name="data_output_file" value="$(find bobble_controllers)/test/data/impulse_test_data"/>
     <param name="run_length_s" value="10.0"/>
   </node>
   <test test-name="BobbleIntegrationTest" pkg="bobble_controllers" type="BobbleIntegrationTest.py" time-limit="45.0">
