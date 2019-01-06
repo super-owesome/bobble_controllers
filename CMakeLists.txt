@@ -79,10 +79,6 @@ if (CATKIN_ENABLE_TESTING)
           test/no_balance.test
           test/no_balance_test.cpp)
     target_link_libraries(no_balance_test ${catkin_LIBRARIES})
-#    foreach(T
-#            test/SimPlots_Test.launch)
-#        add_rostest(${T})
-#    endforeach()
 endif()
 
 #############
