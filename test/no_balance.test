@@ -12,5 +12,5 @@
         required="true"
         time-limit="20.0">
   </test>
-  <node pkg="rosbag" type="record" name="rosbag_record_standard_data" respawn="true" output="screen" args="-o $(find bobble_controllers)/test/no_balance_test_data /bobble/bobble_balance_controller/bb_controller_status" />
+  <node pkg="rosbag" type="record" name="rosbag_record_standard_data" respawn="true" output="screen" args="-O $(find bobble_controllers)/test/no_balance_test_data /bobble/bobble_balance_controller/bb_controller_status" />
 </launch>

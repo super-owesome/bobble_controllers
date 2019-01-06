@@ -65,7 +65,7 @@ class ApplyImpulse(object):
             self.logger.error("Service call failed: %s"%e)
 
     def startDataRecord(self):
-        self.rosbag_process = subprocess.Popen('rosbag record -e /bobble/bobble_balance_controller/bb_controller_status -j -o {} --duration {}'.format(self.data_output_file, "10.0"), stdin=subprocess.PIPE, shell=True)
+        self.rosbag_process = subprocess.Popen('rosbag record -e /bobble/bobble_balance_controller/bb_controller_status -j -O {} --duration {}'.format(self.data_output_file, "10.0"), stdin=subprocess.PIPE, shell=True)
 
     def run(self):
         self.logger.warn("Starting the sim dynamics.")
