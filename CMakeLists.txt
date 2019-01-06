@@ -70,7 +70,6 @@ target_link_libraries(${PROJECT_NAME}
 ## Testing ##
 #############
 if (CATKIN_ENABLE_TESTING)
-    find_package(catkin REQUIRED COMPONENTS controller_manager rostest)
     add_rostest_gtest(balance_controller_test
           test/balance_controller.test
           test/balance_controller_test.cpp)
@@ -81,9 +80,8 @@ if (CATKIN_ENABLE_TESTING)
     target_link_libraries(no_balance_test ${catkin_LIBRARIES})
     foreach(T
         test/js_drive_square.test
-        test/impulse_force.test
-    )
-    add_rostest(${T})
+        test/impulse_force.test)
+        add_rostest(${T})
     endforeach()
 endif()
 
