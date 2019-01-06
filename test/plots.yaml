@@ -3,7 +3,7 @@ measured_tilt:
   y_var: 'bobble_bobble_balance_controller_bb_controller_status__Tilt'
   x_label: 'Time (s)'
   y_label: 'Tilt (deg)'
-  runs : ['no_balance', 'impulse_test']
+  runs : ['no_balance', 'impulse_force']
   colors : ['grey', 'orange']
   linestyles: ['-' , '-']
   legend:
@@ -20,7 +20,7 @@ velocity:
   y_var: 'bobble_bobble_balance_controller_bb_controller_status__ForwardVelocity'
   x_label: 'Time (s)'
   y_label: 'Velocity (m/s)'
-  runs : ['no_balance', 'impulse_test']
+  runs : ['no_balance', 'impulse_force']
   colors : ['grey', 'orange']
   linestyles: ['-' , '-']
   legend:

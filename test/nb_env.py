@@ -19,10 +19,13 @@ sns.set_context("poster", font_scale=1.1)
 #sns.set_palette("Dark2")
 
 # Set paths to relevant data directories and config files
-drive_fwd_bwd_data_home = os.path.abspath(os.path.join('data', 'drive_fwd_bwd'))
-drive_square_data_home = os.path.abspath(os.path.join('data', 'drive_square'))
+data_home = os.path.join(os.getcwd(), "data")
+print("Reading all bag files in directory : ")
+print(data_home)
 
 # Load configs and data
-df = parse_all_runs_in_dir(drive_fwd_bwd_data_home)
-df.update(parse_all_runs_in_dir(drive_square_data_home))
+df = parse_all_runs_in_dir(data_home)
+
+print("Successfully loaded runs : ")
+print(df.keys())
 

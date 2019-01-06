@@ -24,16 +24,16 @@ class ParsingTest(unittest.TestCase):
         from analysis_tools.parsing import parse_single_run
         sim_run = os.path.join(self.sample_data_path, self.run_name+'.bag')
         df = parse_single_run(sim_run)
-        val = df['bobble_bobble_balance_controller_bb_controller_status__Tilt'][0]
-        self.assertAlmostEquals(val, 0.0020834458)
+        val = df['bobble_bobble_balance_controller_bb_controller_status__Tilt'][-1]
+        self.assertTrue(val > 45.0)
         return
 
     def test_ParseManyBagFiles(self):
         from analysis_tools.parsing import parse_all_runs_in_dir
         sim_data_dir = self.sample_data_path
         df = parse_all_runs_in_dir(sim_data_dir)
-        val = df[self.run_name]['bobble_bobble_balance_controller_bb_controller_status__Tilt'][0]
-        self.assertAlmostEquals(val, 0.0020834458)
+        val = df[self.run_name]['bobble_bobble_balance_controller_bb_controller_status__Tilt'][-1]
+        self.assertTrue(val > 45.0)
         return
 
 if __name__ == '__main__':
