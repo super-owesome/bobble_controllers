@@ -79,6 +79,12 @@ if (CATKIN_ENABLE_TESTING)
           test/no_balance.test
           test/no_balance_test.cpp)
     target_link_libraries(no_balance_test ${catkin_LIBRARIES})
+    foreach(T
+        test/js_drive_square.test
+        test/impulse_force.test
+    )
+    add_rostest(${T})
+    endforeach()
 endif()
 
 #############

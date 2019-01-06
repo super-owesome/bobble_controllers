@@ -8,7 +8,7 @@ class BobbleStateHold(object):
 
     def __init__(self):
         """
-        This simple node just keeps the bobblebot standing in sim until
+        This simple node just keeps the Bobble-Bot standing in sim until
         active control begins.
         """
         self._ControlMode = 0 # IDLE

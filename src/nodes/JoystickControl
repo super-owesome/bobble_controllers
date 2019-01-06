@@ -6,7 +6,8 @@ from bobble_controllers.msg import ControlCommands
 PKG = 'bobble_controllers'
 
 FWD_VEL_AXIS = 1
-TURN_RATE_AXIS = 2
+TURN_RATE_AXIS = 3
+#TURN_RATE_AXIS = 2 # Xbox One controller
 ACTIVATE_BUTTON = 0
 RESET_BUTTON = 4
 JOYSTICK_MIN = -1.0
