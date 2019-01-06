@@ -70,7 +70,7 @@ target_link_libraries(${PROJECT_NAME}
 ## Testing ##
 #############
 if (CATKIN_ENABLE_TESTING)
-    include_directories(include ${catkin_INCLUDE_DIRS})
+    find_package(catkin REQUIRED COMPONENTS controller_manager rostest)
     add_rostest_gtest(balance_controller_test
           test/balance_controller.test
           test/balance_controller_test.cpp)
@@ -79,6 +79,10 @@ if (CATKIN_ENABLE_TESTING)
           test/no_balance.test
           test/no_balance_test.cpp)
     target_link_libraries(no_balance_test ${catkin_LIBRARIES})
+#    foreach(T
+#            test/SimPlots_Test.launch)
+#        add_rostest(${T})
+#    endforeach()
 endif()
 
 #############
@@ -99,6 +103,7 @@ catkin_install_python(
    src/nodes/BobbleStateHold
    src/nodes/JoystickControl
    src/nodes/KeyboardControl
+   src/nodes/ApplyImpulse
    DESTINATION
    ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
@@ -112,6 +117,3 @@ install(DIRECTORY config
 install(FILES ${PROJECT_NAME}_plugins.xml
 		DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
-install(DIRECTORY
-        test
-        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})

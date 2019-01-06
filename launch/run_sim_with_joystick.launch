@@ -1,7 +1,9 @@
 <launch>
     <arg name="paused" default="false"/>
+    <arg name="gui" default="true"/>
     <include file="$(find bobble_controllers)/launch/bobble_balance_state_hold.launch">
         <arg name="paused" value="$(arg paused)"/>
+        <arg name="gui" value="$(arg gui)"/>
     </include>
     <node respawn="true" pkg="joy"
           type="joy_node" name="joy_test" >

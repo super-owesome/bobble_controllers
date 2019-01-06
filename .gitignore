@@ -9,3 +9,4 @@ cfg/cpp
 site
 *.pyc
 utils/data/*
+*.bag

@@ -1,8 +1,12 @@
 <launch>
+  <arg name="paused" default="false"/>
+  <arg name="gui" default="true"/>
   <!-- Load common test stuff -->
-  <include file="$(find bobble_controllers)/test/common.launch" />
-  <rosparam file="$(find bobble_controllers)/test/good_balance_control_config.yaml"
-			  command="load"/>
+  <include file="$(find bobble_controllers)/test/common.launch">
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="gui" value="$(arg gui)"/>
+  </include>
+  <rosparam file="$(find bobble_controllers)/test/good_balance_control_config.yaml" command="load"/>
   <!-- Controller test -->
   <test test-name="balance_controller_test"
         pkg="bobble_controllers"
