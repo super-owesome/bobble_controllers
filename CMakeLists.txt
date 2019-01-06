@@ -83,6 +83,8 @@ if (CATKIN_ENABLE_TESTING)
         test/impulse_force.test)
         add_rostest(${T})
     endforeach()
+    catkin_add_nosetests(test/parsing_test.py)
+    catkin_add_nosetests(test/plots_test.py)
 endif()
 
 #############

@@ -10,3 +10,7 @@ site
 *.pyc
 utils/data/*
 *.bag
+*.ipynb_checkpoints
+*.zip
+analysis/notebooks/*data
+*.png

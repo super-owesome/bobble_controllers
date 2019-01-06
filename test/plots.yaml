@@ -1,0 +1,71 @@
+measured_tilt:
+  title : 'Tilt Angle'
+  y_var: 'bobble_bobble_balance_controller_bb_controller_status__Tilt'
+  x_label: 'Time (s)'
+  y_label: 'Tilt (deg)'
+  runs : ['no_balance', 'impulse_test']
+  colors : ['grey', 'orange']
+  linestyles: ['-' , '-']
+  legend:
+     no balance:
+       color: 'grey'
+       linestyle: '-'
+     balanced:
+       color: 'orange'
+       linestyle: '-'
+  xlim: [0.0, 10.0]
+
+velocity:
+  title : 'Velocity'
+  y_var: 'bobble_bobble_balance_controller_bb_controller_status__ForwardVelocity'
+  x_label: 'Time (s)'
+  y_label: 'Velocity (m/s)'
+  runs : ['no_balance', 'impulse_test']
+  colors : ['grey', 'orange']
+  linestyles: ['-' , '-']
+  legend:
+     no balance:
+       color: 'grey'
+       linestyle: '-'
+     balanced:
+       color: 'orange'
+       linestyle: '-'
+  xlim: [0.0, 10.0]
+
+tilt_control:
+  title : 'Tilt Control'
+  desired_y_var: 'bobble_bobble_balance_controller_bb_controller_status__DesiredTilt'
+  actual_y_var: 'bobble_bobble_balance_controller_bb_controller_status__Tilt'
+  runs : ['no_balance']
+  x_label: 'Time (s)'
+  y_label: 'Tilt (deg)'
+  colors : ['red', 'blue']
+  legend:
+     desired:
+       color: 'red'
+       linestyle: '-'
+     actual:
+       color: 'blue'
+       linestyle: '-'
+  xlim: [0.0, 10.0]
+
+velocity_control:
+  title : 'Velocity Control'
+  desired_y_var: 'bobble_bobble_balance_controller_bb_controller_status__DesiredVelocity'
+  actual_y_var: 'bobble_bobble_balance_controller_bb_controller_status__ForwardVelocity'
+  runs : ['no_balance']
+  x_label: 'Time (s)'
+  y_label: 'Velocity (m/s)'
+  cmd_data : 'cmds'
+  resp_data : 'response'
+  colors : ['red', 'blue']
+  legend:
+     desired:
+       color: 'red'
+       linestyle: '-'
+     actual:
+       color: 'blue'
+       linestyle: '-'
+  xlim: [0.0, 10.0]
+
+

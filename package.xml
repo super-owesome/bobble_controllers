@@ -35,6 +35,7 @@
   <run_depend>std_msgs</run_depend>
 
   <test_depend>xacro</test_depend>
+  <test_depend>rosunit</test_depend>
 
   <export>
     <controller_interface plugin="${prefix}/bobble_controllers_plugins.xml"/>

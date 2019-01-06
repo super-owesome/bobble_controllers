@@ -16,11 +16,6 @@ catkin_lint:
   script:
   - catkin_lint -W3 .
 
-build:
-  stage: build
-  script:
-  - catkin build --summarize --no-status --force-color
-
 # catkin tools
 catkin_tools:
   stage: build

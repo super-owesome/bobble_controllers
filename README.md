@@ -2,7 +2,7 @@
 > A Gazebo simulation of the self-balancing ROS robot, Bobble-Bot.
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=hS7kfhN-8V8" 
-target="_blank"><img src="imgs/BobbleBotGazebo.png" 
+target="_blank"><img src="docs/imgs/BobbleBotGazebo.png" 
 alt="BobbleBot Simulation" width="820" height="360" border="1" /></a>
 
 Bobble-Bot is [SOE's](https://github.com/super-owesome) take on a classical problem in control theory. The robot represents 
@@ -110,7 +110,7 @@ roslaunch bobble_controllers run_sim_with_joystick.launch
 
 The default controls are depicted below:
 
-![Joystick Controls](imgs/JoystickControls.png)
+![Joystick Controls](docs/imgs/JoystickControls.png)
 
 ## Docker Setup
 A Bobble-Bot simulation Docker image is available over on [Docker Hub](). If you do 
@@ -136,7 +136,7 @@ cd bobble_docker
 
 ## Build Your Own
 
-<img src="imgs/BobbleCAD.png" alt="BobbleBot CAD" width="250" height="350" border="1" /></a>
+<img src="docs/imgs/BobbleCAD.png" alt="BobbleBot CAD" width="250" height="350" border="1" /></a>
 
 BobbleBot is a real robot built by the robotics team at SOE. Check out the 
 [parts list](https://soe/bobble-parts) to learn how to build your own.
