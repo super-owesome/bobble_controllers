@@ -1,6 +1,5 @@
 # Establish the analysis environment used with Jupyter Notebook
 import os, sys
-os.sys.path.append('/home/mike/.local/lib/python2.7/site-packages/')
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
