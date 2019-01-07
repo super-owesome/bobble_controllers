@@ -1,5 +1,10 @@
 image: superowesome/bobble-sim:latest
 
+stages:
+  - build
+  - test
+  - analyze
+
 cache:
   paths:
   - ccache/
