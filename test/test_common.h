@@ -56,7 +56,6 @@ public:
   void SetUp(){
     waitForController();
     ros::Duration(0.25).sleep();
-    reset();
     ROS_INFO("Activating balance controller.");
     ros::Duration(0.25).sleep();
     activate();
@@ -122,13 +121,6 @@ public:
     }
     if (!ros::ok())
       FAIL() << "Something went wrong while executing test.";
-  }
-
-  double angular_distance(double alpha, double beta) const
-  {
-      double phi = fmod(fabs(beta - alpha), 360);       // This is either the distance or 360 - distance
-      double distance = phi > 180.0 ? 360.0 - phi : phi;
-      return distance;
   }
 
 private:

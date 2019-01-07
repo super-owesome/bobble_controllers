@@ -36,6 +36,16 @@ catkin_tools_tests:
   - catkin_test_results --verbose .
   artifacts:
     paths:
-    - catkin_workspace/src/bobble_controllers/test/*.bag
+    - catkin_workspace/src/bobble_controllers/test/data/*.bag
+
+test_summary_report:
+  stage: analyze
+  script:
+  - jupyter nbconvert --to html TestSummary.ipynb
+  dependencies:
+  - catkin_tools_tests
+  artifacts:
+    paths:
+    - catkin_workspace/src/bobble_controllers/test/TestSummary.html
 
 
