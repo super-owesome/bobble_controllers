@@ -42,9 +42,11 @@ catkin_tools_tests:
   - pwd
   - ls -latr
   - mv src/bobble_controllers/test/data/*.bag ..
+  - mv src/bobble_controllers/test/*.png ..
   artifacts:
     paths:
     - ./*.bag
+    - ./*.png
 
 test_summary_report:
   stage: analyze
