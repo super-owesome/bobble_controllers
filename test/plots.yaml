@@ -36,7 +36,7 @@ tilt_control:
   title : 'Tilt Control'
   desired_y_var: 'bobble_bobble_balance_controller_bb_controller_status__DesiredTilt'
   actual_y_var: 'bobble_bobble_balance_controller_bb_controller_status__Tilt'
-  runs : ['no_balance']
+  runs : ['balance']
   x_label: 'Time (s)'
   y_label: 'Tilt (deg)'
   colors : ['red', 'blue']
@@ -53,7 +53,7 @@ velocity_control:
   title : 'Velocity Control'
   desired_y_var: 'bobble_bobble_balance_controller_bb_controller_status__DesiredVelocity'
   actual_y_var: 'bobble_bobble_balance_controller_bb_controller_status__ForwardVelocity'
-  runs : ['no_balance']
+  runs : ['balance']
   x_label: 'Time (s)'
   y_label: 'Velocity (m/s)'
   colors : ['red', 'blue']
