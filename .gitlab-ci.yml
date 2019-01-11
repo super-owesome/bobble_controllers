@@ -50,6 +50,8 @@ catkin_tools_tests:
 test_summary_report:
   stage: analyze
   script:
+  - mv ../install .
+  - source install/setup.bash
   - mv ../*.bag src/bobble_controllers/test/data/
   - cd src/bobble_controllers/test
   - jupyter nbconvert --execute --to html TestSummary.ipynb
