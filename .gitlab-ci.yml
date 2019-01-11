@@ -43,7 +43,7 @@ catkin_tools_tests:
   - catkin_test_results --verbose .
   artifacts:
     paths:
-    - catkin_ws/src/bobble_controllers/test/data/*.bag
+    - catkin_workspace/src/bobble_controllers/test/data/*.bag
 
 test_summary_report:
   stage: analyze
@@ -56,6 +56,6 @@ test_summary_report:
   - catkin_tools_tests
   artifacts:
     paths:
-    - catkin_ws/src/bobble_controllers/test/TestSummary.html
+    - catkin_workspace/src/bobble_controllers/test/TestSummary.html
 
 
