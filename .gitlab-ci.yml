@@ -51,7 +51,8 @@ test_summary_report:
   script:
   - pwd
   - ls -latr
-  - mv ./*.bag src/bobble_controllers/test/data/
+  - ls -latr ../
+  - mv ../*.bag src/bobble_controllers/test/data/
   - cd src/bobble_controllers/test
   - jupyter nbconvert --to html TestSummary.ipynb
   dependencies:
