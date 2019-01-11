@@ -39,7 +39,9 @@ catkin_tools_tests:
   - catkin build --summarize --no-status --force-color
   - catkin run_tests --no-status --force-color -j1
   - catkin_test_results --verbose .
-  - mv catkin_workspace/src/bobble_controllers/test/data/*.bag .
+  - pwd
+  - ls -latr
+  - mv src/bobble_controllers/test/data/*.bag ..
   artifacts:
     paths:
     - ./*.bag
@@ -47,6 +49,8 @@ catkin_tools_tests:
 test_summary_report:
   stage: analyze
   script:
+  - pwd
+  - ls -latr
   - mv ./*.bag src/bobble_controllers/test/data/
   - cd src/bobble_controllers/test
   - jupyter nbconvert --to html TestSummary.ipynb
