@@ -12,7 +12,6 @@ cache:
 before_script:
 - git clone https://gitlab.com/VictorLamoine/ros_gitlab_ci.git
 - source ros_gitlab_ci/gitlab-ci.bash >/dev/null
-- source install/setup.bash
 
 catkin_lint:
   stage: build
@@ -50,6 +49,7 @@ catkin_tools_tests:
 test_summary_report:
   stage: analyze
   script:
+  - source install/setup.bash
   - mv ../*.bag src/bobble_controllers/test/data/
   - cd src/bobble_controllers/test
   - jupyter nbconvert --execute --to html TestSummary.ipynb
