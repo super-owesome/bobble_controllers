@@ -19,24 +19,18 @@ except ImportError:
     from analysis_tools.plots import *
     from analysis_tools.filters import *
 
+# Set some global plotting configs. We want these for all plots
+sns.set_context("poster", font_scale=1.1)
+#sns.set_palette("Dark2")
 
-if __name__ == '__main__':
-    # Set some global plotting configs. We want these for all plots
-    sns.set_context("poster", font_scale=1.1)
-    #sns.set_palette("Dark2")
+# Set paths to relevant data directories and config files
+data_home = os.path.join(os.getcwd(), "data")
+print("Reading all bag files in directory : ")
+print(data_home)
 
-    import rospkg
-    rospack = rospkg.RosPack()
-    data_home = os.path.abspath(os.path.join(".", "data"))
-    # Set paths to relevant data directories and config files
-    #data_home = os.path.join(os.getcwd(), "data")
-    print("Reading all bag files in directory : ")
-    print(data_home)
+# Load configs and data
+df = parse_all_runs_in_dir(data_home)
 
-    # Load configs and data
-    df = parse_all_runs_in_dir(data_home)
-
-    print("Successfully loaded runs : ")
-    print(df.keys())
-    print df["no_balance"].keys()
+print("Successfully loaded runs : ")
+print(df.keys())
 

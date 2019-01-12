@@ -54,16 +54,15 @@ catkin_tools_tests:
 test_summary_report:
   stage: analyze
   script:
-#  - mv ../*.bag src/bobble_controllers/test/data/
-#  - cd src/bobble_controllers/test
-  - pwd
-  - ls -latr src/
-  - cd src/project-0/test
-  - python nb_env.py
-#  - jupyter nbconvert --execute --to html TestSummary.ipynb
-#  - mv src/bobble_controllers/test/TestSummary.html ../../../..
-#  - mv src/bobble_controllers/docs/imgs/*.png ../../../..
-#  - mv src/bobble_controllers/test/data/*.bag ../../../..
+  - mv ../*.bag src/bobble_controllers/test/data/
+  - cd src/bobble_controllers/test
+  - catkin config --install
+  - catkin build
+  - source install/setup.bash
+  - jupyter nbconvert --execute --to html TestSummary.ipynb
+  - mv src/bobble_controllers/test/TestSummary.html ../../../..
+  - mv src/bobble_controllers/docs/imgs/*.png ../../../..
+  - mv src/bobble_controllers/test/data/*.bag ../../../..
   dependencies:
   - catkin_tools_tests
   artifacts:
