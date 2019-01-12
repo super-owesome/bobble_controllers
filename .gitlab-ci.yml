@@ -60,9 +60,10 @@ test_summary_report:
   - source install/setup.bash
   - cd src/bobble_controllers/test
   - jupyter nbconvert --execute --to html TestSummary.ipynb
-  - mv src/bobble_controllers/test/TestSummary.html ../../../..
-  - mv src/bobble_controllers/docs/imgs/*.png ../../../..
-  - mv src/bobble_controllers/test/data/*.bag ../../../..
+  - cd ../../..
+  - mv src/bobble_controllers/test/TestSummary.html ..
+  - mv src/bobble_controllers/docs/imgs/*.png ..
+  - mv src/bobble_controllers/test/data/*.bag ..
   dependencies:
   - catkin_tools_tests
   artifacts:
