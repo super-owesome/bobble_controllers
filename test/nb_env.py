@@ -25,8 +25,11 @@ if __name__ == '__main__':
     sns.set_context("poster", font_scale=1.1)
     #sns.set_palette("Dark2")
 
+    import rospkg
+    rospack = rospkg.RosPack()
+    data_home = os.path.join(rospack.get_path("bobble_controllers"), "test", "data")
     # Set paths to relevant data directories and config files
-    data_home = os.path.join(os.getcwd(), "data")
+    #data_home = os.path.join(os.getcwd(), "data")
     print("Reading all bag files in directory : ")
     print(data_home)
 
