@@ -11,7 +11,7 @@ cache:
 
 before_script:
 - source /opt/ros/melodic/setup.bash
-- git clone https://gitlab.com/VictorLamoine/ros_gitlab_ci.git
+- git clone -b artifacts https://gitlab.com/VictorLamoine/ros_gitlab_ci.git
 - source ros_gitlab_ci/gitlab-ci.bash >/dev/null
 
 catkin_lint:
@@ -39,11 +39,10 @@ catkin_tools_tests:
   script:
   - catkin build --summarize --no-status --force-color
   - catkin run_tests --no-status --force-color -j1
-  - mv src/bobble_controllers/test/data/*.bag ..
   - catkin_test_results --verbose .
   artifacts:
     paths:
-    - ./*.bag
+    - "*/*/*/*/*.bag"
 
 # These move commands should not be neccessary and break
 # running these tests locally. It is all working around
@@ -54,7 +53,6 @@ catkin_tools_tests:
 test_summary_report:
   stage: analyze
   script:
-  - mv ../*.bag src/bobble_controllers/test/data/
   - cd src/bobble_controllers/test
   - jupyter nbconvert --execute --to html TestSummary.ipynb
   - mv src/bobble_controllers/test/TestSummary.html ../../../..
