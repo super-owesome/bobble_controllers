@@ -17,6 +17,10 @@ def parse_config_file(config_file):
 
 
 def parse_single_run(bag_file):
+    yaml_info = rosbag_pandas.get_bag_info(bag_file)
+    bag_info = rosbag_pandas.get_topics(yaml_info)
+    print yaml_info
+    print bag_info
     df = rosbag_pandas.bag_to_dataframe(bag_file)
     df['time'] = (df.index - df.index[0]) / np.timedelta64(1, 's')
     df.index = df['time']
