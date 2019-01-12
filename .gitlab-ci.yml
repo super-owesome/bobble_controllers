@@ -42,8 +42,8 @@ catkin_tools_tests:
   - catkin_test_results --verbose .
   artifacts:
     paths:
-    - "*/*/*/*/*.bag"
-    - "*/*/*/*.png"
+    - "*/*/*/*/*/*.bag"
+    - "*/*/*/*/*.png"
 
 test_summary_report:
   stage: analyze
