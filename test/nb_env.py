@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
     import rospkg
     rospack = rospkg.RosPack()
-    data_home = os.path.join(".", "test", "data")
+    data_home = os.path.abspath(os.path.join(".", "data"))
     # Set paths to relevant data directories and config files
     #data_home = os.path.join(os.getcwd(), "data")
     print("Reading all bag files in directory : ")
