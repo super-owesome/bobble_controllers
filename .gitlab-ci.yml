@@ -10,6 +10,7 @@ cache:
   - ccache/
 
 before_script:
+- source /opt/ros/melodic/setup.bash
 - git clone https://gitlab.com/VictorLamoine/ros_gitlab_ci.git
 - source ros_gitlab_ci/gitlab-ci.bash >/dev/null
 
@@ -39,24 +40,19 @@ catkin_tools_tests:
   - catkin build --summarize --no-status --force-color
   - catkin run_tests --no-status --force-color -j1
   - catkin_test_results --verbose .
-  - mv src/bobble_controllers/test/data/*.bag ..
-  - mv src/bobble_controllers/test/*.png ..
   artifacts:
     paths:
-    - install
-    - ./*.bag
-    - ./*.png
+    - "src/*/test/data/*.bag"
+    - "src/*/test/*.png"
 
 test_summary_report:
   stage: analyze
   script:
-  - mv ../install .
-  - source install/setup.bash
-  - mv ../*.bag src/bobble_controllers/test/data/
   - cd src/bobble_controllers/test
   - jupyter nbconvert --execute --to html TestSummary.ipynb
   - mv src/bobble_controllers/test/TestSummary.html ../../../..
   - mv src/bobble_controllers/docs/imgs/*.png ../../../..
+  - mv src/bobble_controllers/test/data/*.bag ../../../..
   dependencies:
   - catkin_tools_tests
   artifacts:

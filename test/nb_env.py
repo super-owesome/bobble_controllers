@@ -9,9 +9,16 @@ import numpy as np
 import scipy
 import scipy.fftpack
 import math
-from analysis_tools.parsing import *
-from analysis_tools.plots import *
-from analysis_tools.filters import *
+try:
+    from analysis_tools.parsing import *
+    from analysis_tools.plots import *
+    from analysis_tools.filters import *
+except ImportError:
+    sys.path.append(os.path.join('..', 'src'))
+    from analysis_tools.parsing import *
+    from analysis_tools.plots import *
+    from analysis_tools.filters import *
+
 
 # Set some global plotting configs. We want these for all plots
 sns.set_context("poster", font_scale=1.1)
