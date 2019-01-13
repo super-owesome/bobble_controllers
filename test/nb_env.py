@@ -3,6 +3,8 @@ import os, sys
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
+import warnings
+warnings.filterwarnings("ignore")
 import seaborn as sns
 import pandas as pd
 import numpy as np
