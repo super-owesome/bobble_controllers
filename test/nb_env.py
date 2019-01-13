@@ -30,7 +30,5 @@ print(data_home)
 
 # Load configs and data
 df = parse_all_runs_in_dir(data_home)
-
 print("Successfully loaded runs : ")
-print(df.keys())
 

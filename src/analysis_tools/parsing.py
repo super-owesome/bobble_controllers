@@ -19,12 +19,9 @@ def parse_config_file(config_file):
 def parse_single_run(bag_file):
     yaml_info = rosbag_pandas.get_bag_info(bag_file)
     bag_info = rosbag_pandas.get_topics(yaml_info)
-    print yaml_info
-    print bag_info
     df = rosbag_pandas.bag_to_dataframe(bag_file)
     df['time'] = (df.index - df.index[0]) / np.timedelta64(1, 's')
     df.index = df['time']
-    print df.keys()
     return df
 
 
@@ -33,7 +30,6 @@ def parse_all_runs_in_dir(runs_dir):
     df = {}
     for sim_run in glob.glob(bag_file_pattern):
         run_name = os.path.splitext(os.path.basename(sim_run))[0]
-        print run_name
         df[run_name] = parse_single_run(sim_run)
     return df
 
