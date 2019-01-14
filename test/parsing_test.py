@@ -31,7 +31,7 @@ class ParsingTest(unittest.TestCase):
     def test_ParseManyBagFiles(self):
         from analysis_tools.parsing import parse_all_runs_in_dir
         sim_data_dir = self.sample_data_path
-        df = parse_all_runs_in_dir(sim_data_dir)
+        df = parse_all_runs_in_dir(sim_data_dir, csv_convert=True)
         final_tilt = df[self.run_name]['bobble_bobble_balance_controller_bb_controller_status__Tilt'].iloc[-1]
         self.assertTrue(abs(final_tilt) > 45.0)
         return

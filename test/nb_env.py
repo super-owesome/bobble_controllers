@@ -27,10 +27,10 @@ sns.set_context("poster", font_scale=1.1)
 
 # Set paths to relevant data directories and config files
 data_home = os.path.join(os.getcwd(), "data")
-print("Reading all bag files in directory : ")
+print("Reading all csv files in directory : ")
 print(data_home)
 
 # Load configs and data
-df = parse_all_runs_in_dir(data_home)
+df = parse_all_csv_runs_in_dir(data_home)
 print("Successfully loaded runs : ")
 
