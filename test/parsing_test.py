@@ -36,6 +36,14 @@ class ParsingTest(unittest.TestCase):
         self.assertTrue(abs(final_tilt) > 45.0)
         return
 
+    def test_ParseManyCsvFiles(self):
+        from analysis_tools.parsing import parse_all_csv_runs_in_dir
+        sim_data_dir = self.sample_data_path
+        df = parse_all_csv_runs_in_dir(sim_data_dir)
+        final_tilt = df[self.run_name]['bobble_bobble_balance_controller_bb_controller_status__Tilt'].iloc[-1]
+        self.assertTrue(abs(final_tilt) > 45.0)
+        return
+
 if __name__ == '__main__':
     import rosunit
     rosunit.unitrun(PKG, 'parsings_test', ParsingTest)

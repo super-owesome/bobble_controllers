@@ -21,13 +21,13 @@ class PlotsTest(unittest.TestCase):
         return
 
     def helper_load_data(self):
-        from analysis_tools.parsing import parse_config_file, parse_all_runs_in_dir
+        from analysis_tools.parsing import parse_config_file, parse_all_csv_runs_in_dir
         # Parse configs
         plot_config = os.path.join(self.test_dir, 'plots.yaml')
         pc = parse_config_file(plot_config)
         # Parse data
         sim_runs_data_path = self.sample_data_path
-        return parse_all_runs_in_dir(sim_runs_data_path), pc
+        return parse_all_csv_runs_in_dir(sim_runs_data_path), pc
 
     def test_PlotManyRunsTilt(self):
         from analysis_tools.plots import coplot_var_for_runs

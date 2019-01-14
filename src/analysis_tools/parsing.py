@@ -42,5 +42,6 @@ def parse_all_csv_runs_in_dir(runs_dir):
     for sim_run in glob.glob(csv_file_pattern):
         run_name = os.path.splitext(os.path.basename(sim_run))[0]
         df[run_name] = pd.read_csv(sim_run)
+        df[run_name].index = df[run_name]['time']
     return df
 
