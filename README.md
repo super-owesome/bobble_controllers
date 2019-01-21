@@ -76,11 +76,12 @@ roslaunch bobble_controllers run_sim.launch
 
 In a separate terminal (with the ROS environment sourced) launch the keyboard control node.
 ```sh
+source devel/setup.bash
 rosrun bobble_controllers KeyboardControl
 ```
 
 The controls are summarized below. The terminal used to launch the keyboard control node must 
-have the active focus.
+have the active focus. Hit space-bar to activate the balance controller.
 ```sh
 BobbleBot Keyboard Controller
 ---------------------------
@@ -105,6 +106,7 @@ to setup your Xbox 1 controller. Next, make sure you have the [ROS joy package i
 With those two steps out of the way, you can then launch the simulator using the command below.
 
 ```sh
+source devel/setup.bash
 roslaunch bobble_controllers run_sim_with_joystick.launch
 ```
 
@@ -125,6 +127,7 @@ is a good one to start with. Let's apply an impulse to Bobble-Bot in the -X dire
 and see how the balance controller holds up. 
 
 ```sh
+source devel/setup.bash
 roslaunch bobble_controllers apply_impulse_force.launch impulse:=-1000 out_file:=~/bobble_workspace/src/bobble_controllers/analysis/impulse_test
 ```
 
