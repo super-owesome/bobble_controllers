@@ -23,10 +23,9 @@ of the DIY type, [build the simulation from source](#build-from-source)
 and learn how to [build your own Bobble-Bot](#build-your-own).
  
 ## Debian Install
+> Beware this section is still in development.
 
-TODO debian installation package is still under development. For now, follow 
-the instructions below to build from source.
-
+For now, please follow the instructions to [build the simulation from source](#build-from-source).
 
 ## Build from source
 
@@ -51,18 +50,19 @@ Get the code and build it using catkin.
 
 ```sh
 mkdir -p ~/bobble_workspace/src
-cd ~/bobble_workspace
+cd ~/bobble_workspace/src
 catkin_init_workspace
 git clone https://github.com/super-owesome/bobble_controllers.git
 git clone https://github.com/super-owesome/bobble_description.git
-catkin_make
+cd .. ; catkin_make
+source devel/setup.bash
 ```
 
 The BobbleBot controller package comes with a set of automated tests. If you're doing development on the 
 BobbleBot simulator you are expected to ensure that these tests continue to pass. To run these tests, 
 use the command below.
 ```sh
-catkin run_tests
+catkin_make run_tests_bobble_controllers -j1
 ```
 
 The simulation should now be ready to run. Decide if you want to run using [Keyboard Control](keyoard-control) 
@@ -112,13 +112,60 @@ The default controls are depicted below:
 
 ![Joystick Controls](docs/imgs/JoystickControls.png)
 
+
+## Analyzing Simulation Data
+This repository also comes with some sample Python scripts and [Jupyter notebooks](https://jupyter.org/) 
+that show how to use [Pandas](https://pandas.pydata.org/) to analyze output data 
+from the simulation. Using the [gazebo-ros](https://github.com/ros-simulation/gazebo_ros_pkgs) 
+packages, one can log data as the simulator runs and store it in a ROS bag format. 
+The steps below provide an example of how this is done.
+
+First, we need to generate some data to analyze. The "apply_impulse_force" launch file 
+is a good one to start with. Let's apply an impulse to Bobble-Bot in the -X direction 
+and see how the balance controller holds up. 
+
+```sh
+roslaunch bobble_controllers apply_impulse_force.launch impulse:=-1000 out_file:=~/bobble_workspace/src/bobble_controllers/analysis/impulse_test
+```
+
+If all goes well, the Gazebo simulation should launch and you should see Bobble-Bot hold 
+its balance in spite of the applied impulse. After the test completes, you should see a 
+newly created impulse_test.bag file in the bobble_controllers/analysis directory. Let's 
+analyze the data in this bag file.
+
+
+```sh
+cd src/bobble_controllers/analysis
+python make_plots.py --run impulse_test.bag
+```
+
+The script above uses the analysis_tools Python module defined in this repository to 
+load the data and make the plots. After running the make_plots.py script above, you 
+should see that two images were created: 'TiltControl.png' & 'VelocityControl.png'. 
+They should look something like the following:
+
+![Tilt Control](docs/imgs/TiltControl.png)
+![Velocity Control](docs/imgs/VelocityControl.png)
+
+Try changing the gains in config/bobble_sim_balance_control.yaml and then repeating 
+the steps above to generate and analyze new data. Testing and analyzing your changes 
+against an applied impulse force is a good practice. The apply impulse launch file 
+and analysis_tools module are part of the automated tests that are run against the 
+bobble_controllers ROS package. This is how we ensure the controller remains in 
+a working state.
+
 ## Docker Setup
-A Bobble-Bot simulation Docker image is available over on [Docker Hub](). If you do 
-not know what Docker is, we highly suggest checking it out. Docker can be used 
+> Beware this section is still in development.
+
+A Bobble-Bot simulation Docker image is available over on 
+[Docker Hub](https://cloud.docker.com/u/superowesome/repository/docker/superowesome/bobble-sim). 
+If you do not know what Docker is, we highly suggest checking it out. Docker can be used 
 to quickly experiment with the simulation without polluting your system with additional 
 packages. See this [page](https://docs.docker.com/get-started/) to get started.
 This particular image relies on [nvidia-docker](https://github.com/NVIDIA/nvidia-docker). 
-For now, an NVidia GPU is required if you want to run the graphics from within the container.
+For now, an NVidia GPU is required if you want to run the graphics from within the container. 
+If you only care about running the simulation headless (no graphics), then Docker is the 
+only requirement.
 
 Run the simulation from within a container
 ```sh
@@ -135,6 +182,7 @@ cd bobble_docker
 ```
 
 ## Build Your Own
+> Beware this section is still in development.
 
 <img src="docs/imgs/BobbleCAD.png" alt="BobbleBot CAD" width="250" height="350" border="1" /></a>
 
