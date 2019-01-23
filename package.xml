@@ -33,13 +33,11 @@
   <run_depend>rostest</run_depend>
   <run_depend>sensor_msgs</run_depend>
   <run_depend>std_msgs</run_depend>
-  <run_depend>gazebo_ros</run_depend>
 
   <test_depend>xacro</test_depend>
   <test_depend>rosunit</test_depend>
 
   <export>
     <controller_interface plugin="${prefix}/bobble_controllers_plugins.xml"/>
-    <gazebo_ros gazebo_model_path="${prefix}/.."/>
   </export>
 </package>
