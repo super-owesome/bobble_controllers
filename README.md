@@ -61,6 +61,7 @@ source devel/setup.bash
 The BobbleBot controller package comes with a set of automated tests. If you're doing development on the 
 BobbleBot simulator you are expected to ensure that these tests continue to pass. To run these tests, 
 use the command below.
+
 ```sh
 catkin_make run_tests_bobble_controllers -j1
 ```
@@ -70,11 +71,13 @@ or [Joystick Control](joystick-control). Please create an issue if you encounter
 
 ### Keyboard Control
 Launch the simulation.
+
 ```sh
 roslaunch bobble_controllers run_sim.launch
 ```
 
 In a separate terminal (with the ROS environment sourced) launch the keyboard control node.
+
 ```sh
 source devel/setup.bash
 rosrun bobble_controllers KeyboardControl
@@ -82,6 +85,7 @@ rosrun bobble_controllers KeyboardControl
 
 The controls are summarized below. The terminal used to launch the keyboard control node must 
 have the active focus. Hit space-bar to activate the balance controller.
+
 ```sh
 BobbleBot Keyboard Controller
 ---------------------------
@@ -136,7 +140,6 @@ its balance in spite of the applied impulse. After the test completes, you shoul
 newly created impulse_test.bag file in the bobble_controllers/analysis directory. Let's 
 analyze the data in this bag file.
 
-
 ```sh
 cd src/bobble_controllers/analysis
 python make_plots.py --run impulse_test.bag
@@ -158,31 +161,70 @@ bobble_controllers ROS package. This is how we ensure the controller remains in
 a working state.
 
 ## Docker Setup
-> Beware this section is still in development.
 
 A Bobble-Bot simulation Docker image is available over on 
 [Docker Hub](https://cloud.docker.com/u/superowesome/repository/docker/superowesome/bobble-sim). 
 If you do not know what Docker is, we highly suggest checking it out. Docker can be used 
 to quickly experiment with the simulation without polluting your system with additional 
 packages. See this [page](https://docs.docker.com/get-started/) to get started.
-This particular image relies on [nvidia-docker](https://github.com/NVIDIA/nvidia-docker). 
+This particular image relies on [nvidia-docker2](https://github.com/NVIDIA/nvidia-docker). 
 For now, an NVidia GPU is required if you want to run the graphics from within the container. 
 If you only care about running the simulation headless (no graphics), then Docker is the 
 only requirement.
 
-Run the simulation from within a container
+Run the simulation with graphics from within a container (master branch version of sim).
+
 ```sh
+docker pull superowesome/bobble-sim:latest
+cd ~/bobble_workspace/src
 git clone https://github.com/super-owesome/bobble_docker.git
 cd bobble_docker
-docker pull superowesome/bobble-sim:latest
 ./run_bobble_sim.bash
 ```
 
-Enable keyboard control (in a separate terminal)
+Enable keyboard control (in a separate terminal).
+
 ```sh
-cd bobble_docker
 ./run_keyboard_control.bash
 ```
+
+Run the simulation headless from within a container (master branch version of sim).
+
+```sh
+./run_apply_impulse.bash
+```
+
+Note that the run_apply_impulse.bash script mounts the bobble_docker folder into the 
+container and then directs the apply_impulse launch file to write the output data 
+to that folder. This is a useful script for generating some sample data for analysis.
+
+Use the bash script below to launch a container intended for building the simulation 
+from source. This is a useful container for development.
+
+```sh
+./run_dev_container.bash
+```
+
+This container mounts the bobble_workspace folder in your host 
+machine's home directory to /bobble_src in the container and then gives 
+the user an interactive bash shell. This shell can then be used to build and run 
+the simulation from within a container. We recommended that you use your favorite 
+desktop editor to make code modifications, and then just use the container to build 
+and launch the simulation. Execute commands like the following inside the container 
+to rebuild the sim from source and run it.
+
+```sh
+cd /bobble_src
+catkin config --install
+catkin init
+catkin build
+source install/setup.bash
+roslaunch bobble_controllers apply_impulse_force.launch
+```
+
+You can now freely edit the files on your host machine and simply re-run catkin 
+build and roslaunch commands at will.
+
 
 ## Build Your Own
 > Beware this section is still in development.
