@@ -12,13 +12,13 @@ cache:
 before_script:
 - source /opt/ros/melodic/setup.bash
 - git clone https://gitlab.com/VictorLamoine/ros_gitlab_ci.git
-- source ros_gitlab_ci/gitlab-ci.bash >/dev/null
+- source ros_gitlab_ci/gitlab-ci.bash || true
 
 catkin_lint:
   stage: build
   before_script:
-  - apt update  -q -y >/dev/null
-  - apt install -q -y python-catkin-lint >/dev/null
+  - apt update  -q -y || true
+  - apt install -q -y python-catkin-lint || true
   script:
   - catkin_lint -W3 .
 
