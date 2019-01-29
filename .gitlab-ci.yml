@@ -17,8 +17,8 @@ before_script:
 catkin_lint:
   stage: build
   before_script:
-  - apt update  -q -y >/dev/null 2>&1
-  - apt install -q -y python-catkin-lint >/dev/null 2>&1
+  - apt update  -q -y >/dev/null
+  - apt install -q -y python-catkin-lint >/dev/null
   script:
   - catkin_lint -W3 .
 
