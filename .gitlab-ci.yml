@@ -62,7 +62,6 @@ test_summary_report:
   - jupyter nbconvert --execute --to html TestSummary.ipynb
   - cd ../../..
   - mv src/bobble_controllers/test/TestSummary.html ..
-  - mv src/bobble_controllers/docs/imgs/*.png ..
   - mv src/bobble_controllers/test/data/*.csv ..
   dependencies:
   - catkin_tools_tests

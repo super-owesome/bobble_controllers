@@ -1,6 +1,6 @@
 measured_tilt:
   title : 'Tilt Angle'
-  y_var: 'bobble_bobble_balance_controller_bb_controller_status__Tilt'
+  y_var: 'Tilt'
   x_label: 'Time (s)'
   y_label: 'Tilt (deg)'
   runs : ['impulse_force']
@@ -17,7 +17,7 @@ measured_tilt:
 
 velocity:
   title : 'Velocity'
-  y_var: 'bobble_bobble_balance_controller_bb_controller_status__ForwardVelocity'
+  y_var: 'ForwardVelocity'
   x_label: 'Time (s)'
   y_label: 'Velocity (m/s)'
   runs : ['impulse_force']
@@ -34,8 +34,8 @@ velocity:
 
 tilt_control:
   title : 'Tilt Control'
-  desired_y_var: 'bobble_bobble_balance_controller_bb_controller_status__DesiredTilt'
-  actual_y_var: 'bobble_bobble_balance_controller_bb_controller_status__Tilt'
+  desired_y_var: 'DesiredTilt'
+  actual_y_var: 'Tilt'
   runs : ['impulse_force']
   x_label: 'Time (s)'
   y_label: 'Tilt (deg)'
@@ -51,8 +51,8 @@ tilt_control:
 
 velocity_control:
   title : 'Velocity Control'
-  desired_y_var: 'bobble_bobble_balance_controller_bb_controller_status__DesiredVelocity'
-  actual_y_var: 'bobble_bobble_balance_controller_bb_controller_status__ForwardVelocity'
+  desired_y_var: 'DesiredVelocity'
+  actual_y_var: 'ForwardVelocity'
   runs : ['impulse_force']
   x_label: 'Time (s)'
   y_label: 'Velocity (m/s)'

@@ -21,6 +21,10 @@ def parse_single_run(bag_file, csv_convert=False):
     df = rosbag_pandas.bag_to_dataframe(bag_file)
     df['time'] = (df.index - df.index[0]) / np.timedelta64(1, 's')
     df.index = df['time']
+    new_col_names = []
+    for column in df.columns.values:
+        new_col_names.append(column.split('bb_controller_status__')[-1])
+    df.columns = new_col_names
     if csv_convert:
         csv_file_name = os.path.splitext(yaml_info["path"])[0] + '.csv'
         df.to_csv(csv_file_name)

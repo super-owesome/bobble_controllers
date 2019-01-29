@@ -1,5 +1,6 @@
-import os, matplotlib, argparse
-matplotlib.use('agg')
+import matplotlib
+matplotlib.use('Agg')
+import os, argparse
 import matplotlib.pyplot as plt
 import seaborn as sns
 plt.rcParams['axes.grid'] = True

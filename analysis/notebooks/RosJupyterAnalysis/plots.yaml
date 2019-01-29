@@ -1,6 +1,6 @@
 measured_tilt:
   title : 'Tilt Angle'
-  y_var: 'bobble_bobble_balance_controller_bb_controller_status__Tilt'
+  y_var: 'Tilt'
   x_label: 'Time (s)'
   y_label: 'Tilt (deg)'
   runs : ['no_balance', 'impulse_force']
@@ -17,7 +17,7 @@ measured_tilt:
 
 velocity:
   title : 'Velocity'
-  y_var: 'bobble_bobble_balance_controller_bb_controller_status__ForwardVelocity'
+  y_var: 'ForwardVelocity'
   x_label: 'Time (s)'
   y_label: 'Velocity (m/s)'
   runs : ['no_balance', 'impulse_force']
@@ -34,8 +34,8 @@ velocity:
 
 tilt_control:
   title : 'Tilt Control'
-  desired_y_var: 'bobble_bobble_balance_controller_bb_controller_status__DesiredTilt'
-  actual_y_var: 'bobble_bobble_balance_controller_bb_controller_status__Tilt'
+  desired_y_var: 'DesiredTilt'
+  actual_y_var: 'Tilt'
   runs : ['balance']
   x_label: 'Time (s)'
   y_label: 'Tilt (deg)'
@@ -51,8 +51,8 @@ tilt_control:
 
 velocity_control:
   title : 'Velocity Control'
-  desired_y_var: 'bobble_bobble_balance_controller_bb_controller_status__DesiredVelocity'
-  actual_y_var: 'bobble_bobble_balance_controller_bb_controller_status__ForwardVelocity'
+  desired_y_var: 'DesiredVelocity'
+  actual_y_var: 'ForwardVelocity'
   runs : ['balance']
   x_label: 'Time (s)'
   y_label: 'Velocity (m/s)'
@@ -68,7 +68,7 @@ velocity_control:
 
 turn_rate:
   title : 'Turn Rate - Robot Frame'
-  y_var: 'bobble_bobble_balance_controller_bb_controller_status__TurnRate'
+  y_var: 'TurnRate'
   runs : ['balance']
   x_label: 'Time (s)'
   y_label: 'Turn Rate (deg/s)'
@@ -77,7 +77,7 @@ turn_rate:
 
 heading:
   title : 'Heading - World Frame'
-  y_var: 'bobble_bobble_balance_controller_bb_controller_status__Heading'
+  y_var: 'Heading'
   runs : ['balance']
   x_label: 'Time (s)'
   y_label: 'Heading (deg)'
@@ -86,8 +86,8 @@ heading:
 
 wheel_vel:
   title : 'Wheel Velocity'
-  vars: ['bobble_bobble_balance_controller_bb_controller_status__LeftMotorVelocity',
-         'bobble_bobble_balance_controller_bb_controller_status__RightMotorVelocity']
+  vars: ['LeftMotorVelocity',
+         'RightMotorVelocity']
   runs : ['balance']
   x_label: 'Time (s)'
   y_label: 'Velocity (deg/s)'
@@ -103,7 +103,7 @@ wheel_vel:
 
 loop_jitter:
   title : 'Loop Jitter'
-  y_var: 'bobble_bobble_bot_control_node_rt_status__DeltaT'
+  y_var: 'DeltaT'
   runs : ['balance']
   x_label: 'Time (s)'
   y_label: 'Delta-T (s)'
@@ -112,8 +112,8 @@ loop_jitter:
 
 turning_control:
   title : 'Turning Control'
-  desired_y_var: 'bobble_bobble_balance_controller_bb_controller_status__DesiredTurnRate'
-  actual_y_var: 'bobble_bobble_balance_controller_bb_controller_status__TurnRate'
+  desired_y_var: 'DesiredTurnRate'
+  actual_y_var: 'TurnRate'
   runs : ['balance']
   x_label: 'Time (s)'
   y_label: 'Turn Rate (deg/s)'
