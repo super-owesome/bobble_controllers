@@ -24,7 +24,7 @@ class ParsingTest(unittest.TestCase):
         from analysis_tools.parsing import parse_single_run
         sim_run = os.path.join(self.sample_data_path, self.run_name+'.bag')
         df = parse_single_run(sim_run)
-        final_tilt = df['bobble_bobble_balance_controller_bb_controller_status__Tilt'].iloc[-1]
+        final_tilt = df['Tilt'].iloc[-1]
         self.assertTrue(abs(final_tilt) > 45.0)
         return
 
@@ -32,7 +32,7 @@ class ParsingTest(unittest.TestCase):
         from analysis_tools.parsing import parse_all_runs_in_dir
         sim_data_dir = self.sample_data_path
         df = parse_all_runs_in_dir(sim_data_dir, csv_convert=True)
-        final_tilt = df[self.run_name]['bobble_bobble_balance_controller_bb_controller_status__Tilt'].iloc[-1]
+        final_tilt = df[self.run_name]['Tilt'].iloc[-1]
         self.assertTrue(abs(final_tilt) > 45.0)
         return
 
@@ -40,7 +40,7 @@ class ParsingTest(unittest.TestCase):
         from analysis_tools.parsing import parse_all_csv_runs_in_dir
         sim_data_dir = self.sample_data_path
         df = parse_all_csv_runs_in_dir(sim_data_dir)
-        final_tilt = df[self.run_name]['bobble_bobble_balance_controller_bb_controller_status__Tilt'].iloc[-1]
+        final_tilt = df[self.run_name]['Tilt'].iloc[-1]
         self.assertTrue(abs(final_tilt) > 45.0)
         return
 
