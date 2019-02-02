@@ -2,148 +2,120 @@ cmake_minimum_required(VERSION 2.8.3)
 project(bobble_controllers)
 add_compile_options(-std=c++11)
 
-## Find catkin macros and libraries
-## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
-## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS
-	message_generation
-    rospy
-    controller_manager
-	pluginlib
-	chupacabra_comm
-	adxl345_ros_node
-	itg3200_ros_node
-	generic_filter
-	controller_interface
-	control_msgs
-	sensor_msgs
-    executive
+find_package(
+  catkin
+  REQUIRED COMPONENTS
+  control_msgs
+  controller_interface
+  controller_manager
+  hector_gazebo_plugins
+  message_generation
+  pluginlib
+  rospy
+  rostest
+  sensor_msgs
+  std_msgs
 )
-find_package(cmake_modules REQUIRED)
-
-## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
 
 catkin_python_setup()
 
 add_message_files(
   FILES
+  BobbleBotStatus.msg
   ControlCommands.msg
-  RtStatus.msg
 )
 
-## Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
-  std_msgs  # Or other packages containing msgs
+  std_msgs
 )
 
-###################################
-## catkin specific configuration ##
-###################################
-## The catkin_package macro generates cmake config files for your package
-## Declare things to be passed to dependent projects
-## INCLUDE_DIRS: uncomment this if you package contains header files
-## LIBRARIES: libraries you create in this project that dependent projects also need
-## CATKIN_DEPENDS: catkin_packages dependent projects also need
-## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-   LIBRARIES ${PROJECT_NAME}
-   CATKIN_DEPENDS
-		generic_filter
-		chupacabra_comm
-		controller_interface
-		control_msgs
-		sensor_msgs
-		executive
-		controller_manager
-		pluginlib
-		std_msgs
-		rospy
-		message_runtime
-		adxl345_ros_node
-		itg3200_ros_node
-#  DEPENDS system_lib
+  INCLUDE_DIRS include
+  LIBRARIES ${PROJECT_NAME}
+  CATKIN_DEPENDS
+  control_msgs
+  controller_interface
+  controller_manager
+  hector_gazebo_plugins
+  message_runtime
+  pluginlib
+  rospy
+  rostest
+  sensor_msgs
+  std_msgs
 )
 
 ###########
 ## Build ##
 ###########
-
-## Specify additional locations of header files
-## Your package locations should be listed before other locations
 include_directories(include
   ${catkin_INCLUDE_DIRS}
 )
 
-## Declare a cpp library
-add_library(bobble_controllers
+add_library(${PROJECT_NAME}
   src/BobbleBalanceController.cpp
-  src/PidControl.cpp
+  src/Filter.cpp
   src/MadgwickAHRS.cpp
+  src/PidControl.cpp
 )
 
-## Declare a cpp executable
-add_executable(BobbleControlNode src/nodes/BobbleControlNode.cpp src/BobbleBotHw.cpp)
-target_link_libraries(BobbleControlNode ${catkin_LIBRARIES} wiringPi)
-install(TARGETS BobbleControlNode
-        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_generate_messages_cpp)
 
-## Add cmake target dependencies of the executable/library
-## as an example, message headers may need to be generated before nodes
-add_dependencies(bobble_controllers bobble_controllers_generate_messages_cpp)
-
-## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
-  wiringPi
 )
+
+#############
+## Testing ##
+#############
+if (CATKIN_ENABLE_TESTING)
+    add_rostest_gtest(balance_controller_test
+          test/balance_controller.test
+          test/balance_controller_test.cpp)
+    target_link_libraries(balance_controller_test ${catkin_LIBRARIES})
+    add_rostest_gtest(no_balance_test
+          test/no_balance.test
+          test/no_balance_test.cpp)
+    target_link_libraries(no_balance_test ${catkin_LIBRARIES})
+    foreach(T
+        test/js_drive_square.test
+        test/impulse_force.test)
+        add_rostest(${T})
+    endforeach()
+    catkin_add_nosetests(test/parsing_test.py)
+    catkin_add_nosetests(test/plots_test.py)
+endif()
 
 #############
 ## Install ##
 #############
-
-# all install targets should use catkin DESTINATION variables
-# See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
-
-## Mark executable scripts (Python etc.) for installation
-## in contrast to setup.py, you can choose the destination
-# install(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
-
-## Mark executables and/or libraries for installation
 install(TARGETS ${PROJECT_NAME}
    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-## Mark cpp header files for installation
 install(DIRECTORY include/${PROJECT_NAME}/
    DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-#   FILES_MATCHING PATTERN "*.h"
-#   PATTERN ".svn" EXCLUDE
 )
 
-## Mark other files for installation (e.g. launch and bag files, etc.)
-# install(FILES
-#   # myfile1
-#   # myfile2
-#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-# )
+catkin_install_python(
+   PROGRAMS
+   src/nodes/BobbleStateHold
+   src/nodes/JoystickControl
+   src/nodes/KeyboardControl
+   src/nodes/ApplyImpulse
+   DESTINATION
+   ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
-#############
-## Testing ##
-#############
+install(DIRECTORY launch
+		DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
-## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_bobble_controllers.cpp)
-# if(TARGET ${PROJECT_NAME}-test)
-#   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
-# endif()
+install(DIRECTORY config
+		DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
-## Add folders to be run by python nosetests
-# catkin_add_nosetests(test)
+install(FILES ${PROJECT_NAME}_plugins.xml
+		DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+

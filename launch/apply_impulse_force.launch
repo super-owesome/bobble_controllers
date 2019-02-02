@@ -1,0 +1,15 @@
+<launch>
+    <arg name="gui" default="true"/>
+    <arg name="impulse" default="500.0"/>
+    <arg name="out_file" default="impulse_data"/>
+    <arg name="run_length_s" default="10.0"/>
+    <include file="$(find bobble_controllers)/launch/bobble_balance_state_hold.launch">
+        <arg name="paused" value="false"/>
+        <arg name="gui" value="$(arg gui)"/>
+    </include>
+    <node pkg="bobble_controllers" type="ApplyImpulse" name="ApplyImpulse" output="screen" required="true">
+        <param name="impulse" value="$(arg impulse)"/>
+        <param name="data_output_file" value="$(arg out_file)"/>
+        <param name="run_length_s" value="$(arg run_length_s)"/>
+    </node>
+</launch>

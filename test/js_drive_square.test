@@ -1,0 +1,16 @@
+<launch>
+  <arg name="paused" default="false"/>
+  <arg name="gui" default="false"/>
+  <include file="$(find bobble_controllers)/test/common.launch">
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="gui" value="$(arg gui)"/>
+  </include>
+  <rosparam file="$(find bobble_controllers)/test/good_balance_control_config.yaml" command="load"/>
+  <node pkg="bobble_controllers" type="JoystickControl" name="JoystickController" output="screen">
+  </node>
+  <node pkg="rosbag" type="record" name="rosbag_record_standard_data" respawn="true" output="screen" args="-O $(find bobble_controllers)/test/data/drive_square_js_response /bobble/bobble_balance_controller/bb_controller_status" />
+  <node pkg="rosbag" type="play" name="rosbag_play_drive_square_cmds" required="true" output="screen" args="$(find bobble_controllers)/test/drive_square_js_cmds.bag"/>
+  <test test-name="BobbleIntegrationTest" pkg="bobble_controllers" type="BobbleIntegrationTest.py" time-limit="105.0">
+    <param name="run_length_s" value="100.0"/>
+  </test>
+</launch>
