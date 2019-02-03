@@ -1,0 +1,64 @@
+measured_tilt:
+  title : 'Tilt Angle'
+  y_var: 'bobble_bobble_balance_controller_bb_controller_status__Tilt'
+  runs : ['tilt_testing']
+  x_label: 'Time (s)'
+  y_label: 'Tilt (deg)'
+  colors : ['blue']
+  xlim: [0.0, 20.0]
+
+measured_tilt_rate:
+  title : 'Tilt Rate'
+  y_var: 'bobble_bobble_balance_controller_bb_controller_status__TiltRate'
+  runs : ['tilt_testing']
+  x_label: 'Time (s)'
+  y_label: 'Tilt Rate (deg/s)'
+  colors : ['blue']
+  xlim: [0.0, 20.0]
+
+heading:
+  title : 'Heading - World Frame'
+  y_var: 'bobble_bobble_balance_controller_bb_controller_status__Heading'
+  runs : ['turn_testing']
+  x_label: 'Time (s)'
+  y_label: 'Heading (deg)'
+  colors : ['blue']
+  xlim: [0.0, 20.0]
+
+turn_rate:
+  title : 'Turn Rate - Robot Frame'
+  y_var: 'bobble_bobble_balance_controller_bb_controller_status__TurnRate'
+  runs : ['turn_testing']
+  x_label: 'Time (s)'
+  y_label: 'Turn Rate (deg/s)'
+  colors : ['blue']
+  xlim: [0.0, 20.0]
+
+wheel_vel:
+  title : 'Wheel Velocity'
+  vars: ['bobble_bobble_balance_controller_bb_controller_status__LeftMotorVelocity',
+         'bobble_bobble_balance_controller_bb_controller_status__RightMotorVelocity']
+  run : 'turn_testing'
+  x_label: 'Time (s)'
+  y_label: 'Velocity (deg/s)'
+  colors : ['orange', 'grey']
+  legend:
+     left:
+       color: 'orange'
+       linestyle: '-'
+     right:
+       color: 'grey'
+       linestyle: '-'
+  xlim: [0.0, 20.0]
+
+lp_filter_freq_response:
+  raw_signal: 'bobble_bobble_balance_controller_bb_controller_status__MeasuredTurnRate'
+  run : 'turn_testing'
+  sample_rate: 200.0
+  #cutoff_freq: 20.0
+  cutoff_freq: 5.0
+  filter_order: 3
+  runs : ['turn_testing']
+  y_label: 'Turn Rate (deg/s)'
+  colors : ['blue']
+  xlim: [0.0, 20.0]

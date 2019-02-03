@@ -1,0 +1,51 @@
+#!/usr/bin/python
+import rospy
+from bobble_controllers.msg import BobbleBotStatus
+from gazebo_msgs.srv import *
+PKG = 'bobble_controllers'
+
+class BobbleStateHold(object):
+
+    def __init__(self):
+        """
+        This simple node just keeps the Bobble-Bot standing in sim until
+        active control begins.
+        """
+        self._ControlMode = 0 # IDLE
+        # Listen to bb_controller_status messages
+        rospy.Subscriber("/bobble/bobble_balance_controller/bb_controller_status", BobbleBotStatus, self._controllerDataReceived)
+        # Kluge to reset sim state until balance is active
+        self.reset_state = rospy.ServiceProxy('/gazebo/set_model_state', SetModelState)
+        # Create a timer to execute the control loop
+        rospy.Timer(rospy.Duration(0.0025), self._mainLoop)
+        # Allow time for initialization of all needed nodes
+        # Allow ROS to go to all callbacks.
+        rospy.spin()
+
+    def _mainLoop(self, _event):
+        # Reset sim state until we're in active control. We fall over other-wise
+        if self._ControlMode == 0:
+            self._resetSimState()
+
+    def _resetSimState(self):
+        self.reset_state(gazebo_msgs.msg.ModelState(
+            model_name = "bobblebot",
+            pose = geometry_msgs.msg.Pose(position = geometry_msgs.msg.Point(x=0.0, y=0.0, z=0.0),
+                                          orientation = geometry_msgs.msg.Quaternion(x=0.0, y=0.0, z=0.0, w=0.0)),
+            twist = geometry_msgs.msg.Twist(linear = geometry_msgs.msg.Point(x=0.0, y=0.0, z=0.0),
+                                            angular = geometry_msgs.msg.Quaternion(x=0.0, y=0.0, z=0.0, w=0.0)),
+            reference_frame = "world"))
+        return
+
+    def _controllerDataReceived(self, controller_data):
+        self._ControlMode = controller_data.ControlMode
+
+# Main function.
+if __name__ == '__main__':
+    # Initialize the node and name it.
+    rospy.init_node('BobbleStateHolder', log_level=rospy.INFO)
+    # Go to class functions that do all the heavy lifting. Do error checking.
+    try:
+        bb_state_hold_sim = BobbleStateHold()
+    except rospy.ROSInterruptException:
+        pass
