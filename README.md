@@ -10,8 +10,6 @@ with a handy Gazebo simulation which was used extensively during the development
 of the robot. The source code is being provided as open-source software in order to help others learn about feedback 
 control and the Robot Operating System (ROS).
 
-> The real Bobble-Bot in action
-
 ![BobbleSim](https://media.giphy.com/media/WwYVAmu5tnK1XcXQxd/giphy.gif "Bobble-Bot")
 
 To get started, follow the [installation instructions](#debian-install), or if you're more 
