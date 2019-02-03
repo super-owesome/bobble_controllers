@@ -1,9 +1,7 @@
 # Bobble-Bot Simulator
 > A Gazebo simulation of the self-balancing ROS robot, Bobble-Bot.
 
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=hS7kfhN-8V8" 
-target="_blank"><img src="docs/imgs/BobbleBotGazebo.png" 
-alt="BobbleBot Simulation" width="820" height="360" border="1" /></a>
+![BobbleSim](https://media.giphy.com/media/oHv9d0GjtxQYioSYUA/giphy.gif "Bobble-Bot Sim")
 
 Bobble-Bot is [SOE's](https://github.com/super-owesome) take on a classical problem in control theory. The robot represents 
 a unique solution to the well understood problem of control of a two wheeled inverted pendulum.
