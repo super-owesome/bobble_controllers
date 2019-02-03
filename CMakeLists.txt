@@ -8,7 +8,6 @@ find_package(
   control_msgs
   controller_interface
   controller_manager
-  hector_gazebo_plugins
   message_generation
   pluginlib
   rospy
@@ -37,7 +36,6 @@ catkin_package(
   control_msgs
   controller_interface
   controller_manager
-  hector_gazebo_plugins
   message_runtime
   pluginlib
   rospy
