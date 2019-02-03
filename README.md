@@ -1,14 +1,15 @@
 # Bobble-Bot Simulator
 > A Gazebo simulation of the self-balancing ROS robot, Bobble-Bot.
 
-![BobbleSim](https://media.giphy.com/media/oHv9d0GjtxQYioSYUA/giphy.gif "Bobble-Bot Sim")
-
 Bobble-Bot is [SOE's](https://github.com/super-owesome) take on a classical problem in control theory. The robot represents 
 a unique solution to the well understood problem of control of a two wheeled inverted pendulum.
 The source code found in this repository constitutes the robot's balance control logic. The controller comes 
 with a handy Gazebo simulation which was used extensively during the development 
 of the robot. The source code is being provided as open-source software in order to help others learn about feedback 
 control and the Robot Operating System (ROS).
+
+![BobbleSim](https://media.giphy.com/media/oHv9d0GjtxQYioSYUA/giphy.gif "Bobble-Bot Sim")
+
 
 ![BobbleSim](https://media.giphy.com/media/WwYVAmu5tnK1XcXQxd/giphy.gif "Bobble-Bot")
 
