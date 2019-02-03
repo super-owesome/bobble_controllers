@@ -2,7 +2,7 @@
 <package>
   <name>bobble_controllers</name>
   <version>1.0.0</version>
-  <description>The bobble_controllers package</description>
+  <description>Holds the real-time balance controller for BobbleBot</description>
   <maintainer email="mike.moore@so.engineering">Mike Moore
   	</maintainer>
   <license>tbd</license>
@@ -11,39 +11,32 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <build_depend>controller_interface</build_depend>
-  <build_depend>adxl345_ros_node</build_depend>
-  <build_depend>itg3200_ros_node</build_depend>
-  <build_depend>chupacabra_comm</build_depend>
-  <build_depend>generic_filter</build_depend>
   <build_depend>control_msgs</build_depend>
-  <build_depend>sensor_msgs</build_depend>
-  <build_depend>rospy</build_depend>
+  <build_depend>controller_interface</build_depend>
   <build_depend>controller_manager</build_depend>
-  <build_depend>pluginlib</build_depend>
   <build_depend>message_generation</build_depend>
-  <build_depend>executive</build_depend>
-  <build_depend>cmake_modules</build_depend>
+  <build_depend>pluginlib</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>rostest</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>std_msgs</build_depend>
 
-  <run_depend>cmake_modules</run_depend>
-  <run_depend>generic_filter</run_depend>
-  <run_depend>chupacabra_comm</run_depend>
-  <run_depend>adxl345_ros_node</run_depend>
-  <run_depend>itg3200_ros_node</run_depend>
+  <run_depend>control_msgs</run_depend>
   <run_depend>controller_interface</run_depend>
   <run_depend>controller_manager</run_depend>
-  <run_depend>rospy</run_depend>
-  <run_depend>control_msgs</run_depend>
-  <run_depend>message_runtime</run_depend>
-  <run_depend>sensor_msgs</run_depend>
-  <run_depend>controller_manager</run_depend>
-  <run_depend>pluginlib</run_depend>
-  <run_depend>std_msgs</run_depend>
-  <run_depend>executive</run_depend>
   <run_depend>joint_state_controller</run_depend>
+  <run_depend>message_runtime</run_depend>
+  <run_depend>pluginlib</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>rostest</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>std_msgs</run_depend>
+
+  <test_depend>xacro</test_depend>
+  <test_depend>hector_gazebo_plugins</test_depend>
+  <test_depend>rosunit</test_depend>
 
   <export>
     <controller_interface plugin="${prefix}/bobble_controllers_plugins.xml"/>
   </export>
-
 </package>

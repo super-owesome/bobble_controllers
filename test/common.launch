@@ -1,0 +1,16 @@
+<launch>
+	<arg name="paused"/>
+	<arg name="gui"/>
+	<include file="$(find gazebo_ros)/launch/empty_world.launch">
+		<arg name="paused" value="$(arg paused)"/>
+		<arg name="world_name" value="worlds/empty_sky.world" />
+		<arg name="gui" value="$(arg gui)"/>
+	</include>
+	<param name="robot_description" command="$(find xacro)/xacro '$(find bobble_controllers)/test/xacro/bobble_world.urdf.xacro'" />
+	<node name="bobble_spawner" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model bobblebot" respawn="false" output="screen" />
+	<node name="controller_spawner" pkg="controller_manager" type="spawner"
+		respawn="false" output="screen" ns="/bobble"
+		args="bobble_balance_controller"/>
+	<node pkg="bobble_controllers" type="BobbleStateHold" name="BobbleBotStateHolder" output="screen">
+    </node>
+</launch>

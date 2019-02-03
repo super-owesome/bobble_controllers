@@ -1,0 +1,54 @@
+<?xml version="1.0" ?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="right_wheel" params="parent">
+
+	<link name="right_wheel_link">
+		<inertial>
+			<mass value="0.084"/>
+			<inertia ixx="0.00035" ixy="0.0" ixz="0.0" iyy="0.00035" iyz="0.0" izz="0.00035"/>
+		</inertial>
+		<visual>
+			<origin xyz="0.0 0.0 0.0" rpy="0.0 1.5707 -1.5707"/>
+			<geometry name="right_wheel_link_visual">
+              <cylinder radius="0.05" length="0.05"/>
+			</geometry>
+  		</visual>
+		<collision>
+			<origin xyz="0.0 0.0 0.0" rpy="0.0 1.5707 -1.5707"/>
+            <geometry>
+              <cylinder radius="0.05" length="0.05" />
+            </geometry>
+			<contact_coefficients kd="1.0" kp="1000.0" mu="0"/>
+		</collision>
+	</link>
+
+	<gazebo reference="right_wheel_link">
+		<selfCollide>false</selfCollide>
+	</gazebo>
+
+	<joint name="right_wheel_hinge" type="continuous">
+		<parent link="${parent}"/>
+		<child link="right_wheel_link"/>
+		<origin rpy="0 0 0" xyz="0.0 -0.1 0.05"/>
+		<axis xyz="0 1 0"/>
+		<!-- <safety_controller k_velocity="0.5"/> -->
+		<!-- <joint_properties damping="100.0" friction="1000.0" /> -->
+		<dynamics damping="0.0" friction="0.0"/>
+	</joint>
+
+	<transmission name="right_wheel_transmission">
+		<type>transmission_interface/SimpleTransmission"</type>
+		<joint name="right_wheel_hinge">
+			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="right_wheel_motor">
+			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+
+  </xacro:macro>
+
+</robot>

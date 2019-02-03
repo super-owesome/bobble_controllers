@@ -1,0 +1,102 @@
+#!/usr/bin/python
+import logging, sys, os, time, subprocess, signal
+import rospy
+from bobble_controllers.msg import BobbleBotStatus
+from bobble_controllers.msg import ControlCommands
+from gazebo_msgs.srv import *
+from std_srvs.srv import Empty
+PKG = 'bobble_controllers'
+
+class ApplyImpulse(object):
+
+    def __init__(self, impulse_force, data_output_file, run_length_s):
+        """
+        This simple node applies an X impulse force to the simulated Bobble-Bot and
+        logs the resulting motion.
+        """
+        self.logger = logging.getLogger("sim_plots_test_log")
+        self.impulse_force = impulse_force
+        self.data_output_file = data_output_file
+        self.run_length_s = run_length_s
+        # Allow some time before registering services
+        time.sleep(10.0)
+        try:
+            self.pause_physics_client = rospy.ServiceProxy('/gazebo/pause_physics', Empty)
+            self.unpause_physics_client = rospy.ServiceProxy('/gazebo/unpause_physics', Empty)
+            self.reset_simulation = rospy.ServiceProxy('/gazebo/reset_simulation', Empty)
+            self.reset_state = rospy.ServiceProxy('/gazebo/set_model_state', SetModelState)
+            self.apply_impulse_force = rospy.ServiceProxy('/gazebo/apply_body_wrench', ApplyBodyWrench)
+            self.set_link_properties = rospy.ServiceProxy('/gazebo/set_link_properties', SetLinkProperties)
+        except rospy.ServiceException, e:
+            self.logger.error("Service call failed: %s"%e)
+
+    def resetState(self):
+        control_cmd_publisher = rospy.Publisher('/bobble/bobble_balance_controller/bb_cmd', ControlCommands, queue_size=1)
+        balance_cmd_msg = ControlCommands()
+        balance_cmd_msg.IdleCmd = True
+        balance_cmd_msg.StartupCmd = False
+        balance_cmd_msg.DiagnosticCmd = False
+        control_cmd_publisher.publish(balance_cmd_msg)
+        return
+
+    def activateController(self):
+        self.logger.warn("Commanding controller active.")
+        control_cmd_publisher = rospy.Publisher('/bobble/bobble_balance_controller/bb_cmd', ControlCommands, queue_size=1)
+        balance_cmd_msg = ControlCommands()
+        balance_cmd_msg.StartupCmd = True
+        balance_cmd_msg.IdleCmd = False
+        control_cmd_publisher.publish(balance_cmd_msg)
+
+    def startDataRecord(self):
+         self.rosbag_process = subprocess.Popen('rosbag record -e /bobble/bobble_balance_controller/bb_controller_status -j -o {} --duration {}'.format(self.data_output_file, "10.0"), stdin=subprocess.PIPE, shell=True)
+
+    def applyImpulse(self):
+        try:
+            self.apply_impulse_force(
+                                     body_name = "bobblebot::bobble_chassis_link",
+                                     reference_frame = "bobblebot::bobble_chassis_link",
+                                     reference_point = geometry_msgs.msg.Point(x=0.15, y=0.0, z=0.0),
+                                     wrench = geometry_msgs.msg.Wrench(force = geometry_msgs.msg.Vector3(self.impulse_force, 0.0, 0.0),
+                                                                       torque = geometry_msgs.msg.Vector3(0.0, 0.0, 0.0)),
+                                     start_time = rospy.Time.from_sec(1.0),
+                                     duration = rospy.Time.from_sec(0.001)
+                                     )
+        except rospy.ServiceException, e:
+            self.logger.error("Service call failed: %s"%e)
+
+    def startDataRecord(self):
+        self.rosbag_process = subprocess.Popen('rosbag record -e /bobble/bobble_balance_controller/bb_controller_status -j -O {} --duration {}'.format(self.data_output_file, "10.0"), stdin=subprocess.PIPE, shell=True)
+
+    def run(self):
+        self.logger.warn("Starting the sim dynamics.")
+        self.unpause_physics_client()
+        time.sleep(3.0)
+        self.resetState()
+        time.sleep(3.0)
+        self.logger.warn("Activating controller.")
+        self.activateController()
+        time.sleep(0.25)
+        self.logger.warn("Starting data recording.")
+        self.startDataRecord()
+        time.sleep(1.0)
+        self.logger.warn("Applying impulse force in x direction of : " + str(self.impulse_force) + " Newtons.")
+        self.applyImpulse()
+        time.sleep(self.run_length_s)
+        self.resetState()
+
+# Main function.
+if __name__ == '__main__':
+    # Initialize the node and name it.
+    log = logging.getLogger("sim_plots_test_log")
+    log.setLevel(logging.INFO)
+    rospy.init_node('ApplyImpulse', log_level=rospy.INFO)
+
+    impulse_force = rospy.get_param('~impulse', "500.0")
+    data_output_file = rospy.get_param('~data_output_file', "impulse_data")
+    run_length_s = rospy.get_param('~run_length_s', "10.0")
+    # Go to class functions that do all the heavy lifting. Do error checking.
+    try:
+        apply_impulse_sim = ApplyImpulse(impulse_force, data_output_file, run_length_s)
+        apply_impulse_sim.run()
+    except rospy.ROSInterruptException:
+        pass
