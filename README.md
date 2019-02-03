@@ -10,11 +10,8 @@ with a handy Gazebo simulation which was used extensively during the development
 of the robot. The source code is being provided as open-source software in order to help others learn about feedback 
 control and the Robot Operating System (ROS).
 
-A video of the balance controller in development.
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=bg6ksWbVXSk" 
-target="_blank"><img src="http://img.youtube.com/vi/bg6ksWbVXSk/0.jpg" 
-alt="BobbleBot Testing" width="820" height="360" border="1" /></a>
-
+> The real Bobble-Bot in action
+![BobbleSim](https://media.giphy.com/media/WwYVAmu5tnK1XcXQxd/giphy.gif "Bobble-Bot")
 
 To get started, follow the [installation instructions](#debian-install), or if you're more 
 of the DIY type, [build the simulation from source](#build-from-source) 
@@ -242,6 +239,11 @@ build and roslaunch commands at will.
 
 BobbleBot is a real robot built by the robotics team at SOE. Check out the 
 [parts list](https://soe/bobble-parts) to learn how to build your own.
+
+Here's a video of the original balance controller in development.
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=bg6ksWbVXSk" 
+target="_blank"><img src="http://img.youtube.com/vi/bg6ksWbVXSk/0.jpg" 
+alt="BobbleBot Testing" width="820" height="360" border="1" /></a>
 
 ## Contributing
 
