@@ -8,10 +8,10 @@ with a handy Gazebo simulation which was used extensively during the development
 of the robot. The source code is being provided as open-source software in order to help others learn about feedback 
 control and the Robot Operating System (ROS).
 
-![BobbleSim](https://media.giphy.com/media/oHv9d0GjtxQYioSYUA/giphy.gif "Bobble-Bot Sim")
+![](https://media.giphy.com/media/oHv9d0GjtxQYioSYUA/giphy.gif)
 
 
-![BobbleBotHw](https://media.giphy.com/media/nL8tnA66Ut1E6662t3/giphy.gif "Bobble-Bot Hw")
+![](https://media.giphy.com/media/nL8tnA66Ut1E6662t3/giphy.gif)
 
 To get started, follow the [installation instructions](#debian-install), or if you're more 
 of the DIY type, [build the simulation from source](#build-from-source) 
