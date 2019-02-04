@@ -11,7 +11,7 @@ control and the Robot Operating System (ROS).
 ![BobbleSim](https://media.giphy.com/media/oHv9d0GjtxQYioSYUA/giphy.gif "Bobble-Bot Sim")
 
 
-![BobbleBot](https://media.giphy.com/media/WwYVAmu5tnK1XcXQxd/giphy.gif "Bobble-Bot")
+![BobbleBotHw](https://media.giphy.com/media/nL8tnA66Ut1E6662t3/giphy.gif "Bobble-Bot Hw")
 
 To get started, follow the [installation instructions](#debian-install), or if you're more 
 of the DIY type, [build the simulation from source](#build-from-source) 
