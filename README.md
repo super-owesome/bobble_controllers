@@ -1,10 +1,6 @@
 # Bobble-Bot Simulator
 > A Gazebo simulation of the self-balancing ROS robot, Bobble-Bot.
 
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=hS7kfhN-8V8" 
-target="_blank"><img src="docs/imgs/BobbleBotGazebo.png" 
-alt="BobbleBot Simulation" width="820" height="360" border="1" /></a>
-
 Bobble-Bot is [SOE's](https://github.com/super-owesome) take on a classical problem in control theory. The robot represents 
 a unique solution to the well understood problem of control of a two wheeled inverted pendulum.
 The source code found in this repository constitutes the robot's balance control logic. The controller comes 
@@ -12,11 +8,13 @@ with a handy Gazebo simulation which was used extensively during the development
 of the robot. The source code is being provided as open-source software in order to help others learn about feedback 
 control and the Robot Operating System (ROS).
 
-A video of the balance controller in development.
+#### Simulated Bobble-Bot
+![](https://media.giphy.com/media/oHv9d0GjtxQYioSYUA/giphy.gif)
+
+#### The Real Bobble-Bot
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=bg6ksWbVXSk" 
 target="_blank"><img src="http://img.youtube.com/vi/bg6ksWbVXSk/0.jpg" 
-alt="BobbleBot Testing" width="820" height="360" border="1" /></a>
-
+alt="BobbleBot Testing" width="480" height="340" border="1" /></a>
 
 To get started, follow the [installation instructions](#debian-install), or if you're more 
 of the DIY type, [build the simulation from source](#build-from-source) 
@@ -244,6 +242,11 @@ build and roslaunch commands at will.
 
 BobbleBot is a real robot built by the robotics team at SOE. Check out the 
 [parts list](https://soe/bobble-parts) to learn how to build your own.
+
+Here's a video of the original balance controller in development.
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=bg6ksWbVXSk" 
+target="_blank"><img src="http://img.youtube.com/vi/bg6ksWbVXSk/0.jpg" 
+alt="BobbleBot Testing" width="820" height="360" border="1" /></a>
 
 ## Contributing
 
