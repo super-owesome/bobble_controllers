@@ -12,7 +12,9 @@ control and the Robot Operating System (ROS).
 ![](https://media.giphy.com/media/oHv9d0GjtxQYioSYUA/giphy.gif)
 
 #### The Real Bobble-Bot
-<div style="width:100%;height:0;padding-bottom:56%;position:relative;"><iframe src="https://giphy.com/embed/nL8tnA66Ut1E6662t3" width="100%" height="100%" style="position:absolute" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></div><p><a href="https://giphy.com/gifs/ros-bobble-bot-nL8tnA66Ut1E6662t3">via GIPHY</a></p>
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=bg6ksWbVXSk" 
+target="_blank"><img src="http://img.youtube.com/vi/bg6ksWbVXSk/0.jpg" 
+alt="BobbleBot Testing" width="480" height="340" border="1" /></a>
 
 To get started, follow the [installation instructions](#debian-install), or if you're more 
 of the DIY type, [build the simulation from source](#build-from-source) 
