@@ -11,9 +11,6 @@ control and the Robot Operating System (ROS).
 ### Impulse Response
 ![](https://media.giphy.com/media/8TCb7GXefeW54RbMKT/giphy.gif)
 
-### Square Drive
-![](https://media.giphy.com/media/28CnXrk1rprlAe3Bm7/giphy.gif)
-
 To get started, follow the [installation instructions](#debian-install), or if you're more 
 of the DIY type, [build the simulation from source](#build-from-source) 
 and learn how to [build your own Bobble-Bot](#build-your-own).
