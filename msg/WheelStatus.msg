@@ -1,0 +1,3 @@
+int32 ControlMode
+float32 MotorPosition
+float32 MotorVelocity

@@ -1,0 +1,3 @@
+float32 DesiredVoltage
+float32 DesiredVelocity
+float32 DesiredPosition
