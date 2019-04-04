@@ -55,7 +55,7 @@ namespace bobble_controllers {
             PositionControlPID(0.0, 0.0, 0.0) {
     }
 
-    BobbleBalanceController::~BobbleBalanceController(void) {
+    SingleWheelController::~SingleWheelController(void) {
         runThread = false;
         subscriberThread->join();
     }

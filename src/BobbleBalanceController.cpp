@@ -439,7 +439,6 @@ namespace bobble_controllers {
         }
     }
 
-
 }
 
 PLUGINLIB_EXPORT_CLASS(bobble_controllers::BobbleBalanceController, controller_interface::ControllerBase
