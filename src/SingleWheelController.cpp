@@ -60,7 +60,7 @@ namespace bobble_controllers {
         subscriberThread->join();
     }
 
-    bool BobbleBalanceController::initRequest(hardware_interface::RobotHW* robot_hw,
+    bool SingleWheelController::initRequest(hardware_interface::RobotHW* robot_hw,
                                               ros::NodeHandle&             root_nh,
                                               ros::NodeHandle&             controller_nh,
                                               ClaimedResources&            claimed_resources)
@@ -158,12 +158,12 @@ namespace bobble_controllers {
         control_command_mutex.unlock();
     }
 
-    void BobbleBalanceController::update(const ros::Time &time, const ros::Duration &duration) {
+    void SingleWheelController::update(const ros::Time &time, const ros::Duration &duration) {
         /// Populate Command Variables
         populateCommands();
 
         /////////////////////////////////////////////////////////////////////////////////////////
-        /// Perform the desired control depending on BobbleBot controller state
+        /// Perform the desired control depending on controller state
         /////////////////////////////////////////////////////////////////////////////////////////
         if (ActiveControlMode == ControlModes::IDLE) {
         } else if (ActiveControlMode == ControlModes::DIAGNOSTIC)
