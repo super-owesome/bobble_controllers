@@ -28,6 +28,7 @@
 #include "bobble_controllers/MadgwickAHRS.h"
 #include <bobble_controllers/Filter.h>
 #include <bobble_controllers/BobbleBotStatus.h>
+#include <bobble_controllers/Utils.h>
 #include <tf/transform_datatypes.h>
 
 namespace bobble_controllers {
@@ -175,12 +176,6 @@ namespace bobble_controllers {
         void update(const ros::Time &time, const ros::Duration &duration);
 
         void write_controller_status_msg();
-
-
-        void unpackParameter(std::string parameterName, double &referenceToParameter, double defaultValue);
-        void unpackParameter(std::string parameterName, std::string &referenceToParameter, std::string defaultValue);
-
-        void unpackFlag(std::string parameterName, bool &referenceToFlag, bool defaultValue);
 
         double limit(double cmd, double max);
 
