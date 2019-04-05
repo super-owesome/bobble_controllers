@@ -6,19 +6,7 @@
 #ifndef BOBBLE_CONTROLLERS_BOBBLE_BALANCE_CONTROLLER_H
 #define BOBBLE_CONTROLLERS_BOBBLE_BALANCE_CONTROLLER_H
 
-#include <cstddef>
-#include <cmath>
-#include <vector>
-#include <string>
-#include <algorithm>
-#include <thread>
-#include <mutex>
-
-#include <realtime_tools/realtime_publisher.h>
-#include <ros/node_handle.h>
-#include <hardware_interface/joint_command_interface.h>
-#include <hardware_interface/imu_sensor_interface.h>
-#include <controller_interface/controller.h>
+#include <bobble_controllers/BobbleControllerBase.h>
 #include <trajectory_msgs/JointTrajectoryPoint.h>
 #include <geometry_msgs/Twist.h>
 #include <sensor_msgs/Imu.h>
@@ -28,21 +16,16 @@
 #include "bobble_controllers/MadgwickAHRS.h"
 #include <bobble_controllers/Filter.h>
 #include <bobble_controllers/BobbleBotStatus.h>
-#include <bobble_controllers/Utils.h>
 #include <tf/transform_datatypes.h>
 
 namespace bobble_controllers {
 
-    class BobbleBalanceController : public controller_interface::
-    Controller<hardware_interface::EffortJointInterface> {
-        ros::NodeHandle node_;
-        hardware_interface::RobotHW *robot_;
-        std::vector <hardware_interface::JointHandle> joints_;
-        hardware_interface::ImuSensorInterface *imu_;
-        realtime_tools::RealtimePublisher<bobble_controllers::BobbleBotStatus>* pub_bobble_status;
+class BobbleBalanceController : public bobble_controllers::BobbleControllerBase<BobbleBotStatus>
+    {
+        /// Subscriber for simulation
         ros::Subscriber sub_imu_sensor_;
-        ros::Subscriber sub_command_;
-        hardware_interface::ImuSensorHandle imuData;
+
+        /// Define control Modes
         enum ControlModes {
             IDLE,
             STARTUP,
@@ -50,6 +33,7 @@ namespace bobble_controllers {
             DIAGNOSTIC
         };
 
+        /// Define possible commands
         typedef struct {
             bool StartupCmd;
             bool IdleCmd;
@@ -58,13 +42,9 @@ namespace bobble_controllers {
             double DesiredTurnRate;
         } CommandStruct;
 
-        std::mutex control_command_mutex;
-
-	    std::thread* subscriberThread;
         CommandStruct commandStruct;
         CommandStruct commandStructTmp;
-	    bool runThread;
-        void runSubscriber();
+
         void subscriberCallBack(const bobble_controllers::ControlCommands::ConstPtr &cmd);
         /**
          * \brief Velocity command callback
@@ -176,8 +156,6 @@ namespace bobble_controllers {
         void update(const ros::Time &time, const ros::Duration &duration);
 
         void write_controller_status_msg();
-
-        double limit(double cmd, double max);
 
         void populateImuData();
         void populateCommands();

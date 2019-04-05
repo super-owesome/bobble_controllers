@@ -20,16 +20,20 @@
 #include <sensor_msgs/JointState.h>
 #include <bobble_controllers/ControlCommands.h>
 #include <bobble_controllers/PidControl.h>
-#include <bobble_controllers/Filter.h>
-#include <bobble_controllers/BobbleBotStatus.h>
 #include <tf/transform_datatypes.h>
+
+/// Defined wheel messages
+#include <bobble_controllers/WheelCommands.h>
+#include <bobble_controllers/WheelControlCommands.h>
+#include <bobble_controllers/WheelStatus.h>
+
 
 namespace bobble_controllers {
 
     class SingleWheelController : public controller_interface::
     Controller<hardware_interface::EffortJointInterface> {
         ros::NodeHandle node_;
-        hardware_interface::robothw *robot_;
+        hardware_interface::RobotHW *robot_;
         std::vector <hardware_interface::JointHandle> joints_;
         realtime_tools::RealtimePublisher<bobble_controllers::WheelStatus>* pub_wheel_status;
         ros::Subscriber sub_command_;
@@ -71,8 +75,11 @@ namespace bobble_controllers {
             double Kd;
             double Ki;
         } GainStruct;
+
+        /// Control mode
+        int ActiveControlMode;
+
         /// Controller config
-        bool InSim; // Temporary hack. Need to re-orient IMU model.
         double MaxVoltageCmd;
         double MaxVelocityCmd;
         double MaxPositionCmd;

@@ -10,28 +10,6 @@
 
 namespace bobble_controllers {
 
-    void BobbleBalanceController::runSubscriber() {
-        ros::NodeHandle n;
-        ros::Subscriber sub = n.subscribe("/bobble/bobble_balance_controller/bb_cmd", 1,
-                                          &BobbleBalanceController::subscriberCallBack, this);
-        ros::Subscriber sub_cmd_vel = n.subscribe("/bobble/bobble_balance_controller/cmd_vel", 1,
-                                          &BobbleBalanceController::cmdVelCallback, this);
-        ros::Rate loop_rate(20);
-	while(ros::ok() && runThread)
-    {
-        control_command_mutex.lock();
-        commandStruct.StartupCmd = commandStructTmp.StartupCmd;
-        commandStruct.IdleCmd = commandStructTmp.IdleCmd;
-        commandStruct.DiagnosticCmd = commandStructTmp.DiagnosticCmd;
-        commandStruct.DesiredVelocity = commandStructTmp.DesiredVelocity;
-        commandStruct.DesiredTurnRate = commandStructTmp.DesiredTurnRate;
-        control_command_mutex.unlock();
-
-        loop_rate.sleep();
-    }
-        sub.shutdown();
-    	sub_cmd_vel.shutdown();
-    }
 
     void BobbleBalanceController::subscriberCallBack(const bobble_controllers::ControlCommands::ConstPtr &cmd) {
         commandStructTmp.StartupCmd = cmd->StartupCmd;

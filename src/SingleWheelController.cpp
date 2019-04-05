@@ -2,8 +2,6 @@
 // Created by james on 4/3/19.
 //
 
-**********************************************************************/
-
 #include <sys/mman.h>
 
 #include <bobble_controllers/SingleWheelController.h>
@@ -81,8 +79,7 @@ namespace bobble_controllers {
 
         node_ = controller_nh;
 
-        unpackFlag("InSim", InSim, true);
-        unpackParameter("MotorEffortMax", MotorEffortMax, 0.4);
+        unpackParameter("MotorVoltageCommand", MaxVoltageCmd, 0.4);
 
         XmlRpc::XmlRpcValue joint_names;
         if (!node_.getParam("joints", joint_names)) {
@@ -150,11 +147,7 @@ namespace bobble_controllers {
         /// Get commands
         /// Lock mutex to prevent subscriber from writing to the commands
         control_command_mutex.lock();
-        StartupCmd = commandStruct.StartupCmd;
-        IdleCmd = commandStruct.IdleCmd;
-        DiagnosticCmd = commandStruct.DiagnosticCmd;
-        DesiredVelocityRaw = commandStruct.DesiredVelocity * VelocityCmdScale;
-        DesiredTurnRateRaw = commandStruct.DesiredTurnRate * TurnCmdScale;
+        /// TODO: update commands
         control_command_mutex.unlock();
     }
 
@@ -166,8 +159,9 @@ namespace bobble_controllers {
         /// Perform the desired control depending on controller state
         /////////////////////////////////////////////////////////////////////////////////////////
         if (ActiveControlMode == ControlModes::IDLE) {
-        } else if (ActiveControlMode == ControlModes::DIAGNOSTIC)
-        } else if (ActiveControlMode == ControlModes::BALANCE) {
+        } else if (ActiveControlMode == ControlModes::VOLTAGE) {
+        } else if (ActiveControlMode == ControlModes::VELOCITY) {
+        } else if (ActiveControlMode == ControlModes::POSITION) {
         } else {
         }
 
@@ -180,12 +174,12 @@ namespace bobble_controllers {
     void SingleWheelController::write_controller_status_msg() {
         if(pub_wheel_status->trylock()) {
             pub_wheel_status->msg_.ControlMode = ActiveControlMode;
-            pub_wheel_status->msg_.MotorVelocity = ;
-            pub_wheel_status->msg_.MotorPosition = ;
+            pub_wheel_status->msg_.MotorVelocity = MeasuredMotorPosition;
+            pub_wheel_status->msg_.MotorPosition = MeasuredMotorVelocity;
         }
     }
 
 }
 
-PLUGINLIB_EXPORT_CLASS(bobble_controllers::SingelWheelController, controller_interface::ControllerBase
+PLUGINLIB_EXPORT_CLASS(bobble_controllers::SingleWheelController, controller_interface::ControllerBase
 )
