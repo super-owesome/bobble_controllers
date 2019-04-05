@@ -15,6 +15,7 @@
 
 #include <realtime_tools/realtime_publisher.h>
 #include <ros/node_handle.h>
+#include <topic_tools/shape_shifter.h>
 #include <hardware_interface/joint_command_interface.h>
 #include <hardware_interface/imu_sensor_interface.h>
 #include <controller_interface/controller.h>
@@ -26,12 +27,20 @@ namespace bobble_controllers {
     Controller<hardware_interface::EffortJointInterface> {
 
     protected:
+        BobbleControllerBase(void) {}
+        ~BobbleControllerBase(void) {
+            runSubscriberThread = false;
+            subscriberThread->join();
+        }
+
         /// Node and hardware interface
         ros::NodeHandle node_;
         hardware_interface::RobotHW *robot_;
 
         /// Realtime status publisher
         realtime_tools::RealtimePublisher<T>* pub_status;
+        /// Virtual publising function that has to be implemented by child class
+        virtual void publish_status_message() = 0;
 
         /// Hardware interfaces
         std::vector <hardware_interface::JointHandle> joints_;
@@ -43,8 +52,10 @@ namespace bobble_controllers {
 
         /// Thread for managing non-RT subscriber
         std::thread* subscriberThread;
+        /// Typedef for subscriber callback functions
+        typedef void (*callbackFunctionPtr_t)(const ros::MessageEvent<topic_tools::ShapeShifter> &msg_event);
         /// Vector containing subscriber string to function definitions
-        std::map<std::string, void*> subscribers;
+        std::map<std::string, callbackFunctionPtr_t> subscribers;
         /// Subscriber frequency
         double subscriberFrequency;
 
@@ -63,11 +74,12 @@ namespace bobble_controllers {
         /// Subscriber thread function
         void subscriberFunction() {
             ros::NodeHandle n;
-            std::vector<ros::Subscriber> activeSubscribers;
+            std::vector<ros::Subscriber*> activeSubscribers;
 
             /// add all of the subscribers
-            for (std::map<std::string, void *>::iterator it = subscribers.begin(); it != subscribers.end(); ++it) {
-                activeSubscribers.push_back(n.subscribe(it->first, 1, &(it->second), this));
+            for (std::map<std::string, callbackFunctionPtr_t>::iterator it = subscribers.begin(); it != subscribers.end(); ++it) {
+                ros::TransportHints rosTH;
+                activeSubscribers.push_back(new ros::Subscriber(n.subscribe(it->first, 1, &(*it->second), rosTH)));
             }
 
             ros::Rate loop_rate(subscriberFrequency);
@@ -91,9 +103,9 @@ namespace bobble_controllers {
             }
 
             /// shutdown all of the subscribers
-            for (std::vector<ros::Subscriber>::iterator it = activeSubscribers.begin();
-                 it != activeSubscribers.end(); ++it) {
-                it->shutdown();
+            for (std::vector<ros::Subscriber*>::iterator it = activeSubscribers.begin(); it != activeSubscribers.end(); ++it) {
+                (*it)->shutdown();
+                free(*it);
             }
         }
 

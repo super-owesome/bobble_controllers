@@ -155,7 +155,7 @@ class BobbleBalanceController : public bobble_controllers::BobbleControllerBase<
 
         void update(const ros::Time &time, const ros::Duration &duration);
 
-        void write_controller_status_msg();
+        void publish_status_message();
 
         void populateImuData();
         void populateCommands();
@@ -172,8 +172,6 @@ class BobbleBalanceController : public bobble_controllers::BobbleControllerBase<
                                  ClaimedResources&            claimed_resources) override;
     public:
         BobbleBalanceController(void);
-
-        ~BobbleBalanceController(void);
 
     };
 }

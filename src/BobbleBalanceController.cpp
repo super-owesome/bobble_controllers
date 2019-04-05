@@ -29,10 +29,6 @@ namespace bobble_controllers {
             TurningControlPID(0.0, 0.0, 0.0) {
     }
 
-    BobbleBalanceController::~BobbleBalanceController(void) {
-	    runThread = false;
-	    subscriberThread->join();
-    }
 
     bool BobbleBalanceController::initRequest(hardware_interface::RobotHW* robot_hw,
                              ros::NodeHandle&             root_nh,
@@ -91,7 +87,8 @@ namespace bobble_controllers {
         unpackParameter("TiltDotOffset", TiltDotOffset, 0.0);
         unpackParameter("RollDotOffset", RollDotOffset, 0.0);
         unpackParameter("YawDotOffset", YawDotOffset, 0.0);
-        unpackParameter("ImuName", ImuName, "bno055");
+        std::string defaultImuName = "bno055";
+        unpackParameter("ImuName", ImuName, defaultImuName);
 
         XmlRpc::XmlRpcValue joint_names;
         if (!node_.getParam("joints", joint_names)) {
@@ -119,7 +116,7 @@ namespace bobble_controllers {
         }
 
         // Setup publishers and subscribers
-        pub_bobble_status = new realtime_tools::RealtimePublisher<bobble_controllers::BobbleBotStatus>(root_nh, "bobble_balance_controller/bb_controller_status", 1);
+        pub_status = new realtime_tools::RealtimePublisher<bobble_controllers::BobbleBotStatus>(root_nh, "bobble_balance_controller/bb_controller_status", 1);
         // Only do IMU subscription in sim.
         if(InSim){
             sub_imu_sensor_ = node_.subscribe("/imu_bosch/data_raw", 1, &BobbleBalanceController::imuCB, this);
@@ -134,8 +131,8 @@ namespace bobble_controllers {
             imuData = robot_hw->get<hardware_interface::ImuSensorInterface>()->getHandle(ImuName);
         }
 
-	    runThread = true;
-        subscriberThread = new std::thread(&BobbleBalanceController::runSubscriber, this);
+	    runSubscriberThread = true;
+        subscriberThread = new std::thread(&BobbleBalanceController::subscriberFunction, this);
 
         // Setup Measured State Filters
         MeasuredTiltFilter.setGain(MeasuredTiltFilterGain);
@@ -389,31 +386,31 @@ namespace bobble_controllers {
         /////////////////////////////////////////////////////////////////////////////////////////
         /// Report our status out using RT safe publisher
         /////////////////////////////////////////////////////////////////////////////////////////
-        write_controller_status_msg();
+        publish_status_message();
     }
 
-    void BobbleBalanceController::write_controller_status_msg() {
-        if(pub_bobble_status->trylock()) {
-            pub_bobble_status->msg_.ControlMode = ActiveControlMode;
-            pub_bobble_status->msg_.MeasuredTiltDot = MeasuredTiltDot * (180.0 / M_PI);
-            pub_bobble_status->msg_.MeasuredTurnRate = MeasuredTurnRate * (180.0 / M_PI);
-            pub_bobble_status->msg_.Tilt = Tilt * (180.0 / M_PI);
-            pub_bobble_status->msg_.TiltRate = TiltDot * (180.0 / M_PI);
-            pub_bobble_status->msg_.Heading = Heading * (180.0 / M_PI);
-            pub_bobble_status->msg_.TurnRate = TurnRate * (180.0 / M_PI);
-            pub_bobble_status->msg_.ForwardVelocity = ForwardVelocity;
-            pub_bobble_status->msg_.DesiredVelocity = DesiredVelocity;
-	        pub_bobble_status->msg_.DesiredTilt = DesiredTilt * (180.0 / M_PI);
-            pub_bobble_status->msg_.DesiredTurnRate = DesiredTurnRate * (180.0 / M_PI);
-            pub_bobble_status->msg_.LeftMotorPosition = MeasuredLeftMotorPosition * (180.0 / M_PI);
-            pub_bobble_status->msg_.LeftMotorVelocity = MeasuredLeftMotorVelocity * (180.0 / M_PI);
-            pub_bobble_status->msg_.RightMotorPosition = MeasuredRightMotorPosition * (180.0 / M_PI);
-            pub_bobble_status->msg_.RightMotorVelocity = MeasuredRightMotorVelocity * (180.0 / M_PI);
-            pub_bobble_status->msg_.TiltEffort = TiltEffort;
-            pub_bobble_status->msg_.HeadingEffort = HeadingEffort;
-            pub_bobble_status->msg_.LeftMotorEffortCmd = LeftMotorEffortCmd;
-            pub_bobble_status->msg_.RightMotorEffortCmd = RightMotorEffortCmd;
-            pub_bobble_status->unlockAndPublish();
+    void BobbleBalanceController::publish_status_message() {
+        if(pub_status->trylock()) {
+            pub_status->msg_.ControlMode = ActiveControlMode;
+            pub_status->msg_.MeasuredTiltDot = MeasuredTiltDot * (180.0 / M_PI);
+            pub_status->msg_.MeasuredTurnRate = MeasuredTurnRate * (180.0 / M_PI);
+            pub_status->msg_.Tilt = Tilt * (180.0 / M_PI);
+            pub_status->msg_.TiltRate = TiltDot * (180.0 / M_PI);
+            pub_status->msg_.Heading = Heading * (180.0 / M_PI);
+            pub_status->msg_.TurnRate = TurnRate * (180.0 / M_PI);
+            pub_status->msg_.ForwardVelocity = ForwardVelocity;
+            pub_status->msg_.DesiredVelocity = DesiredVelocity;
+	        pub_status->msg_.DesiredTilt = DesiredTilt * (180.0 / M_PI);
+            pub_status->msg_.DesiredTurnRate = DesiredTurnRate * (180.0 / M_PI);
+            pub_status->msg_.LeftMotorPosition = MeasuredLeftMotorPosition * (180.0 / M_PI);
+            pub_status->msg_.LeftMotorVelocity = MeasuredLeftMotorVelocity * (180.0 / M_PI);
+            pub_status->msg_.RightMotorPosition = MeasuredRightMotorPosition * (180.0 / M_PI);
+            pub_status->msg_.RightMotorVelocity = MeasuredRightMotorVelocity * (180.0 / M_PI);
+            pub_status->msg_.TiltEffort = TiltEffort;
+            pub_status->msg_.HeadingEffort = HeadingEffort;
+            pub_status->msg_.LeftMotorEffortCmd = LeftMotorEffortCmd;
+            pub_status->msg_.RightMotorEffortCmd = RightMotorEffortCmd;
+            pub_status->unlockAndPublish();
         }
     }
 
