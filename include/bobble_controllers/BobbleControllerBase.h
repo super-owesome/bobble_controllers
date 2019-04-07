@@ -62,6 +62,9 @@ namespace bobble_controllers {
         /// Vector for housing possible control modes
         std::map<std::string, unsigned int> controlModes;
 
+        /// Vectors for names of elements of control bools and doubles
+        std::vector<std::string> controlDoubleNames;
+        std::vector<std::string> controlBoolNames;
         /// Vectors for housing possible command transfer elements
         std::map<std::string, double> controlDoubles;
         std::map<std::string, bool> controlBools;
@@ -118,10 +121,24 @@ namespace bobble_controllers {
             for (std::map<std::string, double>::iterator it = controlDoubles.begin(); it != controlDoubles.end(); ++it) {
                 controlDoublesRT.find(it->first)->second = it->second;
             }
-            for (std::map<std::string, double>::iterator it = controlBools.begin(); it != controlBools.end(); ++it) {
+            for (std::map<std::string, bool>::iterator it = controlBools.begin(); it != controlBools.end(); ++it) {
                 controlBoolsRT.find(it->first)->second = it->second;
             }
             control_command_mutex.unlock();
+        }
+
+        void populateControlCommandNames()
+        {
+            for (std::vector<std::string>::iterator it = controlBoolNames.begin(); it != controlBoolNames.end(); ++it){
+                controlBools[*it] = false;
+                controlBoolsRT[*it] = false;
+                controlBoolsNoRT[*it] = false;
+            }
+            for (std::vector<std::string>::iterator it = controlDoubleNames.begin(); it != controlDoubleNames.end(); ++it){
+                controlDoubles[*it] = 0.0;
+                controlDoublesRT[*it] = 0.0;
+                controlDoublesNoRT[*it] = 0.0;
+            }
         }
 
         /// Output limiting function

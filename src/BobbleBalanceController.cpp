@@ -133,22 +133,13 @@ namespace bobble_controllers {
 
         /// Set up data to be transferred in subscriber thread
         /// Bools to transfer
-        /// RT Use
-        controlBools["StartupCmd"] = false;
-        controlBools["IdleCmd"] = false;
-        controlBools["DiagnosticCmd"] = false;
-        /// Non RT Use
-        controlBoolsNoRT["StartupCmd"] = false;
-        controlBoolsNoRT["IdleCmd"] = false;
-        controlBoolsNoRT["DiagnosticCmd"] = false;
+        controlBoolNames.push_back("StartupCmd");
+        controlBoolNames.push_back("IdleCmd");
+        controlBoolNames.push_back("DiagnosticCmd");
         /// Doubles for Transfer
-        /// RT Use
-        controlDoubles["DesiredVelocity"] = 0.0;
-        controlDoubles["DesiredTurnRate"] = 0.0;
-        /// Non RT Use
-        controlDoublesNoRT["DesiredVelocity"] = 0.0;
-        controlDoublesNoRT["DesiredTurnRate"] = 0.0;
-
+        controlDoubleNames.push_back("DesiredVelocity");
+        controlDoubleNames.push_back("DesiredTurnRate");
+        populateControlCommandNames();
 
 	    runSubscriberThread = true;
         subscriberThread = new std::thread(&BobbleBalanceController::subscriberFunction, this);
