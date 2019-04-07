@@ -12,14 +12,14 @@ namespace bobble_controllers {
 
 
     void BobbleBalanceController::subscriberCallBack(const bobble_controllers::ControlCommands::ConstPtr &cmd) {
-        commandStructTmp.StartupCmd = cmd->StartupCmd;
-        commandStructTmp.IdleCmd = cmd->IdleCmd;
-        commandStructTmp.DiagnosticCmd = cmd->DiagnosticCmd;
+        controlBoolsNoRT["StartupCmd"] = cmd->StartupCmd;
+        controlBoolsNoRT["IdleCmd"] = cmd->StartupCmd;
+        controlBoolsNoRT["DiagnosticCmd"] = cmd->StartupCmd;
     }
 
     void BobbleBalanceController::cmdVelCallback(const geometry_msgs::Twist& command) {
-        commandStructTmp.DesiredVelocity = command.linear.x;
-        commandStructTmp.DesiredTurnRate = command.angular.z;
+        controlDoublesNoRT["DesiredVelocity"] = command.linear.x;
+        controlDoublesNoRT["DesiredTurnRate"] = command.angular.z;
     }
 
     BobbleBalanceController::BobbleBalanceController(void)
@@ -131,6 +131,25 @@ namespace bobble_controllers {
             imuData = robot_hw->get<hardware_interface::ImuSensorInterface>()->getHandle(ImuName);
         }
 
+        /// Set up data to be transferred in subscriber thread
+        /// Bools to transfer
+        /// RT Use
+        controlBools["StartupCmd"] = false;
+        controlBools["IdleCmd"] = false;
+        controlBools["DiagnosticCmd"] = false;
+        /// Non RT Use
+        controlBoolsNoRT["StartupCmd"] = false;
+        controlBoolsNoRT["IdleCmd"] = false;
+        controlBoolsNoRT["DiagnosticCmd"] = false;
+        /// Doubles for Transfer
+        /// RT Use
+        controlDoubles["DesiredVelocity"] = 0.0;
+        controlDoubles["DesiredTurnRate"] = 0.0;
+        /// Non RT Use
+        controlDoublesNoRT["DesiredVelocity"] = 0.0;
+        controlDoublesNoRT["DesiredTurnRate"] = 0.0;
+
+
 	    runSubscriberThread = true;
         subscriberThread = new std::thread(&BobbleBalanceController::subscriberFunction, this);
 
@@ -239,19 +258,6 @@ namespace bobble_controllers {
 		tf::Matrix3x3 m(q);
         m.getRPY(MeasuredHeading, MeasuredTilt, MeasuredRoll);
         MeasuredTilt *= -1.0;
-    }
-
-    void BobbleBalanceController::populateCommands()
-    {
-        /// Get commands
-        /// Lock mutex to prevent subscriber from writing to the commands
-        control_command_mutex.lock();
-        StartupCmd = commandStruct.StartupCmd;
-        IdleCmd = commandStruct.IdleCmd;
-        DiagnosticCmd = commandStruct.DiagnosticCmd;
-        DesiredVelocityRaw = commandStruct.DesiredVelocity * VelocityCmdScale;
-        DesiredTurnRateRaw = commandStruct.DesiredTurnRate * TurnCmdScale;
-        control_command_mutex.unlock();
     }
 
     void BobbleBalanceController::applyFilters()

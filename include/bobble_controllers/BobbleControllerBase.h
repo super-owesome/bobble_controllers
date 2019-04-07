@@ -68,6 +68,9 @@ namespace bobble_controllers {
         /// Second copy of vectors for non-RT access
         std::map<std::string, double> controlDoublesNoRT;
         std::map<std::string, bool> controlBoolsNoRT;
+        /// Third copy of vectors for RT use
+        std::map<std::string, double> controlDoublesRT;
+        std::map<std::string, bool> controlBoolsRT;
 
         /// Bool for telling subscriber thread to finish
         bool runSubscriberThread;
@@ -88,8 +91,7 @@ namespace bobble_controllers {
                 /// Lock control data transfer mutex
                 control_command_mutex.lock();
                 /// Transfer all of the data defined
-                for (std::map<std::string, double>::iterator it = controlDoubles.begin();
-                     it != controlDoubles.end(); ++it) {
+                for (std::map<std::string, double>::iterator it = controlDoubles.begin(); it != controlDoubles.end(); ++it) {
                     it->second = controlDoublesNoRT.find(it->first)->second;
                 }
                 for (std::map<std::string, bool>::iterator it = controlBools.begin(); it != controlBools.end(); ++it) {
@@ -107,6 +109,19 @@ namespace bobble_controllers {
                 (*it)->shutdown();
                 free(*it);
             }
+        }
+
+        /// Function for transferring in commands for RT use
+        void populateControlCommands()
+        {
+            control_command_mutex.lock();
+            for (std::map<std::string, double>::iterator it = controlDoubles.begin(); it != controlDoubles.end(); ++it) {
+                controlDoublesRT.find(it->first)->second = it->second;
+            }
+            for (std::map<std::string, double>::iterator it = controlBools.begin(); it != controlBools.end(); ++it) {
+                controlBoolsRT.find(it->first)->second = it->second;
+            }
+            control_command_mutex.unlock();
         }
 
         /// Output limiting function

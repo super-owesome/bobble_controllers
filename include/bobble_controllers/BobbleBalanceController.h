@@ -42,8 +42,6 @@ class BobbleBalanceController : public bobble_controllers::BobbleControllerBase<
             double DesiredTurnRate;
         } CommandStruct;
 
-        CommandStruct commandStruct;
-        CommandStruct commandStructTmp;
 
         void subscriberCallBack(const bobble_controllers::ControlCommands::ConstPtr &cmd);
         /**
