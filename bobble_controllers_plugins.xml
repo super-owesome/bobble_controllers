@@ -10,7 +10,7 @@
 
   <class name="bobble_controllers/BobbleBalanceController"
     type="bobble_controllers::BobbleBalanceController"
-    base_class_type="bobble_controllers::BobbleControllerBase">
+    base_class_type="controller_interface::ControllerBase">
     <description>
       The BobbleBalanceController for use on BB2.
     </description>
@@ -18,7 +18,7 @@
 
   <class name="bobble_controllers/SingleWheelController"
          type="bobble_controllers::SingleWheelController"
-         base_class_type="bobble_controllers::BobbleControllerBase">
+         base_class_type="controller_interface::ControllerBase">
     <description>
       The SingleWheelController for use on single wheels.
     </description>
