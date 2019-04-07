@@ -125,7 +125,6 @@ class BobbleBalanceController : public bobble_controllers::BobbleControllerBase<
         PidControl TurningControlPID;
 
         /// Controller state
-        int ActiveControlMode;
         double DesiredTilt;
         double Tilt;
         double TiltDot;

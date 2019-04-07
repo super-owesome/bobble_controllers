@@ -320,17 +320,17 @@ namespace bobble_controllers {
             DesiredTilt = 0.0;
             TiltEffort = 0.0;
             HeadingEffort = 0.0;
-            if (StartupCmd) {
+            if (controlBoolsRT["StartupCmd"]) {
                 ActiveControlMode = ControlModes::STARTUP;
             }
-            if (DiagnosticCmd) {
+            if (controlBoolsRT["DiagnosticCmd"]) {
                 ActiveControlMode = ControlModes::DIAGNOSTIC;
             }
         } else if (ActiveControlMode == ControlModes::DIAGNOSTIC)
 		{
 			TiltEffort = DesiredVelocity;
 			HeadingEffort = DesiredTurnRate;
-            if (IdleCmd) {
+            if (controlBoolsRT["IdleCmd"]) {
                 ActiveControlMode = ControlModes::IDLE;
             }
 		} else if (ActiveControlMode == ControlModes::STARTUP) {
@@ -346,7 +346,7 @@ namespace bobble_controllers {
 	        DesiredTilt *= -1.0;
             TiltEffort = TiltControlPID.getOutput(DesiredTilt, Tilt);
             HeadingEffort = TurningControlPID.getOutput(DesiredTurnRate, TurnRate);
-            if (IdleCmd) {
+            if (controlBoolsRT["IdleCmd"]) {
                 ActiveControlMode = ControlModes::IDLE;
             }
         } else {

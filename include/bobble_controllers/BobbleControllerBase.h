@@ -61,6 +61,7 @@ namespace bobble_controllers {
 
         /// Vector for housing possible control modes
         std::map<std::string, unsigned int> controlModes;
+        unsigned int ActiveControlMode;
 
         /// Vectors for names of elements of control bools and doubles
         std::vector<std::string> controlDoubleNames;
