@@ -1,26 +1,9 @@
 <library path="lib/libbobble_controllers">
-
-  <class name="bobble_controllers/BobbleControllerBase"
-         type="bobble_controllers::BobbleControllerBase"
-         base_class_type="controller_interface::ControllerBase">
-    <description>
-      The base controller type.
-    </description>
-  </class>
-
   <class name="bobble_controllers/BobbleBalanceController"
     type="bobble_controllers::BobbleBalanceController"
-    base_class_type="controller_interface::ControllerBase">
+    base_class_type="bobble_controllers::BobbleControllerBase">
     <description>
       The BobbleBalanceController for use on BB2.
-    </description>
-  </class>
-
-  <class name="bobble_controllers/SingleWheelController"
-         type="bobble_controllers::SingleWheelController"
-         base_class_type="controller_interface::ControllerBase">
-    <description>
-      The SingleWheelController for use on single wheels.
     </description>
   </class>
 </library>
