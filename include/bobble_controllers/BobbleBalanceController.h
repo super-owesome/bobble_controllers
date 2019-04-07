@@ -43,12 +43,12 @@ class BobbleBalanceController : public bobble_controllers::BobbleControllerBase<
         } CommandStruct;
 
 
-        static void stateCommandCallback(const ros::MessageEvent<topic_tools::ShapeShifter> &cmd);
+        static void stateCommandCallback(const topic_tools::ShapeShifter::ConstPtr &msg);
         /**
          * \brief Velocity command callback
          * \param command Velocity command message (twist)
         */
-        static void velocityCommandCallback(const ros::MessageEvent<topic_tools::ShapeShifter> &cmd);
+        static void velocityCommandCallback(const topic_tools::ShapeShifter::ConstPtr &msg);
 
         /// Controller config
         bool InSim; // Temporary hack. Need to re-orient IMU model.

@@ -11,15 +11,17 @@
 namespace bobble_controllers {
 
 
-    void BobbleBalanceController::stateCommandCallback(const ros::MessageEvent<topic_tools::ShapeShifter> &cmd) {
-        //controlBoolsNoRT["StartupCmd"] = cmd->StartupCmd;
-        //controlBoolsNoRT["IdleCmd"] = cmd->StartupCmd;
-        //controlBoolsNoRT["DiagnosticCmd"] = cmd->StartupCmd;
+    void BobbleBalanceController::stateCommandCallback(const topic_tools::ShapeShifter::ConstPtr &msg) {
+        bobble_controllers::ControlCommands::ConstPtr cmd = msg->instantiate<bobble_controllers::ControlCommands>();
+        controlBoolsNoRT["StartupCmd"] = cmd->StartupCmd;
+        controlBoolsNoRT["IdleCmd"] = cmd->IdleCmd;
+        controlBoolsNoRT["DiagnosticCmd"] = cmd->DiagnosticCmd;
     }
 
-    void BobbleBalanceController::velocityCommandCallback(const ros::MessageEvent<topic_tools::ShapeShifter> &cmd) {
-        //controlDoublesNoRT["DesiredVelocity"] = command.linear.x;
-        //controlDoublesNoRT["DesiredTurnRate"] = command.angular.z;
+    void BobbleBalanceController::velocityCommandCallback(const topic_tools::ShapeShifter::ConstPtr &msg) {
+        geometry_msgs::Twist::ConstPtr cmd = msg->instantiate<geometry_msgs::Twist>();
+        controlDoublesNoRT["DesiredVelocity"] = cmd->linear.x;
+        controlDoublesNoRT["DesiredTurnRate"] = cmd->angular.z;
     }
 
     BobbleBalanceController::BobbleBalanceController(void)

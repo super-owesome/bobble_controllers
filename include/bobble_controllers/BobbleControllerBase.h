@@ -53,7 +53,7 @@ namespace bobble_controllers {
         /// Thread for managing non-RT subscriber
         std::thread* subscriberThread;
         /// Typedef for subscriber callback functions
-        typedef void (*callbackFunctionPtr_t)(const ros::MessageEvent<topic_tools::ShapeShifter> &msg_event);
+        typedef void (*callbackFunctionPtr_t)(const topic_tools::ShapeShifter::ConstPtr &msg);
         /// Vector containing subscriber string to function definitions
         std::map<std::string, callbackFunctionPtr_t> subscribers;
         /// Subscriber frequency
@@ -69,9 +69,9 @@ namespace bobble_controllers {
         /// Vectors for housing possible command transfer elements
         std::map<std::string, double> controlDoubles;
         std::map<std::string, bool> controlBools;
-        /// Second copy of vectors for non-RT access
-        std::map<std::string, double> controlDoublesNoRT;
-        std::map<std::string, bool> controlBoolsNoRT;
+        /// Second copy of vectors for non-RT access - have to be static to be used in callbacks
+        static std::map<std::string, double> controlDoublesNoRT;
+        static std::map<std::string, bool> controlBoolsNoRT;
         /// Third copy of vectors for RT use
         std::map<std::string, double> controlDoublesRT;
         std::map<std::string, bool> controlBoolsRT;
