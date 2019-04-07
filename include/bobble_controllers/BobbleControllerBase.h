@@ -23,7 +23,7 @@
 namespace bobble_controllers {
 
     /// Generic Controller Base
-    template <class T> class BobbleControllerBase : public controller_interface::
+    template <class publisherType> class BobbleControllerBase : public controller_interface::
     Controller<hardware_interface::EffortJointInterface> {
 
     protected:
@@ -38,7 +38,7 @@ namespace bobble_controllers {
         hardware_interface::RobotHW *robot_;
 
         /// Realtime status publisher
-        realtime_tools::RealtimePublisher<T>* pub_status;
+        realtime_tools::RealtimePublisher<publisherType>* pub_status;
         /// Virtual publising function that has to be implemented by child class
         virtual void publish_status_message() = 0;
 
