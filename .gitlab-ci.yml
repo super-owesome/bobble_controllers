@@ -1,4 +1,4 @@
-image: superowesome/bobble-sim:test
+image: superowesome/bobble-sim:latest
 
 stages:
   - build
