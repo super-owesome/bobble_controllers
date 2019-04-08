@@ -10,13 +10,13 @@
 
 namespace bobble_controllers {
 
-
     void BobbleBalanceController::stateCommandCallback(const topic_tools::ShapeShifter::ConstPtr &msg) {
         bobble_controllers::ControlCommands::ConstPtr cmd = msg->instantiate<bobble_controllers::ControlCommands>();
         controlBoolsNoRT["StartupCmd"] = cmd->StartupCmd;
         controlBoolsNoRT["IdleCmd"] = cmd->IdleCmd;
         controlBoolsNoRT["DiagnosticCmd"] = cmd->DiagnosticCmd;
     }
+
 
     void BobbleBalanceController::velocityCommandCallback(const topic_tools::ShapeShifter::ConstPtr &msg) {
         geometry_msgs::Twist::ConstPtr cmd = msg->instantiate<geometry_msgs::Twist>();
@@ -26,6 +26,7 @@ namespace bobble_controllers {
 
     BobbleBalanceController::BobbleBalanceController(void)
             :
+            BobbleControllerBase(),
             VelocityControlPID(0.0, 0.0, 0.0),
             TiltControlPID(0.0, 0.0, 0.0),
             TurningControlPID(0.0, 0.0, 0.0) {
@@ -144,9 +145,12 @@ namespace bobble_controllers {
         populateControlCommandNames();
 
         /// Set up subscribers
-        subscribers["/bobble/bobble_balance_controller/bb_cmd"] = &stateCommandCallback;
-        subscribers["/bobble/bobble_balance_controller/cmd_vel"] = &velocityCommandCallback;
+        boost::function<void (const topic_tools::ShapeShifter::ConstPtr &)> scCallback( boost::bind( &BobbleBalanceController::stateCommandCallback, this, _1));
+        boost::function<void (const topic_tools::ShapeShifter::ConstPtr &)> vcCallback( boost::bind( &BobbleBalanceController::velocityCommandCallback, this, _1));
+        subscribers["/bobble/bobble_balance_controller/bb_cmd"] = *scCallback.target<callbackFunctionPtr_t>();
+        subscribers["/bobble/bobble_balance_controller/cmd_vel"] = *vcCallback.target<callbackFunctionPtr_t>();
 
+        subscriberFrequency = 20.0;
 	    runSubscriberThread = true;
         subscriberThread = new std::thread(&BobbleBalanceController::subscriberFunction, this);
 
@@ -302,7 +306,7 @@ namespace bobble_controllers {
 
     void BobbleBalanceController::update(const ros::Time &time, const ros::Duration &duration) {
         /// Populate Command Variables
-        populateCommands();
+        populateControlCommands();
         /// If not in simulation, populate the IMU data from sensor handles
         if(!InSim){
            populateImuData();
@@ -419,5 +423,5 @@ namespace bobble_controllers {
 
 }
 
-PLUGINLIB_EXPORT_CLASS(bobble_controllers::BobbleBalanceController, controller_interface::ControllerBase
-)
+PLUGINLIB_EXPORT_CLASS(bobble_controllers::BobbleBalanceController, controller_interface::ControllerBase)
+

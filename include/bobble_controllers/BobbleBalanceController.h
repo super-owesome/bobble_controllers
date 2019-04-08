@@ -20,7 +20,9 @@
 
 namespace bobble_controllers {
 
-class BobbleBalanceController : public bobble_controllers::BobbleControllerBase<BobbleBotStatus>
+class BobbleBalanceController
+        : public bobble_controllers::BobbleControllerBase
+        , public controller_interface::Controller<hardware_interface::EffortJointInterface>
     {
         /// Subscriber for simulation
         ros::Subscriber sub_imu_sensor_;
@@ -42,13 +44,15 @@ class BobbleBalanceController : public bobble_controllers::BobbleControllerBase<
             double DesiredTurnRate;
         } CommandStruct;
 
+        /// Realtime status publisher
+        realtime_tools::RealtimePublisher<BobbleBotStatus>* pub_status;
 
-        static void stateCommandCallback(const topic_tools::ShapeShifter::ConstPtr &msg);
+        void stateCommandCallback(const topic_tools::ShapeShifter::ConstPtr &msg);
         /**
          * \brief Velocity command callback
          * \param command Velocity command message (twist)
         */
-        static void velocityCommandCallback(const topic_tools::ShapeShifter::ConstPtr &msg);
+        void velocityCommandCallback(const topic_tools::ShapeShifter::ConstPtr &msg);
 
         /// Controller config
         bool InSim; // Temporary hack. Need to re-orient IMU model.
@@ -155,7 +159,6 @@ class BobbleBalanceController : public bobble_controllers::BobbleControllerBase<
         void publish_status_message();
 
         void populateImuData();
-        void populateCommands();
         void populateOdometry();
 
         void applyFilters();

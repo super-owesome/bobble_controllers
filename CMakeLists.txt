@@ -8,6 +8,7 @@ find_package(
   control_msgs
   controller_interface
   controller_manager
+  topic_tools
   message_generation
   pluginlib
   rospy
@@ -39,6 +40,7 @@ catkin_package(
   control_msgs
   controller_interface
   controller_manager
+  topic_tools
   message_runtime
   pluginlib
   rospy
@@ -55,6 +57,7 @@ include_directories(include
 )
 
 add_library(${PROJECT_NAME}
+  src/BobbleControllerBase.cpp
   src/BobbleBalanceController.cpp
   src/SingleWheelController.cpp
   src/Filter.cpp
