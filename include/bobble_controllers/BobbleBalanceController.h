@@ -48,11 +48,13 @@ class BobbleBalanceController
         realtime_tools::RealtimePublisher<BobbleBotStatus>* pub_status;
 
         void stateCommandCallback(const topic_tools::ShapeShifter::ConstPtr &msg);
+        boost::function<void (const topic_tools::ShapeShifter::ConstPtr &)> *scCallback;
         /**
          * \brief Velocity command callback
          * \param command Velocity command message (twist)
         */
         void velocityCommandCallback(const topic_tools::ShapeShifter::ConstPtr &msg);
+        boost::function<void (const topic_tools::ShapeShifter::ConstPtr &)> *vcCallback;
 
         /// Controller config
         bool InSim; // Temporary hack. Need to re-orient IMU model.

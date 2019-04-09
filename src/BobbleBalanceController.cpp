@@ -145,10 +145,10 @@ namespace bobble_controllers {
         populateControlCommandNames();
 
         /// Set up subscribers
-        boost::function<void (const topic_tools::ShapeShifter::ConstPtr &)> scCallback( boost::bind( &BobbleBalanceController::stateCommandCallback, this, _1));
-        boost::function<void (const topic_tools::ShapeShifter::ConstPtr &)> vcCallback( boost::bind( &BobbleBalanceController::velocityCommandCallback, this, _1));
-        subscribers["/bobble/bobble_balance_controller/bb_cmd"] = *scCallback.target<callbackFunctionPtr_t>();
-        subscribers["/bobble/bobble_balance_controller/cmd_vel"] = *vcCallback.target<callbackFunctionPtr_t>();
+        scCallback = new boost::function<void (const topic_tools::ShapeShifter::ConstPtr &)>(boost::bind( &BobbleBalanceController::stateCommandCallback, this, _1));
+        vcCallback = new boost::function<void (const topic_tools::ShapeShifter::ConstPtr &)>(boost::bind( &BobbleBalanceController::velocityCommandCallback, this, _1));
+        subscribers["/bobble/bobble_balance_controller/bb_cmd"] = *scCallback->target<callbackFunctionPtr_t>();
+        subscribers["/bobble/bobble_balance_controller/cmd_vel"] = *vcCallback->target<callbackFunctionPtr_t>();
 
         subscriberFrequency = 20.0;
 	    runSubscriberThread = true;
