@@ -11,6 +11,7 @@
 namespace bobble_controllers {
 
     void BobbleBalanceController::stateCommandCallback(const topic_tools::ShapeShifter::ConstPtr &msg) {
+        ROS_ERROR("Holy Jesus");
         bobble_controllers::ControlCommands::ConstPtr cmd = msg->instantiate<bobble_controllers::ControlCommands>();
         controlBoolsNoRT["StartupCmd"] = cmd->StartupCmd;
         controlBoolsNoRT["IdleCmd"] = cmd->IdleCmd;
@@ -145,10 +146,10 @@ namespace bobble_controllers {
         populateControlCommandNames();
 
         /// Set up subscribers
-        scCallback = new boost::function<void (const topic_tools::ShapeShifter::ConstPtr &)>(boost::bind( &BobbleBalanceController::stateCommandCallback, this, _1));
-        vcCallback = new boost::function<void (const topic_tools::ShapeShifter::ConstPtr &)>(boost::bind( &BobbleBalanceController::velocityCommandCallback, this, _1));
-        subscribers["/bobble/bobble_balance_controller/bb_cmd"] = *scCallback->target<callbackFunctionPtr_t>();
-        subscribers["/bobble/bobble_balance_controller/cmd_vel"] = *vcCallback->target<callbackFunctionPtr_t>();
+        callbackFunctionPtr_t scCallback = boost::bind(&BobbleBalanceController::stateCommandCallback, this, _1);
+        callbackFunctionPtr_t vcCallback = boost::bind(&BobbleBalanceController::velocityCommandCallback, this, _1);
+        subscribers["/bobble/bobble_balance_controller/bb_cmd"] = scCallback;
+        subscribers["/bobble/bobble_balance_controller/cmd_vel"] = vcCallback;
 
         subscriberFrequency = 20.0;
 	    runSubscriberThread = true;

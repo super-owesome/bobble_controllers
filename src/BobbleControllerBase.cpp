@@ -10,7 +10,7 @@ void BobbleControllerBase::subscriberFunction(){
     /// add all of the subscribers
     for (std::map<std::string, callbackFunctionPtr_t>::iterator it = subscribers.begin(); it != subscribers.end(); ++it) {
         ros::TransportHints rosTH;
-        activeSubscribers.push_back(new ros::Subscriber(n.subscribe(it->first, 1, it->second, rosTH)));
+        activeSubscribers.push_back(new ros::Subscriber(n.subscribe(it->first, 1, it->second)));
     }
 
     ros::Rate loop_rate(subscriberFrequency);

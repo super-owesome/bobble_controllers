@@ -50,7 +50,7 @@ namespace bobble_controllers {
         /// Thread for managing non-RT subscriber
         std::thread* subscriberThread;
         /// Typedef for subscriber callback functions
-        typedef void (*callbackFunctionPtr_t)(const topic_tools::ShapeShifter::ConstPtr &msg);
+        typedef boost::function<void (const topic_tools::ShapeShifter::ConstPtr &)> callbackFunctionPtr_t;
         /// Vector containing subscriber string to function definitions
         std::map<std::string, callbackFunctionPtr_t> subscribers;
         /// Subscriber frequency
