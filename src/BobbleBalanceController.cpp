@@ -277,8 +277,8 @@ namespace bobble_controllers {
         ForwardVelocity = WheelRadiusMeters*(RightWheelVelocity + LeftWheelVelocity)/2.0;
 
         // Filter Command Inputs
-        DesiredVelocity = DesiredForwardVelocityFilter.filter(controlDoublesRT["DesiredVelocity"]);
-        DesiredTurnRate = DesiredTurnRateFilter.filter(controlDoublesRT["DesiredTurnRate"]);
+        DesiredVelocity = DesiredForwardVelocityFilter.filter(controlDoublesRT["DesiredVelocity"]*VelocityCmdScale);
+        DesiredTurnRate = DesiredTurnRateFilter.filter(controlDoublesRT["DesiredTurnRate"]*TurnCmdScale);
 
         /// Limit Velocity Command
         DesiredVelocity = limit(DesiredVelocity, MaxVelocityCmd);
