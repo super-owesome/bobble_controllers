@@ -11,7 +11,6 @@
 namespace bobble_controllers {
 
     void BobbleBalanceController::stateCommandCallback(const topic_tools::ShapeShifter::ConstPtr &msg) {
-        ROS_ERROR("Holy Jesus");
         bobble_controllers::ControlCommands::ConstPtr cmd = msg->instantiate<bobble_controllers::ControlCommands>();
         controlBoolsNoRT["StartupCmd"] = cmd->StartupCmd;
         controlBoolsNoRT["IdleCmd"] = cmd->IdleCmd;
