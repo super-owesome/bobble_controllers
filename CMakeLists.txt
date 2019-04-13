@@ -14,6 +14,7 @@ find_package(
   rospy
   rostest
   sensor_msgs
+  so_controllers
   std_msgs
 )
 
@@ -57,7 +58,6 @@ include_directories(include
 )
 
 add_library(${PROJECT_NAME}
-  src/BobbleControllerBase.cpp
   src/BobbleBalanceController.cpp
   src/SingleWheelController.cpp
   src/Filter.cpp

@@ -26,7 +26,7 @@ namespace bobble_controllers {
 
     BobbleBalanceController::BobbleBalanceController(void)
             :
-            BobbleControllerBase(),
+            SOControllerBase(),
             VelocityControlPID(0.0, 0.0, 0.0),
             TiltControlPID(0.0, 0.0, 0.0),
             TurningControlPID(0.0, 0.0, 0.0) {

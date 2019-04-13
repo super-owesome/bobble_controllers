@@ -6,7 +6,7 @@
 #ifndef BOBBLE_CONTROLLERS_BOBBLE_BALANCE_CONTROLLER_H
 #define BOBBLE_CONTROLLERS_BOBBLE_BALANCE_CONTROLLER_H
 
-#include <bobble_controllers/BobbleControllerBase.h>
+#include <so_controllers/SOControllerBase.h>
 #include <trajectory_msgs/JointTrajectoryPoint.h>
 #include <geometry_msgs/Twist.h>
 #include <sensor_msgs/Imu.h>
@@ -21,8 +21,7 @@
 namespace bobble_controllers {
 
 class BobbleBalanceController
-        : public bobble_controllers::BobbleControllerBase
-        , public controller_interface::Controller<hardware_interface::EffortJointInterface>
+        : public so_controllers::SOControllerBase
     {
         /// Subscriber for simulation
         ros::Subscriber sub_imu_sensor_;
