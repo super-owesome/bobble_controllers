@@ -41,6 +41,6 @@
   <test_depend>rosunit</test_depend>
 
   <export>
-    <controller_interface plugin="${prefix}/bobble_controllers_plugins.xml"/>
+    <bobble_controllers plugin="${prefix}/bobble_controllers_plugins.xml"/>
   </export>
 </package>

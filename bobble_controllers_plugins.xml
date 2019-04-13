@@ -1,7 +1,7 @@
 <library path="lib/libbobble_controllers">
   <class name="bobble_controllers/BobbleBalanceController"
     type="bobble_controllers::BobbleBalanceController"
-	base_class_type="controller_interface::ControllerBase">
+	base_class_type="so_controllers::SOControllerBase">
     <description>
       The BobbleBalanceController for use on BB2.
     </description>

@@ -59,7 +59,6 @@ include_directories(include
 
 add_library(${PROJECT_NAME}
   src/BobbleBalanceController.cpp
-  src/SingleWheelController.cpp
   src/Filter.cpp
   src/MadgwickAHRS.cpp
   src/PidControl.cpp
