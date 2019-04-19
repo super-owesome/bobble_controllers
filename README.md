@@ -1,5 +1,5 @@
 # Bobble-Bot Simulator
-> A Gazebo simulation of the self-balancing ROS robot, Bobble-Bot.
+> Vote Bobble-Bot for the [Hackaday Prize 2019](https://hackaday.io/project/164992-bobble-bot)
 
 Bobble-Bot is [SOE's](https://github.com/super-owesome) take on a classical problem in control theory. The robot represents 
 a unique solution to the well understood problem of control of a two wheeled inverted pendulum.
@@ -231,26 +231,8 @@ build and roslaunch commands at will.
 
 
 ## Build Your Own
-> Beware this section is still in development.
+> Vote Bobble-Bot for the [Hackaday Prize 2019](https://hackaday.io/project/164992-bobble-bot)
 
-<img src="docs/imgs/BobbleCAD.png" alt="BobbleBot CAD" width="250" height="350" border="1" /></a>
-
-BobbleBot is a real robot built by the robotics team at SOE. Check out the 
-[parts list](https://soe/bobble-parts) to learn how to build your own.
-
-Here's a video of the original balance controller in development.
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=bg6ksWbVXSk" 
-target="_blank"><img src="http://img.youtube.com/vi/bg6ksWbVXSk/0.jpg" 
-alt="BobbleBot Testing" width="820" height="360" border="1" /></a>
-
-## Contributing
-
-1. Fork [bobble_controllers](<https://github.com/super-owesome/bobble_controllers/fork>) and [bobble_description](<https://github.com/super-owesome/bobble_description/fork>)
-2. Create your feature branch (`git checkout -b feature/fooBar`)
-3. Commit your changes (`git commit -am 'Add some fooBar'`)
-4. Ensure the tests in bobble_controllers all pass.
-5. Push to the branch (`git push origin feature/fooBar`)
-6. Create a new Pull Request
-
-<!-- Markdown link & img dfn's -->
-[wiki]: https://github.com/super-owesome/bobble_controllers/wiki
+BobbleBot is a real robot built by the robotics team at [SOE](http://so.engineering). 
+Even more details for hobbyists and DIY types can be found on our 
+[hackaday project page](https://hackaday.io/project/164992-bobble-bot). Check it out!
