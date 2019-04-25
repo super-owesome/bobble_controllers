@@ -1,7 +1,7 @@
 # Bobble-Bot Simulator
 > Vote Bobble-Bot for the [Hackaday Prize 2019](https://hackaday.io/project/164992-bobble-bot)
 
-Bobble-Bot is [SOE's](https://github.com/super-owesome) take on a classical problem in control theory. The robot represents 
+Bobble-Bot is a modern take on a classical problem in control theory. The robot represents 
 a unique solution to the well understood problem of control of a two wheeled inverted pendulum.
 The source code found in this repository constitutes the robot's balance control logic. The controller comes 
 with a handy Gazebo simulation which was used extensively during the development 
@@ -233,6 +233,5 @@ build and roslaunch commands at will.
 ## Build Your Own
 > Vote Bobble-Bot for the [Hackaday Prize 2019](https://hackaday.io/project/164992-bobble-bot)
 
-BobbleBot is a real robot built by the robotics team at [SOE](http://so.engineering). 
 Even more details for hobbyists and DIY types can be found on our 
 [hackaday project page](https://hackaday.io/project/164992-bobble-bot). Check it out!
