@@ -179,7 +179,7 @@ only requirement.
 Run the simulation with graphics from within a container (master branch version of sim).
 
 ```sh
-docker pull superowesome/bobble-sim:latest
+docker pull superowesome/bobble-sim:stable
 cd ~/bobble_workspace/src
 git clone https://github.com/super-owesome/bobble_docker.git
 cd bobble_docker
