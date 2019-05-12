@@ -37,18 +37,18 @@
 // Floating-point value comparison threshold
 const double VELOCITY_TOLERANCE = 0.05; // 5 cm-s precision
 
-class BobbleBalanceControllerTest : public ::testing::Test
+class BalanceSimControllerTest : public ::testing::Test
 {
 public:
 
-  BobbleBalanceControllerTest()
+  BalanceSimControllerTest()
   : mode_cmd_pub(nh.advertise<bobble_controllers::ControlCommands>("/bobble/bobble_balance_controller/bb_cmd", 1)),
     cmd_vel_pub(nh.advertise<geometry_msgs::Twist>("/bobble/bobble_balance_controller/cmd_vel", 1)),
-    bobble_status_sub(nh.subscribe("/bobble/bobble_balance_controller/bb_controller_status", 1, &BobbleBalanceControllerTest::statusCallback, this))
+    bobble_status_sub(nh.subscribe("/bobble/bobble_balance_controller/bb_controller_status", 1, &BalanceSimControllerTest::statusCallback, this))
   {
   }
 
-  ~BobbleBalanceControllerTest()
+  ~BalanceSimControllerTest()
   {
     bobble_status_sub.shutdown();
   }

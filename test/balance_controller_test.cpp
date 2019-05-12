@@ -30,7 +30,7 @@
 #include "test_common.h"
 
 // TEST CASES
-TEST_F(BobbleBalanceControllerTest, testBalance)
+TEST_F(BalanceSimControllerTest, testBalance)
 {
   // wait for 3s. Is it holding balance?
   ros::Duration(3.0).sleep();
@@ -38,7 +38,7 @@ TEST_F(BobbleBalanceControllerTest, testBalance)
   EXPECT_LT(fabs(status.Tilt), 5.0); // we should be standing
 }
 
-TEST_F(BobbleBalanceControllerTest, testForward)
+TEST_F(BalanceSimControllerTest, testForward)
 {
   // send a forward velocity command of 0.1 m/s
   geometry_msgs::Twist cmd_vel;
@@ -51,7 +51,7 @@ TEST_F(BobbleBalanceControllerTest, testForward)
   EXPECT_NEAR(status.ForwardVelocity, expected_velocity, VELOCITY_TOLERANCE);
 }
 
-TEST_F(BobbleBalanceControllerTest, testBackward)
+TEST_F(BalanceSimControllerTest, testBackward)
 {
   // send a forward velocity command of -0.1 m/s
   geometry_msgs::Twist cmd_vel;
@@ -64,7 +64,7 @@ TEST_F(BobbleBalanceControllerTest, testBackward)
   EXPECT_NEAR(status.ForwardVelocity, expected_velocity, VELOCITY_TOLERANCE);
 }
 
-TEST_F(BobbleBalanceControllerTest, testTurnLeft)
+TEST_F(BalanceSimControllerTest, testTurnLeft)
 {
   // send a turn rate command of 0.1 rad/s
   geometry_msgs::Twist cmd_vel;
@@ -77,7 +77,7 @@ TEST_F(BobbleBalanceControllerTest, testTurnLeft)
   EXPECT_GT(status.TurnRate, expected_turn_rate); // should be turning at least 25 deg/s
 }
 
-TEST_F(BobbleBalanceControllerTest, testTurnRight)
+TEST_F(BalanceSimControllerTest, testTurnRight)
 {
   // send a turn rate command of -0.1 rad/s
   geometry_msgs::Twist cmd_vel;
