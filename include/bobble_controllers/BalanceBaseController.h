@@ -29,6 +29,7 @@ namespace bobble_controllers {
         void reset();
         void update();
         void runSubscriber();
+        int getControlMode() { return state.ActiveControlMode; };
 
     protected:
         ros::NodeHandle node_;

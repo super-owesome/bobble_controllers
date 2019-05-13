@@ -23,11 +23,9 @@ namespace bobble_controllers {
         double RollDot;
         double TiltDot;
         double TurnDot;
-        double LeftMotorVoltage;
         double LeftMotorPosition;
         double LeftMotorVelocity;
         double LeftMotorEffort;
-        double RightMotorVoltage;
         double RightMotorPosition;
         double RightMotorVelocity;
         double RightMotorEffort;

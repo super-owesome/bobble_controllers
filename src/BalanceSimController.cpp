@@ -74,7 +74,8 @@ namespace bobble_controllers {
     void BalanceSimController::imuCB(const sensor_msgs::Imu::ConstPtr &imuData) {
         state.MeasuredTiltDot = -imuData->angular_velocity.y;
         state.MeasuredTurnRate = imuData->angular_velocity.z;
-        MadgwickAHRSupdateIMU(config.MadgwickFilterGain, imuData->angular_velocity.x, imuData->angular_velocity.y, imuData->angular_velocity.z,
+        MadgwickAHRSupdateIMU(config.MadgwickFilterGain, imuData->angular_velocity.x,
+                              imuData->angular_velocity.y, imuData->angular_velocity.z,
 							  imuData->linear_acceleration.x, imuData->linear_acceleration.y,
 							  imuData->linear_acceleration.z);
         tf::Quaternion q(q0, q1, q2, q3);
