@@ -47,7 +47,7 @@ namespace bobble_controllers {
         bobble_controllers::BalancePIDControllers     pid_controllers;
         virtual void estimateState() = 0;
         virtual void sendMotorCommands() = 0;
-        void loadConfig();
+        virtual void loadConfig();
         void setupFilters();
         void setupControllers();
         void runStateLogic();

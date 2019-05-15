@@ -4,6 +4,11 @@
 
 namespace bobble_controllers {
 
+    void BalanceSimController::loadConfig() {
+        unpackParameter("MotorEffortToTorqueSimFactor", config.MotorEffortToTorqueSimFactor, 0.832);
+        BalanceBaseController::loadConfig();
+    }
+
     bool BalanceSimController::initRequest(hardware_interface::RobotHW* robot_hw,
                              ros::NodeHandle&             root_nh,
                              ros::NodeHandle&             controller_nh,
@@ -15,7 +20,7 @@ namespace bobble_controllers {
             return false;
         }
         node_ = controller_nh;
-        BalanceBaseController::loadConfig();
+        loadConfig();
         BalanceBaseController::setupFilters();
         BalanceBaseController::setupControllers();
         pub_bobble_status_ = new realtime_tools::RealtimePublisher<bobble_controllers::BobbleBotStatus>(root_nh,

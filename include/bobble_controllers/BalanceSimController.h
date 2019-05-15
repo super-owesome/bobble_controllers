@@ -41,6 +41,7 @@ namespace bobble_controllers {
                                  ClaimedResources&            claimed_resources) override;
 
 
+        virtual void loadConfig();
         virtual void estimateState();
         virtual void sendMotorCommands();
 

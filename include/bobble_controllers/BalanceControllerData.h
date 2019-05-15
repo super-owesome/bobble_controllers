@@ -37,7 +37,7 @@ namespace bobble_controllers {
     public:
         double StartingTiltSafetyLimitDegrees;
         double MaxTiltSafetyLimitDegrees;
-        double MotorEffortMax;
+        double ControllerEffortMax;
         double MotorEffortToTorqueSimFactor;
         double WheelVelocityAdjustment;
         double MadgwickFilterGain;

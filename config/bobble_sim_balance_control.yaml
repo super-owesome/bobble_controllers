@@ -6,7 +6,7 @@ bobble:
         - left_wheel_hinge
       StartingTiltSafetyLimitDegrees: 10.0
       MaxTiltSafetyLimitDegrees: 20.0
-      MotorEffortMax: 0.2
+      ControllerEffortMax: 0.2
       MotorEffortToTorqueSimFactor: 1.0
       WheelVelocityAdjustment: 1.0
       MadgwickFilterGain: 0.015

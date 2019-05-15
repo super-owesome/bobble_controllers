@@ -64,8 +64,7 @@ namespace bobble_controllers {
     void BalanceBaseController::loadConfig() {
         unpackParameter("StartingTiltSafetyLimitDegrees", config.StartingTiltSafetyLimitDegrees, 4.0);
         unpackParameter("MaxTiltSafetyLimitDegrees", config.MaxTiltSafetyLimitDegrees, 20.0);
-        unpackParameter("MotorEffortMax", config.MotorEffortMax, 0.4);
-        unpackParameter("MotorEffortToTorqueSimFactor", config.MotorEffortToTorqueSimFactor, 0.832);
+        unpackParameter("ControllerEffortMax", config.ControllerEffortMax, 0.4);
         unpackParameter("WheelVelocityAdjustment", config.WheelVelocityAdjustment, 0.0);
         unpackParameter("MadgwickFilterGain", config.MadgwickFilterGain, 0.01);
         unpackParameter("MeasuredTiltFilterGain", config.MeasuredTiltFilterGain, 0.0);
@@ -122,14 +121,14 @@ namespace bobble_controllers {
         pid_controllers.TiltControlPID.setPID(config.TiltControlKp, 0.0, config.TiltControlKd);
         pid_controllers.TiltControlPID.setExternalDerivativeError(&state.TiltDot);
         pid_controllers.TiltControlPID.setOutputFilter(config.TiltControlAlphaFilter);
-        pid_controllers.TiltControlPID.setOutputLimits(-config.MotorEffortMax, config.MotorEffortMax);
+        pid_controllers.TiltControlPID.setOutputLimits(-config.ControllerEffortMax, config.ControllerEffortMax);
         pid_controllers.TiltControlPID.setDirection(true);
         pid_controllers.TiltControlPID.setSetpointRange(20.0 * (M_PI / 180.0));
         // Setup turning controller
         pid_controllers.TurningControlPID.setPID(config.TurningControlKp, config.TurningControlKi, config.TurningControlKd);
         pid_controllers.TurningControlPID.setOutputFilter(config.TurningOutputFilter);
         pid_controllers.TurningControlPID.setMaxIOutput(1.0);
-        pid_controllers.TurningControlPID.setOutputLimits(-config.MotorEffortMax / 2.0, config.MotorEffortMax / 2.0);
+        pid_controllers.TurningControlPID.setOutputLimits(-config.ControllerEffortMax / 2.0, config.ControllerEffortMax / 2.0);
         pid_controllers.TurningControlPID.setDirection(false);
         pid_controllers.TurningControlPID.setSetpointRange(45.0 * (M_PI / 180.0));
     }
@@ -208,8 +207,8 @@ namespace bobble_controllers {
             outputs.RightMotorEffortCmd = 0.0;
             outputs.LeftMotorEffortCmd = 0.0;
         }
-        outputs.RightMotorEffortCmd = limit(outputs.RightMotorEffortCmd, config.MotorEffortMax);
-        outputs.LeftMotorEffortCmd = limit(outputs.LeftMotorEffortCmd, config.MotorEffortMax);
+        outputs.RightMotorEffortCmd = limit(outputs.RightMotorEffortCmd, config.ControllerEffortMax);
+        outputs.LeftMotorEffortCmd = limit(outputs.LeftMotorEffortCmd, config.ControllerEffortMax);
     }
 
     void BalanceBaseController::runStateLogic() {
