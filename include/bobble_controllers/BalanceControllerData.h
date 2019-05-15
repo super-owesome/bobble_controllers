@@ -122,10 +122,10 @@ namespace bobble_controllers {
 
     /// Controller modes
     enum ControlModes {
-        IDLE,
-        STARTUP,
-        BALANCE,
-        DIAGNOSTIC
+        IDLE = 0,
+        STARTUP = 1,
+        BALANCE = 2,
+        DIAGNOSTIC = 3
     };
 
     /// Controller filters
