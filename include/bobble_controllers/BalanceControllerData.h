@@ -17,6 +17,11 @@ namespace bobble_controllers {
     /// HW interface data.
     class BalanceControllerRtData {
     public:
+        BalanceControllerRtData() :
+	 AccelX(0.0), AccelY(0.0), AccelZ(0.0),
+         RollDot(0.0), TiltDot(0.0), TurnDot(0.0),
+	 LeftMotorPosition(0.0), LeftMotorVelocity(0.0), LeftMotorEffort(0.0),
+	 RightMotorPosition(0.0), RightMotorVelocity(0.0), RightMotorEffort(0.0){};
         double AccelX;
         double AccelY;
         double AccelZ;
