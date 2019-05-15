@@ -10,6 +10,7 @@
 namespace bobble_controllers {
 
     BalanceBaseController::~BalanceBaseController(void) {
+        state.ActiveControlMode = bobble_controllers::ControlModes::IDLE;
 	    run_thread_ = false;
 	    subscriber_thread_->join();
     }
