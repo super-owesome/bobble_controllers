@@ -27,14 +27,13 @@ namespace bobble_controllers {
         subscriber_thread_ = new std::thread(&BalanceBaseController::runSubscriber, this);
     }
 
+
+
     void BalanceBaseController::reset()
     {
-        state.Cmds.StartupCmd = false;
-        state.Cmds.DiagnosticCmd = false;
-        state.Cmds.DesiredVelocity = 0.0;
-        state.Cmds.DesiredVelocityRaw = 0.0;
-        state.Cmds.DesiredTurnRate = 0.0;
-        state.Cmds.DesiredTurnRateRaw = 0.0;
+        clearCommandState(processed_commands);
+        clearCommandState(received_commands);
+        clearCommandState(state.Cmds);
         state.ActiveControlMode = bobble_controllers::ControlModes::IDLE;
         state.ForwardVelocity = 0.0;
         state.DesiredTilt = 0.0;
@@ -166,6 +165,17 @@ namespace bobble_controllers {
     void BalanceBaseController::cmdVelCallback(const geometry_msgs::Twist& command) {
         received_commands.DesiredVelocity = command.linear.x;
         received_commands.DesiredTurnRate = command.angular.z;
+    }
+
+    void BalanceBaseController::clearCommandState(bobble_controllers::BalanceControllerCommands& cmds)
+    {
+        cmds.StartupCmd = false;
+        cmds.IdleCmd = false;
+        cmds.DiagnosticCmd = false;
+        cmds.DesiredVelocityRaw = 0.0;
+        cmds.DesiredTurnRateRaw = 0.0;
+        cmds.DesiredVelocity = 0.0;
+        cmds.DesiredTurnRate = 0.0;
     }
 
     void BalanceBaseController::populateCommands()

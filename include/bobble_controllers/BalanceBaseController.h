@@ -64,6 +64,7 @@ namespace bobble_controllers {
 
     private:
         void populateImuData();
+        void clearCommandState(bobble_controllers::BalanceControllerCommands& cmds);
         void populateCommands();
         void write_controller_status_msg();
         void applyFilters();
