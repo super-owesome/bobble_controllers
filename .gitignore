@@ -9,6 +9,7 @@ cfg/cpp
 site
 *.pyc
 utils/data/*
+test/data/*
 *.bag
 *.ipynb_checkpoints
 *.zip
