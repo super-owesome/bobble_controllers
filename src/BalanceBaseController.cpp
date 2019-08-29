@@ -81,6 +81,7 @@ namespace bobble_controllers {
         unpackParameter("VelocityCmdScale", config.VelocityCmdScale, 1.0);
         unpackParameter("TurnCmdScale", config.TurnCmdScale, 1.0);
         unpackParameter("VelocityControlKp", config.VelocityControlKp, 1.0);
+        unpackParameter("VelocityControlKd", config.VelocityControlKd, 0.0);
         unpackParameter("VelocityControlKi", config.VelocityControlKi, 0.01);
         unpackParameter("VelocityControlAlphaFilter", config.VelocityControlAlphaFilter, 0.05);
         unpackParameter("VelocityControlMaxIntegralOutput", config.VelocityControlMaxIntegralOutput, 0.6);
@@ -111,7 +112,7 @@ namespace bobble_controllers {
 
     void BalanceBaseController::setupControllers() {
         // Setup velocity controller
-        pid_controllers.VelocityControlPID.setPID(config.VelocityControlKp, config.VelocityControlKi, 0.0);
+        pid_controllers.VelocityControlPID.setPID(config.VelocityControlKp, config.VelocityControlKi, config.VelocityControlKd);
         pid_controllers.VelocityControlPID.setOutputFilter(config.VelocityControlAlphaFilter);
         pid_controllers.VelocityControlPID.setMaxIOutput(config.VelocityControlMaxIntegralOutput);
         pid_controllers.VelocityControlPID.setOutputLimits(-config.VelocityControlOutputLimitDegrees * (M_PI / 180.0),
