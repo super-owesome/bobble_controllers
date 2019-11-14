@@ -5,6 +5,7 @@ bobble:
         - right_wheel_hinge
         - left_wheel_hinge
       InSim: true
+      ImuName: bno055
       StartingTiltSafetyLimitDegrees: 10.0
       MaxTiltSafetyLimitDegrees: 20.0
       MotorEffortMax: 0.2
