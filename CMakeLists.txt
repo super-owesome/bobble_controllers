@@ -52,7 +52,8 @@ include_directories(include
 )
 
 add_library(${PROJECT_NAME}
-  src/BobbleBalanceController.cpp
+  src/BalanceBaseController.cpp
+  src/BalanceSimController.cpp
   src/Filter.cpp
   src/MadgwickAHRS.cpp
   src/PidControl.cpp
@@ -116,4 +117,3 @@ install(DIRECTORY config
 
 install(FILES ${PROJECT_NAME}_plugins.xml
 		DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
-
