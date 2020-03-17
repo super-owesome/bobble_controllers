@@ -11,7 +11,7 @@ class BobbleStateHold(object):
         This simple node just keeps the Bobble-Bot standing in sim until
         active control begins.
         """
-        self._ControlMode = 0 # IDLE
+        self._ControlMode = None # Do not have a mode until the controller is actually running
         # Listen to bb_controller_status messages
         rospy.Subscriber("/bobble/bobble_balance_controller/bb_controller_status", BobbleBotStatus, self._controllerDataReceived)
         # Kluge to reset sim state until balance is active

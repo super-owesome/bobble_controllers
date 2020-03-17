@@ -253,7 +253,7 @@ namespace bobble_controllers {
         // function will have sim specific code. Eventually the hardware will not
         // rely on this IMU call back at all and therefore this entire function
         // will be a sim interface only.
-        MeasuredTiltDot = -imuData->angular_velocity.y;
+        MeasuredTiltDot = imuData->angular_velocity.y;
         MeasuredTurnRate = imuData->angular_velocity.z;
         // Call Madgwick orientation filter.
         MadgwickAHRSupdateIMU(MadgwickFilterGain, imuData->angular_velocity.x, imuData->angular_velocity.y, imuData->angular_velocity.z,
@@ -370,9 +370,8 @@ namespace bobble_controllers {
                 ActiveControlMode = ControlModes::BALANCE;
             }
         } else if (ActiveControlMode == ControlModes::BALANCE) {
-            DesiredTilt = VelocityControlPID.getOutput(DesiredVelocity, ForwardVelocity);
-	        DesiredTilt *= -1.0;
-            TiltEffort = TiltControlPID.getOutput(DesiredTilt, Tilt);
+            DesiredTilt = VelocityControlPID.getOutput(ForwardVelocity, DesiredVelocity);
+            TiltEffort = TiltControlPID.getOutput(Tilt, DesiredTilt);
             HeadingEffort = TurningControlPID.getOutput(DesiredTurnRate, TurnRate);
             if (IdleCmd) {
                 ActiveControlMode = ControlModes::IDLE;
@@ -385,8 +384,8 @@ namespace bobble_controllers {
         /////////////////////////////////////////////////////////////////////////////////////////
         /// Combine heading and tilt efforts to achieve velocity, tilt, and turning control.
         /////////////////////////////////////////////////////////////////////////////////////////
-        RightMotorEffortCmd = TiltEffort - HeadingEffort;
-        LeftMotorEffortCmd = TiltEffort + HeadingEffort;
+        RightMotorEffortCmd = -TiltEffort - HeadingEffort;
+        LeftMotorEffortCmd = -TiltEffort + HeadingEffort;
 
         /////////////////////////////////////////////////////////////////////////////////////////
         /// Apply safety checks
