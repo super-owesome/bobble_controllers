@@ -54,8 +54,8 @@ namespace bobble_controllers {
         estimateState();
         applyFilters();
         runStateLogic();
-        outputs.RightMotorEffortCmd = outputs.TiltEffort - outputs.HeadingEffort;
-        outputs.LeftMotorEffortCmd = outputs.TiltEffort + outputs.HeadingEffort;
+        outputs.RightMotorEffortCmd = -outputs.TiltEffort - outputs.HeadingEffort;
+        outputs.LeftMotorEffortCmd = -outputs.TiltEffort + outputs.HeadingEffort;
         applySafety();
         sendMotorCommands();
         write_controller_status_msg();
@@ -272,7 +272,6 @@ namespace bobble_controllers {
 
     void BalanceBaseController::balanceMode() {
         state.DesiredTilt = pid_controllers.VelocityControlPID.getOutput(state.Cmds.DesiredVelocity, state.ForwardVelocity);
-        state.DesiredTilt *= -1.0;
         outputs.TiltEffort = pid_controllers.TiltControlPID.getOutput(state.DesiredTilt, state.Tilt);
         outputs.HeadingEffort = pid_controllers.TurningControlPID.getOutput(state.Cmds.DesiredTurnRate, state.TurnRate);
         if (state.Cmds.IdleCmd) {
