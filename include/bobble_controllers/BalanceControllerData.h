@@ -10,6 +10,7 @@
 #include <bobble_controllers/PidControl.h>
 #include "bobble_controllers/MadgwickAHRS.h"
 #include <bobble_controllers/Filter.h>
+#include <bobble_controllers/LowPassFilter.h>
 
 namespace bobble_controllers {
 
@@ -40,20 +41,21 @@ namespace bobble_controllers {
     /// These are set at init via yml
     class BalanceControllerConfig {
     public:
+        double ControlLoopFrequency;
         double StartingTiltSafetyLimitDegrees;
         double MaxTiltSafetyLimitDegrees;
         double ControllerEffortMax;
         double MotorEffortToTorqueSimFactor;
         double WheelVelocityAdjustment;
         double MadgwickFilterGain;
-        double MeasuredTiltFilterGain;
-        double MeasuredTiltDotFilterGain;
-        double MeasuredHeadingFilterGain;
-        double MeasuredTurnRateFilterGain;
-        double LeftWheelVelocityFilterGain;
-        double RightWheelVelocityFilterGain;
-        double DesiredForwardVelocityFilterGain;
-        double DesiredTurnRateFilterGain;
+        double MeasuredTiltFilterFrequency;
+        double MeasuredTiltDotFilterFrequency;
+        double MeasuredHeadingFilterFrequency;
+        double MeasuredTurnRateFilterFrequency;
+        double LeftWheelVelocityFilterFrequency;
+        double RightWheelVelocityFilterFrequency;
+        double DesiredForwardVelocityFilterFrequency;
+        double DesiredTurnRateFilterFrequency;
         double MaxVelocityCmd;
         double MaxTurnRateCmd;
         double WheelRadiusMeters;
@@ -139,14 +141,14 @@ namespace bobble_controllers {
     /// Controller filters
     class BalanceControllerFilters {
     public:
-        LPFilter MeasuredTiltFilter;
-        LPFilter MeasuredTiltDotFilter;
-        LPFilter MeasuredHeadingFilter;
-        LPFilter MeasuredTurnRateFilter;
-        LPFilter LeftWheelVelocityFilter;
-        LPFilter RightWheelVelocityFilter;
-        LPFilter DesiredForwardVelocityFilter;
-        LPFilter DesiredTurnRateFilter;
+        LowPassFilter MeasuredTiltFilter;
+        LowPassFilter MeasuredTiltDotFilter;
+        LowPassFilter MeasuredHeadingFilter;
+        LowPassFilter MeasuredTurnRateFilter;
+        LowPassFilter LeftWheelVelocityFilter;
+        LowPassFilter RightWheelVelocityFilter;
+        LowPassFilter DesiredForwardVelocityFilter;
+        LowPassFilter DesiredTurnRateFilter;
     };
 
 

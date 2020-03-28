@@ -6,20 +6,21 @@ bobble:
         - left_wheel_hinge
       InSim: true
       ImuName: bno055
+      ControlLoopFrequency: 500.0
       StartingTiltSafetyLimitDegrees: 10.0
       MaxTiltSafetyLimitDegrees: 20.0
       MotorEffortMax: 0.2
       MotorEffortToTorqueSimFactor: 1.0
       WheelVelocityAdjustment: 1.0
       MadgwickFilterGain: 0.015
-      MeasuredTiltFilterGain: 0.15
-      MeasuredTiltDotFilterGain: 0.15
-      MeasuredHeadingFilterGain: 0.5
-      MeasuredTurnRateFilterGain: 0.1
-      LeftWheelVelocityFilterGain: 0.15
-      RightWheelVelocityFilterGain: 0.15
-      DesiredForwardVelocityFilterGain: 0.01
-      DesiredTurnRateFilterGain: 0.01
+      MeasuredTiltFilterFrequency: 50.0
+      MeasuredTiltDotFilterFrequency: 50.0
+      MeasuredHeadingFilterFrequency: 50.0
+      MeasuredTurnRateFilterFrequency: 50.0
+      LeftWheelVelocityFilterFrequency: 50.0
+      RightWheelVelocityFilterFrequency: 50.0
+      DesiredForwardVelocityFilterFrequency: 50.0
+      DesiredTurnRateFilterFrequency: 50.0
       MaxVelocityCmd: 4.25 # 3 mph
       MaxTurnRateCmd: 6.25 # 150 deg/s
       WheelRadiusMeters: 0.05

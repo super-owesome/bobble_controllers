@@ -67,14 +67,14 @@ namespace bobble_controllers {
         unpackParameter("ControllerEffortMax", config.ControllerEffortMax, 0.4);
         unpackParameter("WheelVelocityAdjustment", config.WheelVelocityAdjustment, 0.0);
         unpackParameter("MadgwickFilterGain", config.MadgwickFilterGain, 0.01);
-        unpackParameter("MeasuredTiltFilterGain", config.MeasuredTiltFilterGain, 0.0);
-        unpackParameter("MeasuredTiltDotFilterGain", config.MeasuredTiltDotFilterGain, 0.0);
-        unpackParameter("MeasuredHeadingFilterGain", config.MeasuredHeadingFilterGain, 0.0);
-        unpackParameter("MeasuredTurnRateFilterGain", config.MeasuredTurnRateFilterGain, 0.0);
-        unpackParameter("LeftWheelVelocityFilterGain", config.LeftWheelVelocityFilterGain, 0.0);
-        unpackParameter("RightWheelVelocityFilterGain", config.RightWheelVelocityFilterGain, 0.0);
-        unpackParameter("DesiredForwardVelocityFilterGain", config.DesiredForwardVelocityFilterGain, 0.0);
-        unpackParameter("DesiredTurnRateFilterGain", config.DesiredTurnRateFilterGain, 0.0);
+        unpackParameter("MeasuredTiltFilterGain", config.MeasuredTiltFilterFrequency, 0.0);
+        unpackParameter("MeasuredTiltDotFilterGain", config.MeasuredTiltDotFilterFrequency, 0.0);
+        unpackParameter("MeasuredHeadingFilterGain", config.MeasuredHeadingFilterFrequency, 0.0);
+        unpackParameter("MeasuredTurnRateFilterGain", config.MeasuredTurnRateFilterFrequency, 0.0);
+        unpackParameter("LeftWheelVelocityFilterGain", config.LeftWheelVelocityFilterFrequency, 0.0);
+        unpackParameter("RightWheelVelocityFilterGain", config.RightWheelVelocityFilterFrequency, 0.0);
+        unpackParameter("DesiredForwardVelocityFilterGain", config.DesiredForwardVelocityFilterFrequency, 0.0);
+        unpackParameter("DesiredTurnRateFilterGain", config.DesiredTurnRateFilterFrequency, 0.0);
         unpackParameter("MaxVelocityCmd", config.MaxVelocityCmd, 0.5);
         unpackParameter("MaxTurnRateCmd", config.MaxTurnRateCmd, 0.5);
         unpackParameter("WheelRadiusMeters", config.WheelRadiusMeters, 0.05);
@@ -99,14 +99,14 @@ namespace bobble_controllers {
     }
 
     void BalanceBaseController::setupFilters() {
-        filters.MeasuredTiltFilter.setGain(config.MeasuredTiltFilterGain);
-        filters.MeasuredTiltDotFilter.setGain(config.MeasuredTiltDotFilterGain);
-        filters.MeasuredHeadingFilter.setGain(config.MeasuredHeadingFilterGain);
-        filters.MeasuredTurnRateFilter.setGain(config.MeasuredTurnRateFilterGain);
-        filters.LeftWheelVelocityFilter.setGain(config.LeftWheelVelocityFilterGain);
-        filters.RightWheelVelocityFilter.setGain(config.RightWheelVelocityFilterGain);
-        filters.DesiredForwardVelocityFilter.setGain(config.DesiredForwardVelocityFilterGain);
-        filters.DesiredTurnRateFilter.setGain(config.DesiredTurnRateFilterGain);
+        filters.MeasuredTiltFilter.resetFilterParameters(1.0/config.ControlLoopFrequency, config.MeasuredTiltFilterFrequency, 1.0);
+        filters.MeasuredTiltDotFilter.resetFilterParameters(1.0/config.ControlLoopFrequency, config.MeasuredTiltDotFilterFrequency, 1.0);
+        filters.MeasuredHeadingFilter.resetFilterParameters(1.0/config.ControlLoopFrequency, config.MeasuredHeadingFilterFrequency, 1.0);
+        filters.MeasuredTurnRateFilter.resetFilterParameters(1.0/config.ControlLoopFrequency, config.MeasuredTurnRateFilterFrequency, 1.0);
+        filters.LeftWheelVelocityFilter.resetFilterParameters(1.0/config.ControlLoopFrequency, config.LeftWheelVelocityFilterFrequency, 1.0);
+        filters.RightWheelVelocityFilter.resetFilterParameters(1.0/config.ControlLoopFrequency, config.RightWheelVelocityFilterFrequency, 1.0);
+        filters.DesiredForwardVelocityFilter.resetFilterParameters(1.0/config.ControlLoopFrequency, config.DesiredForwardVelocityFilterFrequency, 1.0);
+        filters.DesiredTurnRateFilter.resetFilterParameters(1.0/config.ControlLoopFrequency, config.DesiredTurnRateFilterFrequency, 1.0);
     }
 
     void BalanceBaseController::setupControllers() {
