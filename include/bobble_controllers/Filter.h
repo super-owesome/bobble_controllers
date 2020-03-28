@@ -51,8 +51,8 @@ class Filter {
   ///        with all the necessary parameters to build a
   ///        custom filter.
   ////////////////////////////////////////////////////////////
-  Filter(float numInWeights, float* inWeights,
-		  float numOutWeights, float* outWeights);
+  Filter(double numInWeights, double* inWeights,
+		  double numOutWeights, double* outWeights);
   //////////////////////////////////////////////////////////
   /// @brief The default c'tor constructs the Filter base
   ///        class.
@@ -71,33 +71,33 @@ class Filter {
   /// @param inputValue input value.
   /// @return Output from the filter
   ////////////////////////////////////////////////////////////
-  virtual float filter(float inputValue);
+  virtual double filter(double inputValue);
   ////////////////////////////////////////////////////////////
   /// @brief An accessor function to get the current input
   ///        buffer of the filter.
   /// @return The current input buffer of the filter.
   ////////////////////////////////////////////////////////////
-  inline float* GetCurrentInputBuffer(void){
+  inline double* GetCurrentInputBuffer(void){
 	                              return _inputBuffer; }
   ////////////////////////////////////////////////////////////
   /// @brief An accessor function to get the current output
   ///        buffer of the filter.
   /// @return The current output buffer of the filter.
   ////////////////////////////////////////////////////////////
-  inline float* GetCurrentOutputBuffer(void){
+  inline double* GetCurrentOutputBuffer(void){
 	                              return _outputBuffer; }
   ////////////////////////////////////////////////////////////
   /// @brief An accessor function to get the filter's input
   ///        weights.
   /// @return The filters input weights
   ////////////////////////////////////////////////////////////
-  inline float* GetInputWeights(void){
+  inline double* GetInputWeights(void){
 	                              return _inputWeights; }
   ////////////////////////////////////////////////////////////
   /// @brief An accessor function to get the filter's output
   ///        weights.
   /// @return The filters output weights
-  inline float* GetOutputWeights(void){
+  inline double* GetOutputWeights(void){
 	                              return _outputWeights; }
 
  protected:
@@ -107,15 +107,15 @@ class Filter {
   /// @param buff      -- The input or output buffer it initialize.
   /// @param buff_size -- Size of the buffer
   ////////////////////////////////////////////////////////////
-  void initBuffer(float* buff, unsigned int buff_size);
+  void initBuffer(double* buff, unsigned int buff_size);
   ////////////////////////////////////////////////////////////
   /// @brief Buffer holding the input signal values.
   ////////////////////////////////////////////////////////////
-  float _inputBuffer[MAX_FILTER_SIZE];
+  double _inputBuffer[MAX_FILTER_SIZE];
   ////////////////////////////////////////////////////////////
   /// @brief Buffer holding the output signal values.
   ////////////////////////////////////////////////////////////
-  float _outputBuffer[MAX_FILTER_SIZE];
+  double _outputBuffer[MAX_FILTER_SIZE];
   ////////////////////////////////////////////////////////////
   /// @brief The number of input weights.
   ////////////////////////////////////////////////////////////
@@ -125,7 +125,7 @@ class Filter {
   ///        delayed values of the input signal in order to
   ///        generate the output signal.
   ////////////////////////////////////////////////////////////
-  float _inputWeights[MAX_FILTER_SIZE];
+  double _inputWeights[MAX_FILTER_SIZE];
   ////////////////////////////////////////////////////////////
   /// @brief The number of output weights.
   ////////////////////////////////////////////////////////////
@@ -135,7 +135,7 @@ class Filter {
   ///        and delayed values of the output signal in order
   ///        to generate the next filter output.
   ////////////////////////////////////////////////////////////
-  float _outputWeights[MAX_FILTER_SIZE];
+  double _outputWeights[MAX_FILTER_SIZE];
 
 
 };

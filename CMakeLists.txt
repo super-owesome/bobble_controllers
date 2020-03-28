@@ -56,6 +56,7 @@ add_library(${PROJECT_NAME}
   src/BalanceSimController.cpp
   src/Filter.cpp
   src/HighPassFilter.cpp
+  src/LowPassFilter.cpp
   src/MadgwickAHRS.cpp
   src/PidControl.cpp
 )

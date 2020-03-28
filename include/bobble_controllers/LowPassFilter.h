@@ -1,18 +1,18 @@
 //
-// Created by james on 3/27/20.
+// Created by james on 3/28/20.
 //
 
-#ifndef SRC_HIGHPASSFILTER_H
-#define SRC_HIGHPASSFILTER_H
+#ifndef SRC_LOWPASSFILTER_H
+#define SRC_LOWPASSFILTER_H
 
-#include "Filter.h"
+#include <bobble_controllers/Filter.h>
 #include <math.h>
 
-class HighPassFilter : public Filter
+class LowPassFilter : public Filter
 {
 public:
     //////////////////////////////////////////////////////////
-    /// @brief The high pass filter takes three arguments
+    /// @brief The low pass filter takes three arguments
     ///        and then calculates the correct coefficients
     ///
     /// @param Ts: The sample period in seconds
@@ -20,18 +20,16 @@ public:
     /// @param zeta: The damping ratio (unitless) - default is
     ///              1.0 for no overshoot
     ////////////////////////////////////////////////////////////
-    HighPassFilter(double Ts, double fc, double zeta);
+    LowPassFilter(double Ts, double fc, double zeta);
 
     //////////////////////////////////////////////////////////
-    /// @brief The high pass filter takes three arguments
+    /// @brief The low pass filter takes three arguments
     ///        and then calculates the correct coefficients
     ///        This default constructor has hardcoded params
     ///
     ////////////////////////////////////////////////////////////
-    HighPassFilter() : HighPassFilter(0.002, 50, 1.0){};
+    LowPassFilter() : LowPassFilter(0.002, 50.0, 1.0){};
 
     void resetFilterParameters(double Ts, double fc, double zeta);
 };
-
-
-#endif //SRC_HIGHPASSFILTER_H
+#endif //SRC_LOWPASSFILTER_H

@@ -1,26 +1,25 @@
 //
-// Created by james on 3/27/20.
+// Created by james on 3/28/20.
 //
 
-#include <bobble_controllers/HighPassFilter.h>
+#include <bobble_controllers/LowPassFilter.h>
 
-HighPassFilter::HighPassFilter(double Ts, double fc, double zeta) {
+LowPassFilter::LowPassFilter(double Ts, double fc, double zeta) {
     resetFilterParameters(Ts, fc, zeta);
 }
 
-void HighPassFilter::resetFilterParameters(double Ts, double fc, double zeta)
-{
+void LowPassFilter::resetFilterParameters(double Ts, double fc, double zeta) {
     /// Initialize buffers to 0
     initBuffer(_inputBuffer, 3);
     initBuffer(_outputBuffer, 3);
 
     _numInWeights = 3;
     _numOutWeights = 3;
-    double wc = (2.0 * M_PI * fc);
+    double wc = 2.0 * M_PI * fc;
     /// The following calculations are the implementation of a second order high pass filter
     /// converted from continuous space to discrete space using the bilinear transform.
-    /// The continuous time filter is s^2 / (s^2 + 2*zeta*wc*s + wc^2)
-    double numeratorWeights[3] = {4.0, -8.0, 4.0};
+    /// The continuous time filter is 1 / (s^2 + 2*zeta*wc*s + wc^2)
+    double numeratorWeights[3] = {Ts*Ts*wc*wc, 2*Ts*Ts*wc*wc, Ts*Ts*wc*wc};
     double denominatorWeights[3] = {Ts*Ts*wc*wc+4*Ts*wc*zeta+4,
                                    2*Ts*Ts*wc*wc-8,
                                    Ts*Ts*wc*wc-4*Ts*wc*zeta+4};
@@ -39,3 +38,4 @@ void HighPassFilter::resetFilterParameters(double Ts, double fc, double zeta)
     }
 
 }
+

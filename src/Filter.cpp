@@ -3,8 +3,8 @@
 //////////////////////////////////////////////////////////
 /// @brief The c'tor constructs the class members.
 ////////////////////////////////////////////////////////////
-Filter::Filter(float numInWeights, float* inWeights,
-		       float numOutWeights, float* outWeights) :
+Filter::Filter(double numInWeights, double* inWeights,
+		       double numOutWeights, double* outWeights) :
          _numInWeights(numInWeights),
          _numOutWeights(numOutWeights)
 {
@@ -52,7 +52,7 @@ Filter::~Filter() {
 /// @param buff_size  -- Size of the buffer
 /// @return Initialized buffer for the filter.
 ////////////////////////////////////////////////////////////
-void Filter::initBuffer(float* buff, unsigned int buff_size){
+void Filter::initBuffer(double* buff, unsigned int buff_size){
 	for (unsigned int i=0; i<buff_size; ++i )
 	{
 		buff[i] = 0.0;
@@ -67,9 +67,9 @@ void Filter::initBuffer(float* buff, unsigned int buff_size){
 /// @param inputValue  -- Input to the filter.
 /// @return Output from the filter
 ////////////////////////////////////////////////////////////
-float Filter::filter(float inputValue) {
-  float outputContribution = 0.0;
-  float inputContribution = 0.0;
+double Filter::filter(double inputValue) {
+  double outputContribution = 0.0;
+  double inputContribution = 0.0;
   /// Buffer the input values and previous input values.
   for(unsigned int i=_numInWeights; i>0; i--){
 	_inputBuffer[i] = _inputBuffer[i-1];
