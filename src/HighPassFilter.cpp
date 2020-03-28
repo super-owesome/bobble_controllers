@@ -16,9 +16,9 @@ HighPassFilter::HighPassFilter(float Ts, float fc, float zeta) {
     /// converted from continuous space to discrete space using the bilinear transform.
     /// The continuous time filter is s^2 / (s^2 + 2*zeta*wc*s + wc^2)
     float numeratorWeights[3] = {4.0, -8.0, 4.0};
-    float denominatorWeights[3] = {Ts*Ts*wc*wc+4*Ts*wc*zeta+4,
+    float denominatorWeights[3] = {Ts*Ts*wc*wc-4*Ts*wc*zeta+4,
                                    2*Ts*Ts*wc*wc-8,
-                                   Ts*Ts*wc*wc-4*Ts*wc*zeta+4};
+                                   Ts*Ts*wc*wc+4*Ts*wc*zeta+4};
 
     /// First initialize all weights to 0.0
     for (unsigned int i = 0; i<MAX_FILTER_SIZE; i++){
