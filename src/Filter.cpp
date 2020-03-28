@@ -87,6 +87,6 @@ float Filter::filter(float inputValue) {
   }
   /// @note calculate the current filter output based on previous
   ///       inputs and previous outputs.
-  _outputBuffer[0] = (1.0/_outputWeights[0])*(inputContribution + outputContribution);
+  _outputBuffer[0] = (1.0/_outputWeights[0])*(inputContribution - outputContribution);
   return _outputBuffer[0];
 }
