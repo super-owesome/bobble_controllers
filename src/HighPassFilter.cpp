@@ -11,7 +11,7 @@ HighPassFilter::HighPassFilter(float Ts, float fc, float zeta) {
 
     _numInWeights = 3;
     _numOutWeights = 3;
-    float wc = 1.0 / (2.0 * 3.1415926 * fc);
+    float wc = 1.0 / (2.0 * M_PI * fc);
     /// The following calculations are the implementation of a second order high pass filter
     /// converted from continuous space to discrete space using the bilinear transform.
     /// The continuous time filter is s^2 / (s^2 + 2*zeta*wc*s + wc^2)

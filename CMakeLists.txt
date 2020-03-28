@@ -70,6 +70,9 @@ target_link_libraries(${PROJECT_NAME}
 ## Testing ##
 #############
 if (CATKIN_ENABLE_TESTING)
+    catkin_add_gtest(filter_test
+            test/filter_test.cpp)
+    target_link_libraries(filter_test ${PROJECT_NAME})
     add_rostest_gtest(balance_controller_test
           test/balance_controller.test
           test/balance_controller_test.cpp)

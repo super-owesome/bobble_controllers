@@ -6,6 +6,7 @@
 #define SRC_HIGHPASSFILTER_H
 
 #include "Filter.h"
+#include <math.h>
 
 class HighPassFilter : public Filter
 {
@@ -27,11 +28,7 @@ public:
     ///        This default constructor has hardcoded params
     ///
     ////////////////////////////////////////////////////////////
-    HighPassFilter()
-    {
-        /// 500 Hz sample, 0.01 Hz cutoff, 1/sqrt(2) damping
-        HighPassFilter(0.002, 0.01, 0.707);
-    };
+    HighPassFilter() : HighPassFilter(0.002, 0.01, 1.0/M_SQRT2){};
 
 };
 
