@@ -5,6 +5,10 @@
 #include <bobble_controllers/HighPassFilter.h>
 
 HighPassFilter::HighPassFilter(float Ts, float fc, float zeta) {
+    /// Initialize buffers to 0
+    initBuffer(_inputBuffer, 3);
+    initBuffer(_outputBuffer, 3);
+
     _numInWeights = 3;
     _numOutWeights = 3;
     float wc = 1.0 / (2.0 * 3.1415926 * fc);
