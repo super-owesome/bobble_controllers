@@ -284,6 +284,8 @@ namespace bobble_controllers {
             pub_bobble_status_->msg_.ControlMode = state.ActiveControlMode;
             pub_bobble_status_->msg_.MeasuredTiltDot = state.MeasuredTiltDot * (180.0 / M_PI);
             pub_bobble_status_->msg_.MeasuredTurnRate = state.MeasuredTurnRate * (180.0 / M_PI);
+            pub_bobble_status_->msg_.FilteredTiltDot = state.FilteredTiltDot * (180.0 / M_PI);
+            pub_bobble_status_->msg_.FilteredTurnRate = state.FilteredTurnRate * (180.0 / M_PI);
             pub_bobble_status_->msg_.Tilt = state.Tilt * (180.0 / M_PI);
             pub_bobble_status_->msg_.TiltRate = state.TiltDot * (180.0 / M_PI);
             pub_bobble_status_->msg_.Heading = state.Heading * (180.0 / M_PI);
