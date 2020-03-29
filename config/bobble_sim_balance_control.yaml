@@ -1,6 +1,6 @@
 bobble:
     bobble_balance_controller:
-      type: bobble_controllers/BobbleBalanceController
+      type: bobble_controllers/BalanceSimController
       joints:
         - right_wheel_hinge
         - left_wheel_hinge
@@ -13,33 +13,33 @@ bobble:
       MotorEffortToTorqueSimFactor: 1.0
       WheelVelocityAdjustment: 1.0
       MadgwickFilterGain: 0.015
-      MeasuredTiltFilterFrequency: 50.0
-      MeasuredTiltDotFilterFrequency: 50.0
-      MeasuredHeadingFilterFrequency: 50.0
+      MeasuredTiltFilterFrequency: 100.0
+      MeasuredTiltDotFilterFrequency: 100.0
+      MeasuredHeadingFilterFrequency: 100.0
       MeasuredTurnRateFilterFrequency: 50.0
-      LeftWheelVelocityFilterFrequency: 50.0
-      RightWheelVelocityFilterFrequency: 50.0
-      DesiredForwardVelocityFilterFrequency: 50.0
+      LeftWheelVelocityFilterFrequency: 200.0
+      RightWheelVelocityFilterFrequency: 200.0
+      DesiredForwardVelocityFilterFrequency: 200.0
       DesiredTurnRateFilterFrequency: 50.0
       MaxVelocityCmd: 4.25 # 3 mph
       MaxTurnRateCmd: 6.25 # 150 deg/s
       WheelRadiusMeters: 0.05
       VelocityCmdScale: 1.15
       TurnCmdScale: 6.25
-      VelocityControlKp: 0.10
-      VelocityControlKi: 0.001
+      VelocityControlKp: 0.2
+      VelocityControlKi: 0.0
       VelocityControlAlphaFilter: 0.05
-      VelocityControlMaxIntegralOutput: 0.02
+      VelocityControlMaxIntegralOutput: 0.05
       VelocityControlOutputLimitDegrees: 8.5
-      TiltControlKp: 0.75
-      TiltControlKd: 0.075
+      TiltControlKp: 2.25
+      TiltControlKd: 0.15
       TiltControlAlphaFilter: 0.05
       TiltOffset: 0.0
       TiltDotOffset: 0.0
       RollDotOffset: 0.0
       YawDotOffset: 0.0
-      TurningControlKp: 1.0
-      TurningControlKi: 0.01
-      TurningControlKd: 0.085
+      TurningControlKp: 0.0
+      TurningControlKi: 0.0
+      TurningControlKd: 0.0
       TurningOutputFilter: 0.0
 
