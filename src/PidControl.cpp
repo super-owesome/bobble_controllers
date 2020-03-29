@@ -190,14 +190,14 @@ void PidControl::setSetpoint(double setpoint){
 * @param target The target value
 * @return calculated output value for driving the actual to the target
 */
-double PidControl::getOutput(double actual, double setpoint){
+double PidControl::getOutput(double desired, double actual){
     double output;
     double Poutput;
     double Ioutput;
     double Doutput;
     double Foutput;
 
-    this->setpoint=setpoint;
+    this->setpoint=desired;
 
     //Ramp the setpoint used for calculations if user has opted to do so
     if(setpointRange!=0){

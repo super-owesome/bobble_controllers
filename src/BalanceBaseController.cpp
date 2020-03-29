@@ -62,25 +62,27 @@ namespace bobble_controllers {
     }
 
     void BalanceBaseController::loadConfig() {
+        unpackParameter("ControlLoopFrequency", config.ControlLoopFrequency, 500.0);
         unpackParameter("StartingTiltSafetyLimitDegrees", config.StartingTiltSafetyLimitDegrees, 4.0);
         unpackParameter("MaxTiltSafetyLimitDegrees", config.MaxTiltSafetyLimitDegrees, 20.0);
         unpackParameter("ControllerEffortMax", config.ControllerEffortMax, 0.4);
         unpackParameter("WheelVelocityAdjustment", config.WheelVelocityAdjustment, 0.0);
         unpackParameter("MadgwickFilterGain", config.MadgwickFilterGain, 0.01);
-        unpackParameter("MeasuredTiltFilterGain", config.MeasuredTiltFilterFrequency, 0.0);
-        unpackParameter("MeasuredTiltDotFilterGain", config.MeasuredTiltDotFilterFrequency, 0.0);
-        unpackParameter("MeasuredHeadingFilterGain", config.MeasuredHeadingFilterFrequency, 0.0);
-        unpackParameter("MeasuredTurnRateFilterGain", config.MeasuredTurnRateFilterFrequency, 0.0);
-        unpackParameter("LeftWheelVelocityFilterGain", config.LeftWheelVelocityFilterFrequency, 0.0);
-        unpackParameter("RightWheelVelocityFilterGain", config.RightWheelVelocityFilterFrequency, 0.0);
-        unpackParameter("DesiredForwardVelocityFilterGain", config.DesiredForwardVelocityFilterFrequency, 0.0);
-        unpackParameter("DesiredTurnRateFilterGain", config.DesiredTurnRateFilterFrequency, 0.0);
+        unpackParameter("MeasuredTiltFilterFrequency", config.MeasuredTiltFilterFrequency, 0.0);
+        unpackParameter("MeasuredTiltDotFilterFrequency", config.MeasuredTiltDotFilterFrequency, 0.0);
+        unpackParameter("MeasuredHeadingFilterFrequency", config.MeasuredHeadingFilterFrequency, 0.0);
+        unpackParameter("MeasuredTurnRateFilterFrequency", config.MeasuredTurnRateFilterFrequency, 0.0);
+        unpackParameter("LeftWheelVelocityFilterFrequency", config.LeftWheelVelocityFilterFrequency, 0.0);
+        unpackParameter("RightWheelVelocityFilterFrequency", config.RightWheelVelocityFilterFrequency, 0.0);
+        unpackParameter("DesiredForwardVelocityFilterFrequency", config.DesiredForwardVelocityFilterFrequency, 0.0);
+        unpackParameter("DesiredTurnRateFilterFrequency", config.DesiredTurnRateFilterFrequency, 0.0);
         unpackParameter("MaxVelocityCmd", config.MaxVelocityCmd, 0.5);
         unpackParameter("MaxTurnRateCmd", config.MaxTurnRateCmd, 0.5);
         unpackParameter("WheelRadiusMeters", config.WheelRadiusMeters, 0.05);
         unpackParameter("VelocityCmdScale", config.VelocityCmdScale, 1.0);
         unpackParameter("TurnCmdScale", config.TurnCmdScale, 1.0);
         unpackParameter("VelocityControlKp", config.VelocityControlKp, 1.0);
+        unpackParameter("VelocityControlKd", config.VelocityControlKd, 0.1);
         unpackParameter("VelocityControlKi", config.VelocityControlKi, 0.01);
         unpackParameter("VelocityControlAlphaFilter", config.VelocityControlAlphaFilter, 0.05);
         unpackParameter("VelocityControlMaxIntegralOutput", config.VelocityControlMaxIntegralOutput, 0.6);
@@ -111,7 +113,7 @@ namespace bobble_controllers {
 
     void BalanceBaseController::setupControllers() {
         // Setup velocity controller
-        pid_controllers.VelocityControlPID.setPID(config.VelocityControlKp, config.VelocityControlKi, 0.0);
+        pid_controllers.VelocityControlPID.setPID(config.VelocityControlKp, config.VelocityControlKi, config.VelocityControlKd);
         pid_controllers.VelocityControlPID.setOutputFilter(config.VelocityControlAlphaFilter);
         pid_controllers.VelocityControlPID.setMaxIOutput(config.VelocityControlMaxIntegralOutput);
         pid_controllers.VelocityControlPID.setOutputLimits(-config.VelocityControlOutputLimitDegrees * (M_PI / 180.0),

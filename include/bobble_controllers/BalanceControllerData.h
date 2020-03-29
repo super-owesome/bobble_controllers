@@ -62,6 +62,7 @@ namespace bobble_controllers {
         double VelocityCmdScale;
         double TurnCmdScale;
         double VelocityControlKp;
+        double VelocityControlKd;
         double VelocityControlKi;
         double VelocityControlAlphaFilter;
         double VelocityControlMaxIntegralOutput;
