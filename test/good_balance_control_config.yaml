@@ -40,8 +40,8 @@ bobble:
     TiltDotOffset: 0.0
     RollDotOffset: 0.0
     YawDotOffset: 0.0
-    TurningControlKp: 0.05
-    TurningControlKi: 0.01
+    TurningControlKp: 0.15
+    TurningControlKi: 0.03
     TurningControlKd: 0.0
     TurningControlDerivFilter: 50.0
     TurningOutputFilter: 0.5
