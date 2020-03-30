@@ -1,42 +1,42 @@
 bobble:
-    bobble_balance_controller:
-      type: bobble_controllers/BalanceSimController
-      joints:
-        - right_wheel_hinge
-        - left_wheel_hinge
-      StartingTiltSafetyLimitDegrees: 10.0
-      MaxTiltSafetyLimitDegrees: 20.0
-      ControllerEffortMax: 0.2
-      MotorEffortToTorqueSimFactor: 1.0
-      WheelVelocityAdjustment: 1.0
-      MadgwickFilterGain: 0.015
-      MeasuredTiltFilterGain: 0.15
-      MeasuredTiltDotFilterGain: 0.15
-      MeasuredHeadingFilterGain: 0.5
-      MeasuredTurnRateFilterGain: 0.1
-      LeftWheelVelocityFilterGain: 0.15
-      RightWheelVelocityFilterGain: 0.15
-      DesiredForwardVelocityFilterGain: 0.01
-      DesiredTurnRateFilterGain: 0.01
-      MaxVelocityCmd: 4.25 # 3 mph
-      MaxTurnRateCmd: 6.25 # 150 deg/s
-      WheelRadiusMeters: 0.05
-      VelocityCmdScale: 1.15
-      TurnCmdScale: 6.25
-      VelocityControlKp: 0.15
-      VelocityControlKi: 0.001
-      VelocityControlAlphaFilter: 0.05
-      VelocityControlMaxIntegralOutput: 0.02
-      VelocityControlOutputLimitDegrees: 8.5
-      TiltControlKp: 0.0
-      TiltControlKd: 0.075
-      TiltControlAlphaFilter: 0.05
-      TiltOffset: 0.0
-      TiltDotOffset: 0.0
-      RollDotOffset: 0.0
-      YawDotOffset: 0.0
-      TurningControlKp: 1.0
-      TurningControlKi: 0.01
-      TurningControlKd: 0.085
-      TurningOutputFilter: 0.0
+  bobble_balance_controller:
+    type: bobble_controllers/BalanceSimController
+    joints:
+      - right_wheel_hinge
+      - left_wheel_hinge
+    StartingTiltSafetyLimitDegrees: 10.0
+    MaxTiltSafetyLimitDegrees: 20.0
+    ControllerEffortMax: 0.2
+    MotorEffortToTorqueSimFactor: 1.0
+    WheelVelocityAdjustment: 1.0
+    MadgwickFilterGain: 0.015
+    MeasuredTiltFilterGain: 0.15
+    MeasuredTiltDotFilterGain: 0.15
+    MeasuredHeadingFilterGain: 0.5
+    MeasuredTurnRateFilterGain: 0.1
+    LeftWheelVelocityFilterGain: 0.15
+    RightWheelVelocityFilterGain: 0.15
+    DesiredForwardVelocityFilterGain: 0.01
+    DesiredTurnRateFilterGain: 0.01
+    MaxVelocityCmd: 4.25 # 3 mph
+    MaxTurnRateCmd: 6.25 # 150 deg/s
+    WheelRadiusMeters: 0.05
+    VelocityCmdScale: 1.15
+    TurnCmdScale: 6.25
+    VelocityControlKp: 0.15
+    VelocityControlKi: 0.001
+    VelocityControlAlphaFilter: 0.05
+    VelocityControlMaxIntegralOutput: 0.02
+    VelocityControlOutputLimitDegrees: 8.5
+    TiltControlKp: 0.0
+    TiltControlKd: 0.075
+    TiltControlAlphaFilter: 0.05
+    TiltOffset: 0.0
+    TiltDotOffset: 0.0
+    RollDotOffset: 0.0
+    YawDotOffset: 0.0
+    TurningControlKp: 1.0
+    TurningControlKi: 0.01
+    TurningControlKd: 0.085
+    TurningOutputFilter: 0.0
 
