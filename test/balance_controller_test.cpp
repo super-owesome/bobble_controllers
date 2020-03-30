@@ -68,7 +68,7 @@ TEST_F(BalanceSimControllerTest, testTurnLeft)
 {
   // send a turn rate command of 0.1 rad/s
   geometry_msgs::Twist cmd_vel;
-  cmd_vel.angular.z = 0.1;
+  cmd_vel.angular.z = 0.125;
   publish_vel_cmd(cmd_vel);
   // wait for 3s
   ros::Duration(3.0).sleep();
@@ -81,7 +81,7 @@ TEST_F(BalanceSimControllerTest, testTurnRight)
 {
   // send a turn rate command of -0.1 rad/s
   geometry_msgs::Twist cmd_vel;
-  cmd_vel.angular.z = -0.1;
+  cmd_vel.angular.z = -0.125;
   publish_vel_cmd(cmd_vel);
   // wait for 3s
   ros::Duration(3.0).sleep();
