@@ -59,6 +59,7 @@ add_library(${PROJECT_NAME}
   src/LowPassFilter.cpp
   src/MadgwickAHRS.cpp
   src/PidControl.cpp
+  src/PIDFilters.cpp
 )
 
 add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_generate_messages_cpp)

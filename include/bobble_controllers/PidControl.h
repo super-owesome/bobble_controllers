@@ -1,16 +1,18 @@
 #ifndef PIDCONTROL_H
 #define PIDCONTROL_H
 
+#include <bobble_controllers/PIDFilters.h>
+
 class PidControl{
 public:
-    PidControl(double p, double i, double d);
-    PidControl(double p, double i, double d, double f);
+    PidControl(double p, double i, double d, double fc, double sampleTime);
+    PidControl(double p, double i, double d, double fc, double sampleTime, double f);
     void setP(double p);
     void setI(double i);
-    void setD(double d);
+    void setD(double d, double fc);
     void setF(double f);
-    void setPID(double p, double i, double d);
-    void setPID(double p, double i, double d, double f);
+    void setPID(double p, double i, double d, double fc, double sampleTime);
+    void setPID(double p, double i, double d, double fc, double sampleTime, double f);
     void setMaxIOutput(double);
     void setOutputLimits(double);
     void setOutputLimits(double,double);
@@ -33,7 +35,12 @@ private:
     double P;
     double I;
     double D;
+    double Fc;
     double F;
+    double Ts;
+
+    DerivativeFilter derivativeFilter;
+    IntegralFilter integralFilter;
 
     double maxIOutput;
     double maxError;

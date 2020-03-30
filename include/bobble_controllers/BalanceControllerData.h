@@ -63,6 +63,7 @@ namespace bobble_controllers {
         double TurnCmdScale;
         double VelocityControlKp;
         double VelocityControlKd;
+        double VelocityControlDerivFilter;
         double VelocityControlKi;
         double VelocityControlAlphaFilter;
         double VelocityControlMaxIntegralOutput;
@@ -77,6 +78,7 @@ namespace bobble_controllers {
         double TurningControlKp;
         double TurningControlKi;
         double TurningControlKd;
+        double TurningControlDerivFilter;
         double TurningOutputFilter;
     };
 
@@ -157,9 +159,9 @@ namespace bobble_controllers {
     class BalancePIDControllers {
     public:
         BalancePIDControllers() :
-          VelocityControlPID(0.0, 0.0, 0.0),
-          TiltControlPID(0.0, 0.0, 0.0),
-          TurningControlPID(0.0, 0.0, 0.0)
+          VelocityControlPID(0.0, 0.0, 0.0, 0.0, 0.0),
+          TiltControlPID(0.0, 0.0, 0.0, 0.0, 0.0),
+          TurningControlPID(0.0, 0.0, 0.0, 0.0, 0.0)
         {}
         PidControl VelocityControlPID;
         PidControl TiltControlPID;

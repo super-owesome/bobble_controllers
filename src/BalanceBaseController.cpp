@@ -54,8 +54,8 @@ namespace bobble_controllers {
         estimateState();
         applyFilters();
         runStateLogic();
-        outputs.RightMotorEffortCmd = -outputs.TiltEffort - outputs.HeadingEffort;
-        outputs.LeftMotorEffortCmd = -outputs.TiltEffort + outputs.HeadingEffort;
+        outputs.RightMotorEffortCmd = -outputs.TiltEffort + outputs.HeadingEffort;
+        outputs.LeftMotorEffortCmd = -outputs.TiltEffort - outputs.HeadingEffort;
         applySafety();
         sendMotorCommands();
         write_controller_status_msg();
@@ -83,6 +83,7 @@ namespace bobble_controllers {
         unpackParameter("TurnCmdScale", config.TurnCmdScale, 1.0);
         unpackParameter("VelocityControlKp", config.VelocityControlKp, 1.0);
         unpackParameter("VelocityControlKd", config.VelocityControlKd, 0.1);
+        unpackParameter("VelocityControlDerivFilter", config.VelocityControlDerivFilter, 50.0);
         unpackParameter("VelocityControlKi", config.VelocityControlKi, 0.01);
         unpackParameter("VelocityControlAlphaFilter", config.VelocityControlAlphaFilter, 0.05);
         unpackParameter("VelocityControlMaxIntegralOutput", config.VelocityControlMaxIntegralOutput, 0.6);
@@ -97,6 +98,7 @@ namespace bobble_controllers {
         unpackParameter("TurningControlKp", config.TurningControlKp, 1.0);
         unpackParameter("TurningControlKi", config.TurningControlKi, 0.01);
         unpackParameter("TurningControlKd", config.TurningControlKd, 0.01);
+        unpackParameter("TurningControlDerivFilter", config.TurningControlDerivFilter, 50.0);
         unpackParameter("TurningOutputFilter", config.TurningOutputFilter, 0.0);
     }
 
@@ -113,25 +115,25 @@ namespace bobble_controllers {
 
     void BalanceBaseController::setupControllers() {
         // Setup velocity controller
-        pid_controllers.VelocityControlPID.setPID(config.VelocityControlKp, config.VelocityControlKi, config.VelocityControlKd);
+        pid_controllers.VelocityControlPID.setPID(config.VelocityControlKp, config.VelocityControlKi, config.VelocityControlKd, config.VelocityControlDerivFilter, 1.0/config.ControlLoopFrequency);
         pid_controllers.VelocityControlPID.setOutputFilter(config.VelocityControlAlphaFilter);
         pid_controllers.VelocityControlPID.setMaxIOutput(config.VelocityControlMaxIntegralOutput);
         pid_controllers.VelocityControlPID.setOutputLimits(-config.VelocityControlOutputLimitDegrees * (M_PI / 180.0),
                                            config.VelocityControlOutputLimitDegrees * (M_PI / 180.0));
         pid_controllers.VelocityControlPID.setDirection(true);
         // Setup tilt controller
-        pid_controllers.TiltControlPID.setPID(config.TiltControlKp, 0.0, config.TiltControlKd);
+        pid_controllers.TiltControlPID.setPID(config.TiltControlKp, 0.0, config.TiltControlKd, 0.0, 1.0/config.ControlLoopFrequency);
         pid_controllers.TiltControlPID.setExternalDerivativeError(&state.TiltDot);
         pid_controllers.TiltControlPID.setOutputFilter(config.TiltControlAlphaFilter);
         pid_controllers.TiltControlPID.setOutputLimits(-config.ControllerEffortMax, config.ControllerEffortMax);
         pid_controllers.TiltControlPID.setDirection(true);
         pid_controllers.TiltControlPID.setSetpointRange(20.0 * (M_PI / 180.0));
         // Setup turning controller
-        pid_controllers.TurningControlPID.setPID(config.TurningControlKp, config.TurningControlKi, config.TurningControlKd);
+        pid_controllers.TurningControlPID.setPID(config.TurningControlKp, config.TurningControlKi, config.TurningControlKd, config.TurningControlDerivFilter, 1.0/config.ControlLoopFrequency);
         pid_controllers.TurningControlPID.setOutputFilter(config.TurningOutputFilter);
         pid_controllers.TurningControlPID.setMaxIOutput(1.0);
         pid_controllers.TurningControlPID.setOutputLimits(-config.ControllerEffortMax / 2.0, config.ControllerEffortMax / 2.0);
-        pid_controllers.TurningControlPID.setDirection(false);
+        pid_controllers.TurningControlPID.setDirection(true);
         pid_controllers.TurningControlPID.setSetpointRange(45.0 * (M_PI / 180.0));
     }
 
