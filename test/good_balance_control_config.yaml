@@ -19,7 +19,7 @@ bobble:
     MeasuredTurnRateFilterFrequency: 50.0
     LeftWheelVelocityFilterFrequency: 10.0
     RightWheelVelocityFilterFrequency: 10.0
-    DesiredForwardVelocityFilterFrequency: 200.0
+    DesiredForwardVelocityFilterFrequency: 10.0
     DesiredTurnRateFilterFrequency: 50.0
     MaxVelocityCmd: 4.25 # 3 mph
     MaxTurnRateCmd: 6.25 # 150 deg/s
@@ -27,8 +27,8 @@ bobble:
     VelocityCmdScale: 1.15
     TurnCmdScale: 6.25
     VelocityControlKp: 0.125
-    VelocityControlKd: 0.035
-    VelocityControlDerivFilter: 5.0
+    VelocityControlKd: 0.03
+    VelocityControlDerivFilter: 25.0
     VelocityControlKi: 0.01
     VelocityControlAlphaFilter: 0.975
     VelocityControlMaxIntegralOutput: 0.15
@@ -40,8 +40,8 @@ bobble:
     TiltDotOffset: 0.0
     RollDotOffset: 0.0
     YawDotOffset: 0.0
-    TurningControlKp: 0.15
-    TurningControlKi: 0.03
+    TurningControlKp: 0.25
+    TurningControlKi: 0.05
     TurningControlKd: 0.0
     TurningControlDerivFilter: 50.0
     TurningOutputFilter: 0.5
