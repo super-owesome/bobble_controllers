@@ -26,14 +26,14 @@ bobble:
     WheelRadiusMeters: 0.05
     VelocityCmdScale: 1.15
     TurnCmdScale: 6.25
-    VelocityControlKp: 0.07
-    VelocityControlKd: 0.03
-    VelocityControlDerivFilter: 10.0
-    VelocityControlKi: 0.02
-    VelocityControlAlphaFilter: 0.975
+    VelocityControlKp: 0.125
+    VelocityControlKd: 0.05
+    VelocityControlDerivFilter: 20.0
+    VelocityControlKi: 0.01
+    VelocityControlAlphaFilter: 0.99
     VelocityControlMaxIntegralOutput: 0.025
     VelocityControlOutputLimitDegrees: 8.5
-    TiltControlKp: 2.25
+    TiltControlKp: 2.5
     TiltControlKd: 0.5
     TiltControlAlphaFilter: 0.05
     TiltOffset: 0.0
