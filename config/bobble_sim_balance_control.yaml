@@ -34,7 +34,7 @@ bobble:
     VelocityControlAlphaFilter: 0.99
     VelocityControlMaxIntegralOutput: 0.025
     VelocityControlOutputLimitDegrees: 8.5
-    TiltControlKp: 2.5
+    TiltControlKp: 0.0 # 2.5
     TiltControlKd: 0.5
     TiltControlAlphaFilter: 0.05
     TiltOffset: 0.0
