@@ -52,10 +52,14 @@ include_directories(include
 )
 
 add_library(${PROJECT_NAME}
-  src/BobbleBalanceController.cpp
+  src/BalanceBaseController.cpp
+  src/BalanceSimController.cpp
   src/Filter.cpp
+  src/HighPassFilter.cpp
+  src/LowPassFilter.cpp
   src/MadgwickAHRS.cpp
   src/PidControl.cpp
+  src/PIDFilters.cpp
 )
 
 add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_generate_messages_cpp)
@@ -68,6 +72,9 @@ target_link_libraries(${PROJECT_NAME}
 ## Testing ##
 #############
 if (CATKIN_ENABLE_TESTING)
+    catkin_add_gtest(filter_test
+            test/filter_test.cpp)
+    target_link_libraries(filter_test ${PROJECT_NAME})
     add_rostest_gtest(balance_controller_test
           test/balance_controller.test
           test/balance_controller_test.cpp)
@@ -116,4 +123,3 @@ install(DIRECTORY config
 
 install(FILES ${PROJECT_NAME}_plugins.xml
 		DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
-

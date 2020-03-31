@@ -30,7 +30,7 @@
 #include "test_common.h"
 
 // TEST CASES
-TEST_F(BobbleBalanceControllerTest, testNoBalance)
+TEST_F(BalanceSimControllerTest, testNoBalance)
 {
   // wait for 3s. Is it holding balance?
   ros::Duration(3.0).sleep();

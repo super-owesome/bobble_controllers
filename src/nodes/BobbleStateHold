@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import rospy
+import logging
 from bobble_controllers.msg import BobbleBotStatus
 from gazebo_msgs.srv import *
 PKG = 'bobble_controllers'
@@ -11,6 +12,7 @@ class BobbleStateHold(object):
         This simple node just keeps the Bobble-Bot standing in sim until
         active control begins.
         """
+        self.logger = logging.getLogger("hold_state_log")
         self._ControlMode = None # Do not have a mode until the controller is actually running
         # Listen to bb_controller_status messages
         rospy.Subscriber("/bobble/bobble_balance_controller/bb_controller_status", BobbleBotStatus, self._controllerDataReceived)
@@ -28,13 +30,17 @@ class BobbleStateHold(object):
             self._resetSimState()
 
     def _resetSimState(self):
-        self.reset_state(gazebo_msgs.msg.ModelState(
-            model_name = "bobblebot",
-            pose = geometry_msgs.msg.Pose(position = geometry_msgs.msg.Point(x=0.0, y=0.0, z=0.0),
-                                          orientation = geometry_msgs.msg.Quaternion(x=0.0, y=0.0, z=0.0, w=0.0)),
-            twist = geometry_msgs.msg.Twist(linear = geometry_msgs.msg.Point(x=0.0, y=0.0, z=0.0),
-                                            angular = geometry_msgs.msg.Quaternion(x=0.0, y=0.0, z=0.0, w=0.0)),
-            reference_frame = "world"))
+        try:
+            self.reset_state(gazebo_msgs.msg.ModelState(
+                model_name = "bobblebot",
+                pose = geometry_msgs.msg.Pose(position = geometry_msgs.msg.Point(x=0.0, y=0.0, z=0.0),
+                                              orientation = geometry_msgs.msg.Quaternion(x=0.0, y=0.0, z=0.0, w=0.0)),
+                twist = geometry_msgs.msg.Twist(linear = geometry_msgs.msg.Point(x=0.0, y=0.0, z=0.0),
+                                                angular = geometry_msgs.msg.Quaternion(x=0.0, y=0.0, z=0.0, w=0.0)),
+                reference_frame = "world"))
+        except Exception as e:
+            self.logger.warning("Gazebo state was not able to be reset to zero.")
+
         return
 
     def _controllerDataReceived(self, controller_data):
