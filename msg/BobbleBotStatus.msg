@@ -1,6 +1,8 @@
 int32 ControlMode
 float32 MeasuredTiltDot
 float32 MeasuredTurnRate
+float32 FilteredTiltDot
+float32 FilteredTurnRate
 float32 Tilt
 float32 TiltRate
 float32 Heading

@@ -10,6 +10,7 @@
 #include <bobble_controllers/PidControl.h>
 #include "bobble_controllers/MadgwickAHRS.h"
 #include <bobble_controllers/Filter.h>
+#include <bobble_controllers/LowPassFilter.h>
 
 namespace bobble_controllers {
 
@@ -40,26 +41,29 @@ namespace bobble_controllers {
     /// These are set at init via yml
     class BalanceControllerConfig {
     public:
+        double ControlLoopFrequency;
         double StartingTiltSafetyLimitDegrees;
         double MaxTiltSafetyLimitDegrees;
         double ControllerEffortMax;
         double MotorEffortToTorqueSimFactor;
         double WheelVelocityAdjustment;
         double MadgwickFilterGain;
-        double MeasuredTiltFilterGain;
-        double MeasuredTiltDotFilterGain;
-        double MeasuredHeadingFilterGain;
-        double MeasuredTurnRateFilterGain;
-        double LeftWheelVelocityFilterGain;
-        double RightWheelVelocityFilterGain;
-        double DesiredForwardVelocityFilterGain;
-        double DesiredTurnRateFilterGain;
+        double MeasuredTiltFilterFrequency;
+        double MeasuredTiltDotFilterFrequency;
+        double MeasuredHeadingFilterFrequency;
+        double MeasuredTurnRateFilterFrequency;
+        double LeftWheelVelocityFilterFrequency;
+        double RightWheelVelocityFilterFrequency;
+        double DesiredForwardVelocityFilterFrequency;
+        double DesiredTurnRateFilterFrequency;
         double MaxVelocityCmd;
         double MaxTurnRateCmd;
         double WheelRadiusMeters;
         double VelocityCmdScale;
         double TurnCmdScale;
         double VelocityControlKp;
+        double VelocityControlKd;
+        double VelocityControlDerivFilter;
         double VelocityControlKi;
         double VelocityControlAlphaFilter;
         double VelocityControlMaxIntegralOutput;
@@ -74,6 +78,7 @@ namespace bobble_controllers {
         double TurningControlKp;
         double TurningControlKi;
         double TurningControlKd;
+        double TurningControlDerivFilter;
         double TurningOutputFilter;
     };
 
@@ -110,6 +115,9 @@ namespace bobble_controllers {
         double MeasuredRollDot;
         double MeasuredTiltDot;
         double MeasuredTurnRate;
+        double FilteredRollDot;
+        double FilteredTiltDot;
+        double FilteredTurnRate;
         double MeasuredRightMotorPosition;
         double MeasuredRightMotorVelocity;
         double MeasuredLeftMotorPosition;
@@ -136,14 +144,14 @@ namespace bobble_controllers {
     /// Controller filters
     class BalanceControllerFilters {
     public:
-        LPFilter MeasuredTiltFilter;
-        LPFilter MeasuredTiltDotFilter;
-        LPFilter MeasuredHeadingFilter;
-        LPFilter MeasuredTurnRateFilter;
-        LPFilter LeftWheelVelocityFilter;
-        LPFilter RightWheelVelocityFilter;
-        LPFilter DesiredForwardVelocityFilter;
-        LPFilter DesiredTurnRateFilter;
+        LowPassFilter MeasuredTiltFilter;
+        LowPassFilter MeasuredTiltDotFilter;
+        LowPassFilter MeasuredHeadingFilter;
+        LowPassFilter MeasuredTurnRateFilter;
+        LowPassFilter LeftWheelVelocityFilter;
+        LowPassFilter RightWheelVelocityFilter;
+        LowPassFilter DesiredForwardVelocityFilter;
+        LowPassFilter DesiredTurnRateFilter;
     };
 
 
@@ -151,9 +159,9 @@ namespace bobble_controllers {
     class BalancePIDControllers {
     public:
         BalancePIDControllers() :
-          VelocityControlPID(0.0, 0.0, 0.0),
-          TiltControlPID(0.0, 0.0, 0.0),
-          TurningControlPID(0.0, 0.0, 0.0)
+          VelocityControlPID(0.0, 0.0, 0.0, 0.0, 0.0),
+          TiltControlPID(0.0, 0.0, 0.0, 0.0, 0.0),
+          TurningControlPID(0.0, 0.0, 0.0, 0.0, 0.0)
         {}
         PidControl VelocityControlPID;
         PidControl TiltControlPID;

@@ -14,13 +14,17 @@
 //**********************************
 //Constructor functions
 //**********************************
-PidControl::PidControl(double p, double i, double d){
+PidControl::PidControl(double p, double i, double d, double fc, double sampleTime){
     init();
-    P=p; I=i; D=d;
+    P=p; I=i; D=d; Fc=fc; Ts=sampleTime;
+    derivativeFilter.resetFilterParameters(Ts, Fc, D);
+    integralFilter.resetFilterParameters(Ts, I);
 }
-PidControl::PidControl(double p, double i, double d, double f){
+PidControl::PidControl(double p, double i, double d, double fc, double sampleTime, double f){
     init();
-    P=p; I=i; D=d; F=f;
+    F=f; P=p; I=i; D=d; Fc=fc; Ts=sampleTime;
+    derivativeFilter.resetFilterParameters(Ts, Fc, D);
+    integralFilter.resetFilterParameters(Ts, I);
 }
 void PidControl::init(){
     P=0;
@@ -82,6 +86,7 @@ void PidControl::setI(double i){
     }
     I=i;
     checkSigns();
+    integralFilter.resetFilterParameters(Ts, I);
     /* Implementation note:
     * this->Scales the accumulated error to avoid output errors.
     * As an example doubling the I term cuts the accumulated error in half, which results in the
@@ -90,9 +95,10 @@ void PidControl::setI(double i){
     */
 }
 
-void PidControl::setD(double d){
-    D=d;
+void PidControl::setD(double d, double fc){
+    D=d; Fc=fc;
     checkSigns();
+    derivativeFilter.resetFilterParameters(Ts, Fc, D);
 }
 
 /**Configure the FeedForward parameter. <br>
@@ -112,14 +118,20 @@ void PidControl::setF(double f){
  * @param i Integral gain.	Becomes large if setpoint cannot reach target quickly.
  * @param d Derivative gain. Responds quickly to large changes in error. Small values prevents P and I terms from causing overshoot.
  */
-void PidControl::setPID(double p, double i, double d){
+void PidControl::setPID(double p, double i, double d, double fc, double sampleTime){
     P=p;I=i;D=d;
     checkSigns();
+    P=p; I=i; D=d; Fc=fc; Ts=sampleTime;
+    derivativeFilter.resetFilterParameters(Ts, Fc, D);
+    integralFilter.resetFilterParameters(Ts, I);
 }
 
-void PidControl::setPID(double p, double i, double d,double f){
+void PidControl::setPID(double p, double i, double d, double fc, double sampleTime, double f){
     P=p;I=i;D=d;F=f;
     checkSigns();
+    F=f; P=p; I=i; D=d; Fc=fc; Ts=sampleTime;
+    derivativeFilter.resetFilterParameters(Ts, Fc, D);
+    integralFilter.resetFilterParameters(Ts, I);
 }
 
 void PidControl::setExternalDerivativeError(double* err_source){
@@ -190,14 +202,14 @@ void PidControl::setSetpoint(double setpoint){
 * @param target The target value
 * @return calculated output value for driving the actual to the target
 */
-double PidControl::getOutput(double actual, double setpoint){
+double PidControl::getOutput(double desired, double actual){
     double output;
     double Poutput;
     double Ioutput;
     double Doutput;
     double Foutput;
 
-    this->setpoint=setpoint;
+    this->setpoint=desired;
 
     //Ramp the setpoint used for calculations if user has opted to do so
     if(setpointRange!=0){
@@ -224,14 +236,14 @@ double PidControl::getOutput(double actual, double setpoint){
 
 
     //Calculate D Term
-    //Note, this->is negative. this->actually "slows" the system if it's doing
-    //the correct thing, and small values helps prevent output spikes and overshoot
+    // If using the external derivative, use the negative value of Kd
+    // If using the standard PID, the derivative term is calcluated
+    // from the bilinear transform with a first order filter
 
     if (useExternalDerivError){
         Doutput= -D*(*extDerivError);
     }else{
-        Doutput= -D*(actual-lastActual);
-        lastActual=actual;
+        Doutput=derivativeFilter.filter(error);
     }
 
 
@@ -240,7 +252,7 @@ double PidControl::getOutput(double actual, double setpoint){
     // 1. maxIoutput restricts the amount of output contributed by the Iterm.
     // 2. prevent windup by not increasing errorSum if we're already running against our max Ioutput
     // 3. prevent windup by not increasing errorSum if output is output=maxOutput
-    Ioutput=I*errorSum;
+    Ioutput=integralFilter.filter(error);
     if(maxIOutput!=0){
         Ioutput=clamp(Ioutput,-maxIOutput,maxIOutput);
     }
@@ -275,8 +287,8 @@ double PidControl::getOutput(double actual, double setpoint){
     if(minOutput!=maxOutput){
         output=clamp(output, minOutput,maxOutput);
     }
-    if(outputFilter!=0){
-        output=lastOutput*outputFilter+output*(1-outputFilter);
+    if(outputFilter!=0.0){
+        output=lastOutput*outputFilter+output*(1.0-outputFilter);
     }
 
     lastOutput=output;
