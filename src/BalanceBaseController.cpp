@@ -62,7 +62,6 @@ namespace bobble_controllers {
     }
 
     void BalanceBaseController::loadConfig() {
-        ROS_INFO("LOADING CONFIG!!!");
         unpackParameter("ControlLoopFrequency", config.ControlLoopFrequency, 500.0);
         unpackParameter("StartingTiltSafetyLimitDegrees", config.StartingTiltSafetyLimitDegrees, 4.0);
         unpackParameter("MaxTiltSafetyLimitDegrees", config.MaxTiltSafetyLimitDegrees, 20.0);
