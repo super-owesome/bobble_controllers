@@ -16,6 +16,7 @@ namespace bobble_controllers {
 
     void BalanceBaseController::init(ros::NodeHandle& nh)
     {
+        state.ActiveControlMode = bobble_controllers::ControlModes::IDLE;
         reset();
         node_ = nh;
         loadConfig();
@@ -34,7 +35,6 @@ namespace bobble_controllers {
         clearCommandState(processed_commands);
         clearCommandState(received_commands);
         clearCommandState(state.Cmds);
-        state.ActiveControlMode = bobble_controllers::ControlModes::IDLE;
         state.ForwardVelocity = 0.0;
         state.DesiredTilt = 0.0;
         state.Tilt = 0.0;
@@ -54,33 +54,37 @@ namespace bobble_controllers {
         estimateState();
         applyFilters();
         runStateLogic();
-        outputs.RightMotorEffortCmd = outputs.TiltEffort - outputs.HeadingEffort;
-        outputs.LeftMotorEffortCmd = outputs.TiltEffort + outputs.HeadingEffort;
+        outputs.RightMotorEffortCmd = -outputs.TiltEffort + outputs.HeadingEffort;
+        outputs.LeftMotorEffortCmd = -outputs.TiltEffort - outputs.HeadingEffort;
         applySafety();
         sendMotorCommands();
         write_controller_status_msg();
     }
 
     void BalanceBaseController::loadConfig() {
+        ROS_INFO("LOADING CONFIG!!!");
+        unpackParameter("ControlLoopFrequency", config.ControlLoopFrequency, 500.0);
         unpackParameter("StartingTiltSafetyLimitDegrees", config.StartingTiltSafetyLimitDegrees, 4.0);
         unpackParameter("MaxTiltSafetyLimitDegrees", config.MaxTiltSafetyLimitDegrees, 20.0);
         unpackParameter("ControllerEffortMax", config.ControllerEffortMax, 0.4);
         unpackParameter("WheelVelocityAdjustment", config.WheelVelocityAdjustment, 0.0);
         unpackParameter("MadgwickFilterGain", config.MadgwickFilterGain, 0.01);
-        unpackParameter("MeasuredTiltFilterGain", config.MeasuredTiltFilterGain, 0.0);
-        unpackParameter("MeasuredTiltDotFilterGain", config.MeasuredTiltDotFilterGain, 0.0);
-        unpackParameter("MeasuredHeadingFilterGain", config.MeasuredHeadingFilterGain, 0.0);
-        unpackParameter("MeasuredTurnRateFilterGain", config.MeasuredTurnRateFilterGain, 0.0);
-        unpackParameter("LeftWheelVelocityFilterGain", config.LeftWheelVelocityFilterGain, 0.0);
-        unpackParameter("RightWheelVelocityFilterGain", config.RightWheelVelocityFilterGain, 0.0);
-        unpackParameter("DesiredForwardVelocityFilterGain", config.DesiredForwardVelocityFilterGain, 0.0);
-        unpackParameter("DesiredTurnRateFilterGain", config.DesiredTurnRateFilterGain, 0.0);
+        unpackParameter("MeasuredTiltFilterFrequency", config.MeasuredTiltFilterFrequency, 0.0);
+        unpackParameter("MeasuredTiltDotFilterFrequency", config.MeasuredTiltDotFilterFrequency, 0.0);
+        unpackParameter("MeasuredHeadingFilterFrequency", config.MeasuredHeadingFilterFrequency, 0.0);
+        unpackParameter("MeasuredTurnRateFilterFrequency", config.MeasuredTurnRateFilterFrequency, 0.0);
+        unpackParameter("LeftWheelVelocityFilterFrequency", config.LeftWheelVelocityFilterFrequency, 0.0);
+        unpackParameter("RightWheelVelocityFilterFrequency", config.RightWheelVelocityFilterFrequency, 0.0);
+        unpackParameter("DesiredForwardVelocityFilterFrequency", config.DesiredForwardVelocityFilterFrequency, 0.0);
+        unpackParameter("DesiredTurnRateFilterFrequency", config.DesiredTurnRateFilterFrequency, 0.0);
         unpackParameter("MaxVelocityCmd", config.MaxVelocityCmd, 0.5);
         unpackParameter("MaxTurnRateCmd", config.MaxTurnRateCmd, 0.5);
         unpackParameter("WheelRadiusMeters", config.WheelRadiusMeters, 0.05);
         unpackParameter("VelocityCmdScale", config.VelocityCmdScale, 1.0);
         unpackParameter("TurnCmdScale", config.TurnCmdScale, 1.0);
         unpackParameter("VelocityControlKp", config.VelocityControlKp, 1.0);
+        unpackParameter("VelocityControlKd", config.VelocityControlKd, 0.1);
+        unpackParameter("VelocityControlDerivFilter", config.VelocityControlDerivFilter, 50.0);
         unpackParameter("VelocityControlKi", config.VelocityControlKi, 0.01);
         unpackParameter("VelocityControlAlphaFilter", config.VelocityControlAlphaFilter, 0.05);
         unpackParameter("VelocityControlMaxIntegralOutput", config.VelocityControlMaxIntegralOutput, 0.6);
@@ -95,41 +99,42 @@ namespace bobble_controllers {
         unpackParameter("TurningControlKp", config.TurningControlKp, 1.0);
         unpackParameter("TurningControlKi", config.TurningControlKi, 0.01);
         unpackParameter("TurningControlKd", config.TurningControlKd, 0.01);
+        unpackParameter("TurningControlDerivFilter", config.TurningControlDerivFilter, 50.0);
         unpackParameter("TurningOutputFilter", config.TurningOutputFilter, 0.0);
     }
 
     void BalanceBaseController::setupFilters() {
-        filters.MeasuredTiltFilter.setGain(config.MeasuredTiltFilterGain);
-        filters.MeasuredTiltDotFilter.setGain(config.MeasuredTiltDotFilterGain);
-        filters.MeasuredHeadingFilter.setGain(config.MeasuredHeadingFilterGain);
-        filters.MeasuredTurnRateFilter.setGain(config.MeasuredTurnRateFilterGain);
-        filters.LeftWheelVelocityFilter.setGain(config.LeftWheelVelocityFilterGain);
-        filters.RightWheelVelocityFilter.setGain(config.RightWheelVelocityFilterGain);
-        filters.DesiredForwardVelocityFilter.setGain(config.DesiredForwardVelocityFilterGain);
-        filters.DesiredTurnRateFilter.setGain(config.DesiredTurnRateFilterGain);
+        filters.MeasuredTiltFilter.resetFilterParameters(1.0/config.ControlLoopFrequency, config.MeasuredTiltFilterFrequency, 1.0);
+        filters.MeasuredTiltDotFilter.resetFilterParameters(1.0/config.ControlLoopFrequency, config.MeasuredTiltDotFilterFrequency, 1.0);
+        filters.MeasuredHeadingFilter.resetFilterParameters(1.0/config.ControlLoopFrequency, config.MeasuredHeadingFilterFrequency, 1.0);
+        filters.MeasuredTurnRateFilter.resetFilterParameters(1.0/config.ControlLoopFrequency, config.MeasuredTurnRateFilterFrequency, 1.0);
+        filters.LeftWheelVelocityFilter.resetFilterParameters(1.0/config.ControlLoopFrequency, config.LeftWheelVelocityFilterFrequency, 1.0);
+        filters.RightWheelVelocityFilter.resetFilterParameters(1.0/config.ControlLoopFrequency, config.RightWheelVelocityFilterFrequency, 1.0);
+        filters.DesiredForwardVelocityFilter.resetFilterParameters(1.0/config.ControlLoopFrequency, config.DesiredForwardVelocityFilterFrequency, 1.0);
+        filters.DesiredTurnRateFilter.resetFilterParameters(1.0/config.ControlLoopFrequency, config.DesiredTurnRateFilterFrequency, 1.0);
     }
 
     void BalanceBaseController::setupControllers() {
         // Setup velocity controller
-        pid_controllers.VelocityControlPID.setPID(config.VelocityControlKp, config.VelocityControlKi, 0.0);
+        pid_controllers.VelocityControlPID.setPID(config.VelocityControlKp, config.VelocityControlKi, config.VelocityControlKd, config.VelocityControlDerivFilter, 1.0/config.ControlLoopFrequency);
         pid_controllers.VelocityControlPID.setOutputFilter(config.VelocityControlAlphaFilter);
         pid_controllers.VelocityControlPID.setMaxIOutput(config.VelocityControlMaxIntegralOutput);
         pid_controllers.VelocityControlPID.setOutputLimits(-config.VelocityControlOutputLimitDegrees * (M_PI / 180.0),
                                            config.VelocityControlOutputLimitDegrees * (M_PI / 180.0));
         pid_controllers.VelocityControlPID.setDirection(true);
         // Setup tilt controller
-        pid_controllers.TiltControlPID.setPID(config.TiltControlKp, 0.0, config.TiltControlKd);
+        pid_controllers.TiltControlPID.setPID(config.TiltControlKp, 0.0, config.TiltControlKd, 0.0, 1.0/config.ControlLoopFrequency);
         pid_controllers.TiltControlPID.setExternalDerivativeError(&state.TiltDot);
         pid_controllers.TiltControlPID.setOutputFilter(config.TiltControlAlphaFilter);
         pid_controllers.TiltControlPID.setOutputLimits(-config.ControllerEffortMax, config.ControllerEffortMax);
         pid_controllers.TiltControlPID.setDirection(true);
         pid_controllers.TiltControlPID.setSetpointRange(20.0 * (M_PI / 180.0));
         // Setup turning controller
-        pid_controllers.TurningControlPID.setPID(config.TurningControlKp, config.TurningControlKi, config.TurningControlKd);
+        pid_controllers.TurningControlPID.setPID(config.TurningControlKp, config.TurningControlKi, config.TurningControlKd, config.TurningControlDerivFilter, 1.0/config.ControlLoopFrequency);
         pid_controllers.TurningControlPID.setOutputFilter(config.TurningOutputFilter);
         pid_controllers.TurningControlPID.setMaxIOutput(1.0);
         pid_controllers.TurningControlPID.setOutputLimits(-config.ControllerEffortMax / 2.0, config.ControllerEffortMax / 2.0);
-        pid_controllers.TurningControlPID.setDirection(false);
+        pid_controllers.TurningControlPID.setDirection(true);
         pid_controllers.TurningControlPID.setSetpointRange(45.0 * (M_PI / 180.0));
     }
 
@@ -246,6 +251,10 @@ namespace bobble_controllers {
         outputs.HeadingEffort = 0.0;
         if (state.Cmds.StartupCmd) {
             state.ActiveControlMode = bobble_controllers::ControlModes::STARTUP;
+            reset();
+            loadConfig();
+            setupFilters();
+            setupControllers();
         }
         if (state.Cmds.DiagnosticCmd) {
             state.ActiveControlMode = bobble_controllers::ControlModes::DIAGNOSTIC;
@@ -272,7 +281,6 @@ namespace bobble_controllers {
 
     void BalanceBaseController::balanceMode() {
         state.DesiredTilt = pid_controllers.VelocityControlPID.getOutput(state.Cmds.DesiredVelocity, state.ForwardVelocity);
-        state.DesiredTilt *= -1.0;
         outputs.TiltEffort = pid_controllers.TiltControlPID.getOutput(state.DesiredTilt, state.Tilt);
         outputs.HeadingEffort = pid_controllers.TurningControlPID.getOutput(state.Cmds.DesiredTurnRate, state.TurnRate);
         if (state.Cmds.IdleCmd) {
@@ -285,6 +293,8 @@ namespace bobble_controllers {
             pub_bobble_status_->msg_.ControlMode = state.ActiveControlMode;
             pub_bobble_status_->msg_.MeasuredTiltDot = state.MeasuredTiltDot * (180.0 / M_PI);
             pub_bobble_status_->msg_.MeasuredTurnRate = state.MeasuredTurnRate * (180.0 / M_PI);
+            pub_bobble_status_->msg_.FilteredTiltDot = state.FilteredTiltDot * (180.0 / M_PI);
+            pub_bobble_status_->msg_.FilteredTurnRate = state.FilteredTurnRate * (180.0 / M_PI);
             pub_bobble_status_->msg_.Tilt = state.Tilt * (180.0 / M_PI);
             pub_bobble_status_->msg_.TiltRate = state.TiltDot * (180.0 / M_PI);
             pub_bobble_status_->msg_.Heading = state.Heading * (180.0 / M_PI);
