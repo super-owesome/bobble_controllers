@@ -250,7 +250,7 @@ namespace bobble_controllers {
             reset();
             loadConfig();
             setupFilters();
-            setupControllers()
+            setupControllers();
         }
         if (state.Cmds.DiagnosticCmd) {
             state.ActiveControlMode = bobble_controllers::ControlModes::DIAGNOSTIC;
