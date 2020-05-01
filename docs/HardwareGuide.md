@@ -31,3 +31,13 @@ More information about this file can be found [here](https://www.raspberrypi.org
 
 
 
+ssh bb2@raspberrypi.local
+pw is : bb2
+
+Set ROS_MASTER on remote PC:
+
+export ROS_MASTER_URI=http://raspberrypi.local:11311
+
+
+If this doesn't work, you may need to manually set ROS_IP in this file on BB:
+/etc/rc.local
