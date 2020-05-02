@@ -28,7 +28,7 @@ public:
     ///        This default constructor has hardcoded params
     ///
     ////////////////////////////////////////////////////////////
-    HighPassFilter() : HighPassFilter(0.002, 50, 1.0){};
+    HighPassFilter() : HighPassFilter(0.002, 0.01, 1.0){};
 
     void resetFilterParameters(double Ts, double fc, double zeta);
 };

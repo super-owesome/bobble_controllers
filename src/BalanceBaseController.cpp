@@ -16,6 +16,7 @@ namespace bobble_controllers {
 
     void BalanceBaseController::init(ros::NodeHandle& nh)
     {
+        state.ActiveControlMode = bobble_controllers::ControlModes::IDLE;
         reset();
         node_ = nh;
         loadConfig();
@@ -34,7 +35,6 @@ namespace bobble_controllers {
         clearCommandState(processed_commands);
         clearCommandState(received_commands);
         clearCommandState(state.Cmds);
-        state.ActiveControlMode = bobble_controllers::ControlModes::IDLE;
         state.ForwardVelocity = 0.0;
         state.DesiredTilt = 0.0;
         state.Tilt = 0.0;
@@ -250,6 +250,10 @@ namespace bobble_controllers {
         outputs.HeadingEffort = 0.0;
         if (state.Cmds.StartupCmd) {
             state.ActiveControlMode = bobble_controllers::ControlModes::STARTUP;
+            reset();
+            loadConfig();
+            setupFilters();
+            setupControllers();
         }
         if (state.Cmds.DiagnosticCmd) {
             state.ActiveControlMode = bobble_controllers::ControlModes::DIAGNOSTIC;
