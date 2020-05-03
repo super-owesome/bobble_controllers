@@ -3,21 +3,19 @@
 
 #include <bobble_controllers/PIDFilters.h>
 
+enum PID_Direction : bool {
+    NORMAL = true,
+    REVERSED = false,
+};
+
 class PidControl{
 public:
-    PidControl(double p, double i, double d, double fc, double sampleTime);
-    PidControl(double p, double i, double d, double fc, double sampleTime, double f);
-    void setP(double p);
-    void setI(double i);
-    void setD(double d, double fc);
-    void setF(double f);
-    void setPID(double p, double i, double d, double fc, double sampleTime);
-    void setPID(double p, double i, double d, double fc, double sampleTime, double f);
+    PidControl(double p, double i, double d, double fc, double sampleTime, bool direction = PID_Direction::NORMAL);
+    PidControl(double p, double i, double d, double fc, double sampleTime, double f, bool direction = PID_Direction::NORMAL);
+    void setPID(double f, double p, double i, double d, double fc, double sampleTime, bool direction = PID_Direction::NORMAL);
     void setMaxIOutput(double);
     void setOutputLimits(double);
     void setOutputLimits(double,double);
-    void setDirection(bool);
-    void setSetpoint(double);
     void reset();
     void setOutputRampRate(double);
     void setExternalDerivativeError(double*);
@@ -30,7 +28,6 @@ public:
 private:
     double clamp(double, double, double);
     bool bounded(double, double, double);
-    void checkSigns();
     void init();
     double P;
     double I;
@@ -55,7 +52,7 @@ private:
     double lastActual;
 
     bool firstRun;
-    bool reversed;
+    bool direction;
     bool useExternalDerivError;
 
     double outputRampRate;

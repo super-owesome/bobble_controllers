@@ -14,122 +14,68 @@
 //**********************************
 //Constructor functions
 //**********************************
-PidControl::PidControl(double p, double i, double d, double fc, double sampleTime){
+PidControl::PidControl(double p, double i, double d, double fc, double sampleTime, bool direction){
     init();
-    P=p; I=i; D=d; Fc=fc; Ts=sampleTime;
+    this->P = p;
+    this->I = i;
+    this->D = d;
+    this->Fc = fc;
+    this->Ts = sampleTime;
+    this->direction = direction;
     derivativeFilter.resetFilterParameters(Ts, Fc, D);
     integralFilter.resetFilterParameters(Ts, I);
 }
-PidControl::PidControl(double p, double i, double d, double fc, double sampleTime, double f){
+PidControl::PidControl(double p, double i, double d, double fc, double sampleTime, double f, bool direction){
     init();
-    F=f; P=p; I=i; D=d; Fc=fc; Ts=sampleTime;
+    this->F = f;
+    this->P = p;
+    this->I = i;
+    this->D = d;
+    this->Fc = fc;
+    this->Ts = sampleTime;
+    this->direction = direction;
     derivativeFilter.resetFilterParameters(Ts, Fc, D);
     integralFilter.resetFilterParameters(Ts, I);
 }
 void PidControl::init(){
-    P=0;
-    I=0;
-    D=0;
-    F=0;
+    this->P = 0;
+    this->I = 0;
+    this->D = 0;
+    this->F = 0;
 
-    maxIOutput=0;
-    maxError=0;
-    errorSum=0;
-    maxOutput=0;
-    minOutput=0;
-    setpoint=0;
-    lastActual=0;
-    firstRun=true;
-    reversed=false;
-    outputRampRate=0;
-    lastOutput=0;
-    outputFilter=0;
-    setpointRange=0;
-    extDerivError=0;
-    useExternalDerivError=false;
+    maxIOutput = 0;
+    maxError = 0;
+    errorSum = 0;
+    maxOutput = 0;
+    minOutput = 0;
+    setpoint = 0;
+    lastActual = 0;
+    firstRun = true;
+    direction = PID_Direction::NORMAL;
+    outputRampRate = 0;
+    lastOutput = 0;
+    outputFilter = 0;
+    setpointRange = 0;
+    extDerivError = 0;
+    useExternalDerivError = false;
 }
 
 //**********************************
 //Configuration functions
 //**********************************
-/**
- * Configure the Proportional gain parameter. <br>
- * this->responds quickly to changes in setpoint, and provides most of the initial driving force
- * to make corrections. <br>
- * Some systems can be used with only a P gain, and many can be operated with only PI.<br>
- * For position based controllers, this->is the first parameter to tune, with I second. <br>
- * For rate controlled systems, this->is often the second after F.
- *
- * @param p Proportional gain. Affects output according to <b>output+=P*(setpoint-current_value)</b>
- */
-void PidControl::setP(double p){
-    P=p;
-    checkSigns();
-}
-
-/**
- * Changes the I parameter <br>
- * this->is used for overcoming disturbances, and ensuring that the controller always gets to the control mode.
- * Typically tuned second for "Position" based modes, and third for "Rate" or continuous based modes. <br>
- * Affects output through <b>output+=previous_errors*Igain ;previous_errors+=current_error</b>
- *
- * @see {@link #setMaxIOutput(double) setMaxIOutput} for how to restrict
- *
- * @param i New gain value for the Integral term
- */
-void PidControl::setI(double i){
-    if(I!=0){
-        errorSum=errorSum*I/i;
-    }
-    if(maxIOutput!=0){
-        maxError=maxIOutput/i;
-    }
-    I=i;
-    checkSigns();
-    integralFilter.resetFilterParameters(Ts, I);
-    /* Implementation note:
-    * this->Scales the accumulated error to avoid output errors.
-    * As an example doubling the I term cuts the accumulated error in half, which results in the
-    * output change due to the I term constant during the transition.
-    *
-    */
-}
-
-void PidControl::setD(double d, double fc){
-    D=d; Fc=fc;
-    checkSigns();
-    derivativeFilter.resetFilterParameters(Ts, Fc, D);
-}
-
-/**Configure the FeedForward parameter. <br>
- * this->is excellent for Velocity, rate, and other	continuous control modes where you can
- * expect a rough output value based solely on the setpoint.<br>
- * Should not be used in "position" based control modes.
- *
- * @param f Feed forward gain. Affects output according to <b>output+=F*Setpoint</b>;
- */
-void PidControl::setF(double f){
-    F=f;
-    checkSigns();
-}
-
 /** Create a new PID object.
  * @param p Proportional gain. Large if large difference between setpoint and target.
  * @param i Integral gain.	Becomes large if setpoint cannot reach target quickly.
  * @param d Derivative gain. Responds quickly to large changes in error. Small values prevents P and I terms from causing overshoot.
  */
-void PidControl::setPID(double p, double i, double d, double fc, double sampleTime){
-    P=p;I=i;D=d;
-    checkSigns();
-    P=p; I=i; D=d; Fc=fc; Ts=sampleTime;
-    derivativeFilter.resetFilterParameters(Ts, Fc, D);
-    integralFilter.resetFilterParameters(Ts, I);
-}
-
-void PidControl::setPID(double p, double i, double d, double fc, double sampleTime, double f){
-    P=p;I=i;D=d;F=f;
-    checkSigns();
-    F=f; P=p; I=i; D=d; Fc=fc; Ts=sampleTime;
+void PidControl::setPID(double f, double p, double i, double d, double fc, double sampleTime, bool direction){
+    this->F = f;
+    this->P = p;
+    this->I = i;
+    this->D = d;
+    this->Fc = fc;
+    this->Ts = sampleTime;
+    this->direction = direction;
     derivativeFilter.resetFilterParameters(Ts, Fc, D);
     integralFilter.resetFilterParameters(Ts, I);
 }
@@ -160,7 +106,9 @@ void PidControl::setMaxIOutput(double maximum){
  * set to (-maximum).
  * @param output
  */
-void PidControl::setOutputLimits(double output){ setOutputLimits(-output,output);}
+void PidControl::setOutputLimits(double output){
+    setOutputLimits(-output,output);
+}
 
 /**
  * Specify a maximum output.
@@ -178,23 +126,9 @@ void PidControl::setOutputLimits(double minimum,double maximum){
     }
 }
 
-/** Set the operating direction of the PID controller
- * @param reversed Set true to reverse PID output
- */
-void PidControl::setDirection(bool reversed){
-    this->reversed=reversed;
-}
-
 //**********************************
 //Primary operating functions
 //**********************************
-
-/**Set the target for the PID calculations
- * @param setpoint
- */
-void PidControl::setSetpoint(double setpoint){
-    this->setpoint=setpoint;
-}
 
 /** Calculate the PID value needed to hit the target setpoint.
 * Automatically re-calculates the output at each call.
@@ -209,7 +143,7 @@ double PidControl::getOutput(double desired, double actual){
     double Doutput;
     double Foutput;
 
-    this->setpoint=desired;
+    this->setpoint = desired;
 
     //Ramp the setpoint used for calculations if user has opted to do so
     if(setpointRange!=0){
@@ -217,33 +151,31 @@ double PidControl::getOutput(double desired, double actual){
     }
 
     //Do the simple parts of the calculations
-    double error=setpoint-actual;
+    double error = setpoint - actual;
 
     //Calculate F output. Notice, this->depends only on the setpoint, and not the error.
-    Foutput=F*setpoint;
+    Foutput = F * setpoint;
 
     //Calculate P term
-    Poutput=P*error;
+    Poutput = P * error;
 
     //If this->is our first time running this-> we don't actually _have_ a previous input or output.
     //For sensor, sanely assume it was exactly where it is now.
     //For last output, we can assume it's the current time-independent outputs.
     if(firstRun){
-        lastActual=actual;
-        lastOutput=Poutput+Foutput;
-        firstRun=false;
+        lastActual = actual;
+        lastOutput = Poutput + Foutput;
+        firstRun = false;
     }
-
 
     //Calculate D Term
     // If using the external derivative, use the negative value of Kd
     // If using the standard PID, the derivative term is calcluated
     // from the bilinear transform with a first order filter
-
     if (useExternalDerivError){
-        Doutput= -D*(*extDerivError);
+        Doutput= -D * (*extDerivError);
     }else{
-        Doutput=derivativeFilter.filter(error);
+        Doutput = derivativeFilter.filter(error);
     }
 
 
@@ -252,13 +184,13 @@ double PidControl::getOutput(double desired, double actual){
     // 1. maxIoutput restricts the amount of output contributed by the Iterm.
     // 2. prevent windup by not increasing errorSum if we're already running against our max Ioutput
     // 3. prevent windup by not increasing errorSum if output is output=maxOutput
-    Ioutput=integralFilter.filter(error);
+    Ioutput = integralFilter.filter(error);
     if(maxIOutput!=0){
-        Ioutput=clamp(Ioutput,-maxIOutput,maxIOutput);
+        Ioutput = clamp(Ioutput, -maxIOutput, maxIOutput);
     }
 
     //And, finally, we can just add the terms up
-    output=Foutput + Poutput + Ioutput + Doutput;
+    output = Foutput + Poutput + Ioutput + Doutput;
 
     //Figure out what we're doing with the error.
     if(minOutput!=maxOutput && !bounded(output, minOutput,maxOutput) ){
@@ -292,6 +224,12 @@ double PidControl::getOutput(double desired, double actual){
     }
 
     lastOutput=output;
+
+    // If the directionality of the PID is reversed, negate the output
+    if(this->direction == PID_Direction::REVERSED)
+    {
+        output = -output;
+    }
     return output;
 }
 
@@ -377,21 +315,3 @@ bool PidControl::bounded(double value, double min, double max){
     return (min<value) && (value<max);
 }
 
-/**
- * To operate correctly, all PID parameters require the same sign,
- * with that sign depending on the {@literal}reversed value
- */
-void PidControl::checkSigns(){
-    if(reversed){	//all values should be below zero
-        if(P>0) P*=-1;
-        if(I>0) I*=-1;
-        if(D>0) D*=-1;
-        if(F>0) F*=-1;
-    }
-    else{	//all values should be above zero
-        if(P<0) P*=-1;
-        if(I<0) I*=-1;
-        if(D<0) D*=-1;
-        if(F<0) F*=-1;
-    }
-}
