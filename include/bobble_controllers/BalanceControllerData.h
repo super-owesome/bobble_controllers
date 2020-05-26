@@ -26,6 +26,9 @@ namespace bobble_controllers {
         double AccelX;
         double AccelY;
         double AccelZ;
+        double MagX;
+        double MagY;
+        double MagZ;
         double RollDot;
         double TiltDot;
         double TurnDot;
