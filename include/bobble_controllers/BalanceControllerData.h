@@ -93,9 +93,9 @@ namespace bobble_controllers {
         bool IdleCmd;
         bool DiagnosticCmd;
         double DesiredVelocityRaw;
-        double DesiredTurnRateRaw;
+        double DesiredHeadingRaw;
         double DesiredVelocity;
-        double DesiredTurnRate;
+        double DesiredHeading;
     };
 
     /// Controller outputs.
@@ -114,6 +114,9 @@ namespace bobble_controllers {
         int    ActiveControlMode;
         double MeasuredTilt;
         double MeasuredHeading;
+        double WrappedMeasuredHeading;
+        int NumberOfWraps;
+        double PreviousMeasuredHeading;
         double MeasuredRoll;
         double MeasuredRollDot;
         double MeasuredTiltDot;

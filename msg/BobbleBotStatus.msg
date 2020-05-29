@@ -10,7 +10,7 @@ float32 TurnRate
 float32 ForwardVelocity
 float32 DesiredVelocity
 float32 DesiredTilt
-float32 DesiredTurnRate
+float32 DesiredHeading
 float32 LeftMotorPosition
 float32 LeftMotorVelocity
 float32 RightMotorPosition

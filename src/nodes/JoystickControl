@@ -6,7 +6,7 @@ from bobble_controllers.msg import ControlCommands
 PKG = 'bobble_controllers'
 
 FWD_VEL_AXIS = 1
-TURN_RATE_AXIS = 3
+TURN_AXIS = 3
 #TURN_RATE_AXIS = 2 # Xbox One controller
 ACTIVATE_BUTTON = 0
 RESET_BUTTON = 4
@@ -35,8 +35,8 @@ class JoystickControl(object):
         for axisNumber, axisValue in enumerate(jsData.axes):
             if axisNumber == FWD_VEL_AXIS:
                 self.cmd_vel.linear.x = self.remap_joystick_range(axisValue)
-            elif axisNumber == TURN_RATE_AXIS:
-                self.cmd_vel.angular.z = self.remap_joystick_range(axisValue)
+            elif axisNumber == TURN_AXIS:
+                self.cmd_vel.angular.z += self.remap_joystick_range(axisValue)
         for buttonNumber, buttonValue in enumerate(jsData.buttons):
             if buttonNumber == ACTIVATE_BUTTON and buttonValue:
                 self.mode_cmd.IdleCmd = False

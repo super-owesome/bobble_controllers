@@ -86,7 +86,25 @@ namespace bobble_controllers {
         tf::Quaternion q(q0, q1, q2, q3);
 		tf::Matrix3x3 m(q);
         m.getRPY(state.MeasuredHeading, state.MeasuredTilt, state.MeasuredRoll);
+        /// These need to be negated to match bb2 frames - roll isn't used
         state.MeasuredTilt *= -1.0;
+        state.MeasuredHeading *= -1.0;
+        /// This is making the heading go between 0 and 2 PI instead of -PI and PI
+        state.MeasuredHeading += M_PI;
+
+        /// Wrap or unwrap the heading so that there are no discontinuities
+        if(state.MeasuredHeading - state.PreviousMeasuredHeading > M_PI)
+        {
+            state.NumberOfWraps -= 1;
+        }
+        else if(state.MeasuredHeading - state.PreviousMeasuredHeading < -M_PI)
+        {
+            state.NumberOfWraps += 1;
+        }
+
+        /// Wrapped heading is current heading plus 2 pi times the number of wraps
+        state.WrappedMeasuredHeading = state.MeasuredHeading + 2.0 * M_PI * state.NumberOfWraps;
+        state.PreviousMeasuredHeading = state.MeasuredHeading;
     }
 
     void BalanceSimController::estimateState()

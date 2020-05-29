@@ -86,7 +86,7 @@ if __name__=="__main__":
                     break
             twist = Twist()
             twist.linear.x = drive_fwd*fwd_speed
-            twist.angular.z = turn_rate*turn_speed
+            twist.angular.z += turn_rate*turn_speed
             print('Forward Velocity Cmd : ' + str(twist.linear.x))
             print('Turn Rate Cmd : ' + str(twist.angular.z))
             cmd_vel_pub.publish(twist)

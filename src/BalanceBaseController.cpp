@@ -128,6 +128,7 @@ namespace bobble_controllers {
         pid_controllers.TiltControlPID.setSetpointRange(20.0 * (M_PI / 180.0));
         // Setup turning controller
         pid_controllers.TurningControlPID.setPID(0.0, config.TurningControlKp, config.TurningControlKi, config.TurningControlKd, config.TurningControlDerivFilter, 1.0/config.ControlLoopFrequency);
+        pid_controllers.TurningControlPID.setExternalDerivativeError(&state.TurnRate);
         pid_controllers.TurningControlPID.setOutputFilter(config.TurningOutputFilter);
         pid_controllers.TurningControlPID.setMaxIOutput(1.0);
         pid_controllers.TurningControlPID.setOutputLimits(-config.ControllerEffortMax / 2.0, config.ControllerEffortMax / 2.0);
@@ -148,7 +149,7 @@ namespace bobble_controllers {
             processed_commands.IdleCmd = received_commands.IdleCmd;
             processed_commands.DiagnosticCmd = received_commands.DiagnosticCmd;
             processed_commands.DesiredVelocity = received_commands.DesiredVelocity;
-            processed_commands.DesiredTurnRate = received_commands.DesiredTurnRate;
+            processed_commands.DesiredHeading = received_commands.DesiredHeading;
             control_command_mutex_.unlock();
 
             loop_rate.sleep();
@@ -165,7 +166,7 @@ namespace bobble_controllers {
 
     void BalanceBaseController::cmdVelCallback(const geometry_msgs::Twist& command) {
         received_commands.DesiredVelocity = command.linear.x;
-        received_commands.DesiredTurnRate = command.angular.z;
+        received_commands.DesiredHeading = command.angular.z;
     }
 
     void BalanceBaseController::clearCommandState(bobble_controllers::BalanceControllerCommands& cmds)
@@ -174,9 +175,9 @@ namespace bobble_controllers {
         cmds.IdleCmd = false;
         cmds.DiagnosticCmd = false;
         cmds.DesiredVelocityRaw = 0.0;
-        cmds.DesiredTurnRateRaw = 0.0;
+        cmds.DesiredHeadingRaw = state.Heading;
         cmds.DesiredVelocity = 0.0;
-        cmds.DesiredTurnRate = 0.0;
+        cmds.DesiredHeading = state.Heading;
     }
 
     void BalanceBaseController::populateCommands()
@@ -189,7 +190,7 @@ namespace bobble_controllers {
         state.Cmds.IdleCmd = processed_commands.IdleCmd;
         state.Cmds.DiagnosticCmd = processed_commands.DiagnosticCmd;
         state.Cmds.DesiredVelocityRaw = processed_commands.DesiredVelocity * config.VelocityCmdScale;
-        state.Cmds.DesiredTurnRateRaw = processed_commands.DesiredTurnRate * config.TurnCmdScale;
+        state.Cmds.DesiredHeadingRaw = processed_commands.DesiredHeading;
         control_command_mutex_.unlock();
     }
 
@@ -198,7 +199,7 @@ namespace bobble_controllers {
         // Filters on IMU data to get a good orientation state estimate.
         state.Tilt = filters.MeasuredTiltFilter.filter(state.MeasuredTilt);
         state.TiltDot = filters.MeasuredTiltDotFilter.filter(state.MeasuredTiltDot);
-        state.Heading = filters.MeasuredHeadingFilter.filter(state.MeasuredHeading);
+        state.Heading = filters.MeasuredHeadingFilter.filter(state.WrappedMeasuredHeading);
         state.TurnRate = filters.MeasuredTurnRateFilter.filter(state.MeasuredTurnRate);
         // Filter wheel velocities and apply a wheel velocity adjustment in order to remove
         // a perceived wheel motion due to pendulum rotation
@@ -206,9 +207,9 @@ namespace bobble_controllers {
         state.RightWheelVelocity = filters.RightWheelVelocityFilter.filter(state.MeasuredRightMotorVelocity) * config.WheelVelocityAdjustment;
         state.ForwardVelocity = config.WheelRadiusMeters*(state.RightWheelVelocity + state.LeftWheelVelocity)/2.0;
         state.Cmds.DesiredVelocity = filters.DesiredForwardVelocityFilter.filter(state.Cmds.DesiredVelocityRaw);
-        state.Cmds.DesiredTurnRate = filters.DesiredTurnRateFilter.filter(state.Cmds.DesiredTurnRateRaw);
+        state.Cmds.DesiredHeading = filters.DesiredTurnRateFilter.filter(state.Cmds.DesiredHeadingRaw);
         state.Cmds.DesiredVelocity = limit(state.Cmds.DesiredVelocity, config.MaxVelocityCmd);
-        state.Cmds.DesiredTurnRate = limit(state.Cmds.DesiredTurnRate, config.MaxTurnRateCmd);
+        //state.Cmds.DesiredHeading = limit(state.Cmds.DesiredTurnRate, config.MaxTurnRateCmd);
     }
 
     void BalanceBaseController::applySafety()
@@ -259,7 +260,7 @@ namespace bobble_controllers {
 
     void BalanceBaseController::diagnosticMode() {
         outputs.TiltEffort = state.Cmds.DesiredVelocity;
-        outputs.HeadingEffort = state.Cmds.DesiredTurnRate;
+        outputs.HeadingEffort = state.Cmds.DesiredHeading;
         if (state.Cmds.IdleCmd) {
             state.ActiveControlMode = bobble_controllers::ControlModes::IDLE;
         }
@@ -278,7 +279,7 @@ namespace bobble_controllers {
     void BalanceBaseController::balanceMode() {
         state.DesiredTilt = pid_controllers.VelocityControlPID.getOutput(state.Cmds.DesiredVelocity, state.ForwardVelocity);
         outputs.TiltEffort = pid_controllers.TiltControlPID.getOutput(state.DesiredTilt, state.Tilt);
-        outputs.HeadingEffort = pid_controllers.TurningControlPID.getOutput(state.Cmds.DesiredTurnRate, state.TurnRate);
+        outputs.HeadingEffort = pid_controllers.TurningControlPID.getOutput(state.Cmds.DesiredHeading, state.Heading);
         if (state.Cmds.IdleCmd) {
             state.ActiveControlMode = bobble_controllers::ControlModes::IDLE;
         }
@@ -288,17 +289,17 @@ namespace bobble_controllers {
         if(pub_bobble_status_->trylock()) {
             pub_bobble_status_->msg_.ControlMode = state.ActiveControlMode;
             pub_bobble_status_->msg_.MeasuredTiltDot = state.MeasuredTiltDot * (180.0 / M_PI);
-            pub_bobble_status_->msg_.MeasuredTurnRate = state.MeasuredTurnRate * (180.0 / M_PI);
+            pub_bobble_status_->msg_.MeasuredTurnRate = state.MeasuredTurnRate;
             pub_bobble_status_->msg_.FilteredTiltDot = state.FilteredTiltDot * (180.0 / M_PI);
             pub_bobble_status_->msg_.FilteredTurnRate = state.FilteredTurnRate * (180.0 / M_PI);
             pub_bobble_status_->msg_.Tilt = state.Tilt * (180.0 / M_PI);
             pub_bobble_status_->msg_.TiltRate = state.TiltDot * (180.0 / M_PI);
             pub_bobble_status_->msg_.Heading = state.Heading * (180.0 / M_PI);
-            pub_bobble_status_->msg_.TurnRate = state.TurnRate * (180.0 / M_PI);
+            pub_bobble_status_->msg_.TurnRate = state.TurnRate;
             pub_bobble_status_->msg_.ForwardVelocity = state.ForwardVelocity;
             pub_bobble_status_->msg_.DesiredVelocity = state.Cmds.DesiredVelocity;
 	        pub_bobble_status_->msg_.DesiredTilt = state.DesiredTilt * (180.0 / M_PI);
-            pub_bobble_status_->msg_.DesiredTurnRate = state.Cmds.DesiredTurnRate * (180.0 / M_PI);
+            pub_bobble_status_->msg_.DesiredHeading = state.Cmds.DesiredHeading * (180.0 / M_PI);
             pub_bobble_status_->msg_.LeftMotorPosition = state.MeasuredLeftMotorPosition * (180.0 / M_PI);
             pub_bobble_status_->msg_.LeftMotorVelocity = state.MeasuredLeftMotorVelocity * (180.0 / M_PI);
             pub_bobble_status_->msg_.RightMotorPosition = state.MeasuredRightMotorPosition * (180.0 / M_PI);
