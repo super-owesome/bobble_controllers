@@ -20,9 +20,6 @@ class BobbleStateHold(object):
         self._ControlMode = None # Do not have a mode until the controller is actually running
         self.controller_config_root_dir = rospkg.RosPack().get_path(self._ConfigPackageName)
         self.controller_config_file = os.path.join(self.controller_config_root_dir, self._ConfigFileName)
-
-        self.logger.warning('STARTING UP')
-        self.logger.warning(self.controller_config_file)
         # Listen to bb_controller_status messages
         rospy.Subscriber('/bobble/bobble_balance_controller/bb_controller_status', BobbleBotStatus, self._controllerDataReceived)
         # Kluge to reset sim state until balance is active
