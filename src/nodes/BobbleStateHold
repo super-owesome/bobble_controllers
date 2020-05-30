@@ -14,10 +14,15 @@ class BobbleStateHold(object):
         This simple node just keeps the Bobble-Bot standing in sim until
         active control begins.
         """
+        self._ConfigPackageName = rospy.get_param('~configPackageName', 'bobble_controllers')
+        self._ConfigFileName = rospy.get_param('~configFileName', 'config/bobble_sim_balance_control.yaml')
         self.logger = logging.getLogger('hold_state_log')
         self._ControlMode = None # Do not have a mode until the controller is actually running
-        self.controller_config_root_dir = rospkg.RosPack().get_path('bobble_controllers')
-        self.controller_config_file = os.path.join(self.controller_config_root_dir, 'config/bobble_sim_balance_control.yaml')
+        self.controller_config_root_dir = rospkg.RosPack().get_path(self._ConfigPackageName)
+        self.controller_config_file = os.path.join(self.controller_config_root_dir, self._ConfigFileName)
+
+        self.logger.warning('STARTING UP')
+        self.logger.warning(self.controller_config_file)
         # Listen to bb_controller_status messages
         rospy.Subscriber('/bobble/bobble_balance_controller/bb_controller_status', BobbleBotStatus, self._controllerDataReceived)
         # Kluge to reset sim state until balance is active
