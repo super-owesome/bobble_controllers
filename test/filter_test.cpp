@@ -64,11 +64,12 @@ protected:
     // for Foo.
 };
 
-/// This test assumes a sample rate of 500, filter of 0.01 Hz, and damping of 0.707
+/// This test assumes a sample rate of 500, filter of 50 Hz, and damping of 1.0
 /// Input is a unit step, step results were generated from octave
 
 TEST_F(FilterTest, HPFTest) {
     HighPassFilter hpfFilter;
+    hpfFilter.resetFilterParameters(0.002, 50, 1.0);
     const unsigned int RESPONSE_LENGTH = 26;
     const float ACCEPTABLE_ERROR = 1e-6;
     float response[RESPONSE_LENGTH] = {
@@ -107,8 +108,11 @@ TEST_F(FilterTest, HPFTest) {
     }
 }
 
+/// This test assumes a sample rate of 500, filter of 50 Hz, and damping of 1.0
+/// Input is a unit step, step results were generated from octave
 TEST_F(FilterTest, LPFTest) {
     LowPassFilter lpfFilter;
+    lpfFilter.resetFilterParameters(0.002, 50, 1.0);
     const unsigned int RESPONSE_LENGTH = 26;
     const float ACCEPTABLE_ERROR = 1e-6;
     float response[RESPONSE_LENGTH] = {
