@@ -16,3 +16,4 @@ test/data/*
 analysis/notebooks/*data
 *.png
 test/TestSummary.html
+test/data/
