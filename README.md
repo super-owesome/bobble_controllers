@@ -120,7 +120,7 @@ roslaunch bobble_controllers run_sim_with_joystick.launch
 
 The default controls are depicted below:
 
-![Joystick Controls](docs/imgs/JoystickControls.png)
+![Joystick Controls](../bobble_bot/docs/imgs/JoystickControls.png)
 
 
 ## Analyzing Simulation Data
@@ -154,8 +154,8 @@ load the data and make the plots. After running the make_plots.py script above, 
 should see that two images were created: 'TiltControl.png' & 'VelocityControl.png'. 
 They should look something like the following:
 
-![Tilt Control](docs/imgs/TiltControl.png)
-![Velocity Control](docs/imgs/VelocityControl.png)
+![Tilt Control](../bobble_bot/docs/imgs/TiltControl.png)
+![Velocity Control](../bobble_bot/docs/imgs/VelocityControl.png)
 
 Try changing the gains in config/bobble_sim_balance_control.yaml and then repeating 
 the steps above to generate and analyze new data. Testing and analyzing your changes 

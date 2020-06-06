@@ -11,6 +11,7 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
+  <build_depend>bobble_description</build_depend>
   <build_depend>control_msgs</build_depend>
   <build_depend>controller_interface</build_depend>
   <build_depend>controller_manager</build_depend>
@@ -21,6 +22,7 @@
   <build_depend>sensor_msgs</build_depend>
   <build_depend>std_msgs</build_depend>
 
+  <run_depend>bobble_description</run_depend>
   <run_depend>control_msgs</run_depend>
   <run_depend>controller_interface</run_depend>
   <run_depend>controller_manager</run_depend>

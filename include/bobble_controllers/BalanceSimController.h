@@ -22,6 +22,10 @@
 #include <bobble_controllers/BalanceBaseController.h>
 #include <tf/transform_datatypes.h>
 
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2_ros/transform_broadcaster.h>
+#include <geometry_msgs/TransformStamped.h>
+
 namespace bobble_controllers {
 
     class BalanceSimController : public bobble_controllers::BalanceBaseController,
