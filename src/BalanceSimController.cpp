@@ -84,25 +84,6 @@ namespace bobble_controllers {
 							  imuData->linear_acceleration.x, imuData->linear_acceleration.y,
 							  imuData->linear_acceleration.z);
         tf::Quaternion q(q0, q1, q2, q3);
-
-        /// Broadcast the quaternion
-        static tf2_ros::TransformBroadcaster br;
-        geometry_msgs::TransformStamped transformStamped;
-        transformStamped.header.stamp = ros::Time::now();
-        transformStamped.header.frame_id = "world";
-        transformStamped.child_frame_id = "bobble_chassis_link";
-        transformStamped.transform.translation.x = 0.0;
-        transformStamped.transform.translation.y = 0.0;
-        transformStamped.transform.translation.z = 0.0;
-        transformStamped.transform.rotation.x = q0;
-        transformStamped.transform.rotation.y = q1;
-        transformStamped.transform.rotation.z = q2;
-        transformStamped.transform.rotation.w = q3;
-
-        tf2_ros::TransformBroadcaster tfb;
-
-        tfb.sendTransform(transformStamped);
-
 		tf::Matrix3x3 m(q);
         m.getRPY(state.MeasuredHeading, state.MeasuredTilt, state.MeasuredRoll);
         /// These need to be negated to match bb2 frames - roll isn't used
