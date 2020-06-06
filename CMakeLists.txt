@@ -75,21 +75,6 @@ if (CATKIN_ENABLE_TESTING)
     catkin_add_gtest(filter_test
             test/filter_test.cpp)
     target_link_libraries(filter_test ${PROJECT_NAME})
-	#add_rostest_gtest(balance_controller_test
-    #      test/balance_controller.test
-    #      test/balance_controller_test.cpp)
-    #target_link_libraries(balance_controller_test ${catkin_LIBRARIES})
-    #add_rostest_gtest(no_balance_test
-    #      test/no_balance.test
-    #      test/no_balance_test.cpp)
-    #target_link_libraries(no_balance_test ${catkin_LIBRARIES})
-    #foreach(T
-    #    test/js_drive_square.test
-    #    test/impulse_force.test)
-    #    add_rostest(${T})
-    #endforeach()
-    #catkin_add_nosetests(test/parsing_test.py)
-    #catkin_add_nosetests(test/plots_test.py)
 endif()
 
 #############
