@@ -5,7 +5,6 @@ add_compile_options(-std=c++11)
 find_package(
   catkin
   REQUIRED COMPONENTS
-  bobble_description
   control_msgs
   controller_interface
   controller_manager
@@ -34,7 +33,6 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS
-  bobble_description
   control_msgs
   controller_interface
   controller_manager
