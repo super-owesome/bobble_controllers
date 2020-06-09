@@ -27,7 +27,7 @@ bobble:
     WheelRadiusMeters: 0.05
     VelocityCmdScale: 1.15
     TurnCmdScale: 6.25
-    VelocityControlKp: 0.125
+    VelocityControlKp: 0.25
     VelocityControlKd: 0.05
     VelocityControlDerivFilter: 20.0
     VelocityControlKi: 0.01
