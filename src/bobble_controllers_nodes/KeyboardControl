@@ -52,6 +52,7 @@ if __name__=="__main__":
     turn_speed = 0.25
     active = False
     mode_cmd = ControlCommands()
+    twist = Twist()
 
     try:
         print(msg)
@@ -84,11 +85,10 @@ if __name__=="__main__":
                 turn_rate = 0.0
                 if (key == '\x03'):
                     break
-            twist = Twist()
             twist.linear.x = drive_fwd*fwd_speed
             twist.angular.z += turn_rate*turn_speed
             print('Forward Velocity Cmd : ' + str(twist.linear.x))
-            print('Turn Rate Cmd : ' + str(twist.angular.z))
+            print('Heading Cmd : ' + str(twist.angular.z))
             cmd_vel_pub.publish(twist)
             time.sleep(0.05)
 
