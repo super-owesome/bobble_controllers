@@ -16,6 +16,7 @@ JOYSTICK_RANGE = JOYSTICK_MAX - JOYSTICK_MIN
 OUTPUT_MIN = -0.2
 OUTPUT_MAX = 0.2
 OUTPUT_RANGE = OUTPUT_MAX - OUTPUT_MIN
+HEADING_SCALING = 0.25
 
 
 class JoystickControl(object):
@@ -36,7 +37,7 @@ class JoystickControl(object):
             if axisNumber == FWD_VEL_AXIS:
                 self.cmd_vel.linear.x = self.remap_joystick_range(axisValue)
             elif axisNumber == TURN_AXIS:
-                self.cmd_vel.angular.z += self.remap_joystick_range(axisValue)
+                self.cmd_vel.angular.z += self.remap_joystick_range(axisValue) * HEADING_SCALING
         for buttonNumber, buttonValue in enumerate(jsData.buttons):
             if buttonNumber == ACTIVATE_BUTTON and buttonValue:
                 self.mode_cmd.IdleCmd = False
