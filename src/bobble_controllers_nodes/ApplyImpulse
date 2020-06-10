@@ -73,6 +73,7 @@ class ApplyImpulse(object):
         while not unpaused:
             try:
                 self.unpause_physics_client()
+                unpaused = True
             except rospy.service.ServiceException:
                 self.logger.warning("Attempting to unpause physics.")
         time.sleep(3.0)
