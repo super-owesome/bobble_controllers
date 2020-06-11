@@ -17,6 +17,7 @@
 #include <realtime_tools/realtime_publisher.h>
 #include <ros/node_handle.h>
 #include <geometry_msgs/Twist.h>
+#include <sensor_msgs/JointState.h>
 #include <bobble_controllers/BalanceControllerData.h>
 
 namespace bobble_controllers {
@@ -35,6 +36,7 @@ namespace bobble_controllers {
         ros::NodeHandle node_;
         bool run_thread_;
         realtime_tools::RealtimePublisher<bobble_controllers::BobbleBotStatus>* pub_bobble_status_;
+        realtime_tools::RealtimePublisher<sensor_msgs::JointState>* pub_joint_state_;
         ros::Subscriber sub_command_;
         std::mutex control_command_mutex_;
 	    std::thread* subscriber_thread_;
@@ -45,6 +47,7 @@ namespace bobble_controllers {
         bobble_controllers::BalanceControllerOutputs  outputs;
         bobble_controllers::BalanceControllerFilters  filters;
         bobble_controllers::BalancePIDControllers     pid_controllers;
+
         virtual void estimateState() = 0;
         virtual void sendMotorCommands() = 0;
         virtual void loadConfig();
@@ -67,6 +70,7 @@ namespace bobble_controllers {
         void clearCommandState(bobble_controllers::BalanceControllerCommands& cmds);
         void populateCommands();
         void write_controller_status_msg();
+        void write_joint_state_msg();
         void applyFilters();
         void applySafety();
     };

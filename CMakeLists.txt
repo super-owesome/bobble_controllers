@@ -14,6 +14,7 @@ find_package(
   rostest
   sensor_msgs
   std_msgs
+  tf2_ros
 )
 
 catkin_python_setup()
@@ -42,6 +43,7 @@ catkin_package(
   rostest
   sensor_msgs
   std_msgs
+  tf2_ros
 )
 
 ###########

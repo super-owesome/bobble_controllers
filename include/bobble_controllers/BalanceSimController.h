@@ -23,6 +23,7 @@
 #include <tf/transform_datatypes.h>
 
 #include <tf2/LinearMath/Quaternion.h>
+#include <tf2_ros/transform_broadcaster.h>
 
 namespace bobble_controllers {
 

@@ -24,6 +24,19 @@ namespace bobble_controllers {
         setupControllers();
         pub_bobble_status_ = new realtime_tools::RealtimePublisher<bobble_controllers::BobbleBotStatus>(node_,
                                                     "bobble_balance_controller/bb_controller_status", 1);
+        pub_joint_state_ = new realtime_tools::RealtimePublisher<sensor_msgs::JointState>(node_,
+                                                                                         "/joint_states", 1);
+        /// Initialize the message arrays for the left and right wheels
+        pub_joint_state_->msg_.header.frame_id = "bobble_chassis_link";
+        pub_joint_state_->msg_.name.push_back("right_wheel_hinge");
+        pub_joint_state_->msg_.name.push_back("left_wheel_hinge");
+        pub_joint_state_->msg_.position.push_back(0.0);
+        pub_joint_state_->msg_.position.push_back(0.0);
+        pub_joint_state_->msg_.velocity.push_back(0.0);
+        pub_joint_state_->msg_.velocity.push_back(0.0);
+        pub_joint_state_->msg_.effort.push_back(0.0);
+        pub_joint_state_->msg_.effort.push_back(0.0);
+
 	    run_thread_ = true;
         subscriber_thread_ = new std::thread(&BalanceBaseController::runSubscriber, this);
     }
@@ -59,6 +72,7 @@ namespace bobble_controllers {
         applySafety();
         sendMotorCommands();
         write_controller_status_msg();
+        write_joint_state_msg();
     }
 
     void BalanceBaseController::loadConfig() {
@@ -282,6 +296,24 @@ namespace bobble_controllers {
         outputs.HeadingEffort = pid_controllers.TurningControlPID.getOutput(state.Cmds.DesiredHeading, state.Heading);
         if (state.Cmds.IdleCmd) {
             state.ActiveControlMode = bobble_controllers::ControlModes::IDLE;
+        }
+    }
+
+    void BalanceBaseController::write_joint_state_msg() {
+        if(pub_joint_state_->trylock())
+        {
+            pub_joint_state_->msg_.header.stamp = ros::Time::now();
+            // Right Wheel
+            pub_joint_state_->msg_.name[0] = "right_wheel_hinge";
+            pub_joint_state_->msg_.effort[0] = outputs.RightMotorEffortCmd;
+            pub_joint_state_->msg_.position[0] = state.MeasuredRightMotorPosition;
+            pub_joint_state_->msg_.velocity[0] = state.MeasuredRightMotorVelocity;
+            // Left Wheel
+            pub_joint_state_->msg_.name[1] = "left_wheel_hinge";
+            pub_joint_state_->msg_.effort[1] = outputs.LeftMotorEffortCmd;
+            pub_joint_state_->msg_.position[1] = state.MeasuredLeftMotorPosition;
+            pub_joint_state_->msg_.velocity[1] = state.MeasuredLeftMotorVelocity;
+            pub_joint_state_->unlockAndPublish();
         }
     }
 

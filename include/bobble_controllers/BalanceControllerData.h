@@ -134,6 +134,8 @@ namespace bobble_controllers {
         double TiltDot;
         double Heading;
         double TurnRate;
+        double PositionX;
+        double PositionY;
         double LeftWheelVelocity;
         double RightWheelVelocity;
         BalanceControllerCommands Cmds;

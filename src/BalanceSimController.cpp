@@ -25,6 +25,20 @@ namespace bobble_controllers {
         BalanceBaseController::setupControllers();
         pub_bobble_status_ = new realtime_tools::RealtimePublisher<bobble_controllers::BobbleBotStatus>(root_nh,
                                                     "bobble_balance_controller/bb_controller_status", 1);
+
+        pub_joint_state_ = new realtime_tools::RealtimePublisher<sensor_msgs::JointState>(node_,
+                                                                                          "/joint_states", 1);
+        /// Initialize the message arrays for the left and right wheels
+        pub_joint_state_->msg_.header.frame_id = "bobble_chassis_link";
+        pub_joint_state_->msg_.name.push_back("right_wheel_hinge");
+        pub_joint_state_->msg_.name.push_back("left_wheel_hinge");
+        pub_joint_state_->msg_.position.push_back(0.0);
+        pub_joint_state_->msg_.position.push_back(0.0);
+        pub_joint_state_->msg_.velocity.push_back(0.0);
+        pub_joint_state_->msg_.velocity.push_back(0.0);
+        pub_joint_state_->msg_.effort.push_back(0.0);
+        pub_joint_state_->msg_.effort.push_back(0.0);
+
 	    run_thread_ = true;
         subscriber_thread_ = new std::thread(&BalanceBaseController::runSubscriber, this);
         /// get a pointer to the effort interface
@@ -84,13 +98,33 @@ namespace bobble_controllers {
 							  imuData->linear_acceleration.x, imuData->linear_acceleration.y,
 							  imuData->linear_acceleration.z);
         tf::Quaternion q(q0, q1, q2, q3);
+
 		tf::Matrix3x3 m(q);
         m.getRPY(state.MeasuredHeading, state.MeasuredTilt, state.MeasuredRoll);
+
         /// These need to be negated to match bb2 frames - roll isn't used
         state.MeasuredTilt *= -1.0;
         state.MeasuredHeading *= -1.0;
         /// This is making the heading go between 0 and 2 PI instead of -PI and PI
         state.MeasuredHeading += M_PI;
+
+        /// Broadcast the quaternion
+        static tf2_ros::TransformBroadcaster br;
+        tf2::Quaternion broadcastQuaternion;
+        broadcastQuaternion.setRPY(state.MeasuredRoll, state.MeasuredTilt, state.MeasuredHeading);
+        geometry_msgs::TransformStamped transformStamped;
+        transformStamped.header.stamp = ros::Time::now();
+        transformStamped.header.frame_id = "world";
+        transformStamped.child_frame_id = "bobble_chassis_link";
+        transformStamped.transform.translation.x = state.PositionX;
+        transformStamped.transform.translation.y = state.PositionY;
+        transformStamped.transform.translation.z = 0.0;
+        transformStamped.transform.rotation.w = broadcastQuaternion.getW();
+        transformStamped.transform.rotation.x = broadcastQuaternion.getX();
+        transformStamped.transform.rotation.y = broadcastQuaternion.getY();
+        transformStamped.transform.rotation.z = broadcastQuaternion.getZ();
+        tf2_ros::TransformBroadcaster tfb;
+        tfb.sendTransform(transformStamped);
 
         /// Wrap or unwrap the heading so that there are no discontinuities
         if(state.MeasuredHeading - state.PreviousMeasuredHeading > M_PI)
@@ -113,6 +147,9 @@ namespace bobble_controllers {
         state.MeasuredRightMotorPosition = joints_[0].getPosition();
         state.MeasuredLeftMotorVelocity = joints_[1].getVelocity();
         state.MeasuredRightMotorVelocity = joints_[0].getVelocity();
+
+        state.PositionX += (config.WheelRadiusMeters / 2.0 * (state.MeasuredRightMotorVelocity + state.MeasuredLeftMotorVelocity) * cos(state.Heading)) / config.ControlLoopFrequency;
+        state.PositionY += (config.WheelRadiusMeters / 2.0 * (state.MeasuredRightMotorVelocity + state.MeasuredLeftMotorVelocity) * sin(state.Heading)) / config.ControlLoopFrequency;
     }
 
     void BalanceSimController::sendMotorCommands()
