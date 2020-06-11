@@ -24,7 +24,7 @@ bobble:
     DesiredTurnRateFilterFrequency: 50.0
     MaxVelocityCmd: 4.25 # 3 mph
     MaxTurnRateCmd: 6.25 # 150 deg/s
-    WheelRadiusMeters: 0.05
+    WheelRadiusMeters: 0.0275
     VelocityCmdScale: 1.15
     TurnCmdScale: 6.25
     VelocityControlKp: 0.25
