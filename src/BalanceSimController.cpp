@@ -15,7 +15,7 @@ namespace bobble_controllers {
                              ClaimedResources&            claimed_resources)
     {
         /// check if construction finished cleanly
-        if (state_ != CONSTRUCTED){
+        if (state_ != ControllerState::CONSTRUCTED){
             ROS_ERROR("Cannot initialize this controller because it failed to be constructed");
             return false;
         }
@@ -57,7 +57,7 @@ namespace bobble_controllers {
             joints_.push_back(j);
         }
         sub_imu_sensor_ = node_.subscribe("/imu_bosch/data_raw", 1, &BalanceSimController::imuCB, this);
-        state_ = INITIALIZED;
+        state_ = ControllerState::INITIALIZED;
         return true;
     }
 
