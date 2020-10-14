@@ -22,29 +22,23 @@ and learn how to [build your own Bobble-Bot](#build-your-own).
 
 For now, please follow the instructions to [build the simulation from source](#build-from-source).
 
+## Bobble-Bot on Windows
+Bobble-Bot now works on Windows thanks to the Windows Subsystem for Linux (WSL)! If you'd like to work with Bobble-Bot 
+on Windows, follow [these instructions first](https://jack-kawell.com/2020/06/12/ros-wsl2/). Once you've completed the 
+basic WSL setup, you can proceed to the instructions in the [build the simulation from source section](#build-from-source).
+
 ## Build from source
 
 The BobbleBot simulator requires ROS and Gazebo. Follow the instructions 
 [here](http://wiki.ros.org/melodic/Installation/Ubuntu)
-and install ROS Melodic Desktop. Other recent versions of ROS should also work, 
+and install ROS Melodic Desktop Full. Other versions of ROS should also work, 
 but they are not officially supported at this time.
 The simulator also makes use of the [Hector Gazebo](http://wiki.ros.org/hector_gazebo_plugins) 
 plugins. Those can be installed using the command below.
 
 ```sh
-apt-get install ros-melodic-hector-gazebo-plugins
+sudo apt-get install ros-melodic-hector-gazebo-plugins
 ```
-
-The bobble_description repository contains some large mesh files. To check these out 
-properly we need git lfs installed. Follow the steps below to install git lfs.
-
-```sh
-echo 'deb http://http.debian.net/debian wheezy-backports main' > /etc/apt/sources.list.d/wheezy-backports-main.list
-curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
-apt-get install -q -y git-lfs
-git lfs install
-```
-
 
 Before starting the build process, make sure your ROS environment is active.
 
