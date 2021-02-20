@@ -1,5 +1,5 @@
 # Bobble-Bot Simulator
-> Vote Bobble-Bot for the [Hackaday Prize 2019](https://hackaday.io/project/164992-bobble-bot)
+> Follow the Bobble-Bot project on [Hackaday](https://hackaday.io/project/164992-bobble-bot)
 
 Bobble-Bot is a modern take on a classical problem in control theory. The robot represents 
 a unique solution to the well understood problem of control of a two wheeled inverted pendulum.
