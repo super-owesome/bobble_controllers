@@ -1,5 +1,3 @@
-Bobble-Bot is participating in Hacktoberfest 2020! Head over to [issues](https://github.com/super-owesome/bobble_controllers/issues) to find potential items to work on, and join our [Discord](https://discord.gg/hAfM7tq) server to chat with fellow contributors!
-
 # Bobble-Bot Simulator
 > Vote Bobble-Bot for the [Hackaday Prize 2019](https://hackaday.io/project/164992-bobble-bot)
 
