@@ -100,3 +100,4 @@ if __name__ == '__main__':
         apply_impulse_sim.run()
     except rospy.ROSInterruptException:
         pass
+    rospy.signal_shutdown('Run complete.')

@@ -36,6 +36,7 @@ plugins. Those can be installed using the command below.
 
 ```sh
 sudo apt-get install ros-melodic-hector-gazebo-plugins
+pip install seaborn rosbag_pandas
 ```
 
 Before starting the build process, make sure your ROS environment is active.
