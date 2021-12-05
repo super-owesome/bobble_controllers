@@ -72,7 +72,7 @@ or [Joystick Control](joystick-control). Please create an issue if you encounter
 Launch the simulation.
 
 ```sh
-roslaunch bobble_controllers run_sim.launch
+roslaunch bobble_controllers run_sim.launch gui:=true
 ```
 
 In a separate terminal (with the ROS environment sourced) launch the keyboard control node.
@@ -110,7 +110,7 @@ With those two steps out of the way, you can then launch the simulator using the
 
 ```sh
 source devel/setup.bash
-roslaunch bobble_controllers run_sim_with_joystick.launch
+roslaunch bobble_controllers run_sim_with_joystick.launch gui:=true
 ```
 
 The default controls are depicted below:
@@ -131,7 +131,7 @@ and see how the balance controller holds up.
 
 ```sh
 source devel/setup.bash
-roslaunch bobble_controllers apply_impulse_force.launch impulse:=-1000 out_file:=~/bobble_workspace/src/bobble_controllers/analysis/impulse_test
+roslaunch bobble_controllers apply_impulse_force.launch gui:=true impulse:=-1000 out_file:=~/bobble_workspace/src/bobble_controllers/analysis/impulse_test
 ```
 
 If all goes well, the Gazebo simulation should launch and you should see Bobble-Bot hold 
@@ -218,7 +218,7 @@ catkin config --install
 catkin init
 catkin build
 source install/setup.bash
-roslaunch bobble_controllers apply_impulse_force.launch
+roslaunch bobble_controllers apply_impulse_force.launch gui:=true
 ```
 
 You can now freely edit the files on your host machine and simply re-run catkin 
